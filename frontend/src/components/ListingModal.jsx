@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
 export default function ListingModal({ isOpen, onClose, onListingCreated }) {
   if (!isOpen) return null;
@@ -42,7 +43,7 @@ export default function ListingModal({ isOpen, onClose, onListingCreated }) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/listings', {
+      const response = await fetch(`${API_BASE_URL}/api/listings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

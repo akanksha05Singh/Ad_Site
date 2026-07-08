@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ListingModal from './ListingModal';
+import { API_BASE_URL } from '../config';
 
 export default function MyListings({ user }) {
   const [listings, setListings] = useState([]);
@@ -15,7 +16,7 @@ export default function MyListings({ user }) {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/listings?owner=${user.id || user._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/listings?owner=${user.id || user._id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -43,7 +44,7 @@ export default function MyListings({ user }) {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/listings/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/listings/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -72,7 +73,7 @@ export default function MyListings({ user }) {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/listings/${selectedListing._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/listings/${selectedListing._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

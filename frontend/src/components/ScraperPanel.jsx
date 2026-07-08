@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
 export default function ScraperPanel() {
   const [sourceUrl, setSourceUrl] = useState('https://jobs-api.norway.no/v2/listings.json');
@@ -59,7 +60,7 @@ export default function ScraperPanel() {
       setLogs(prev => [...prev, `[IMPORTING] "${job.title}" -> Sending DB post request...`]);
       
       try {
-        const response = await fetch('/api/listings', {
+        const response = await fetch(`${API_BASE_URL}/api/listings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

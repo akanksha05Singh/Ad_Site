@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ListingCard from './ListingCard';
+import { API_BASE_URL } from '../config';
 
 export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigger }) {
   const [listings, setListings] = useState([]);
@@ -14,7 +15,7 @@ export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigg
     // Fetch lists from proxy-routed /api/listings
     const fetchListings = async () => {
       try {
-        let url = '/api/listings';
+        let url = `${API_BASE_URL}/api/listings`;
         const params = new URLSearchParams();
 
         if (selectedCategory && selectedCategory !== 'all') {

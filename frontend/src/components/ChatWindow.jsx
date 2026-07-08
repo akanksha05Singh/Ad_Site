@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 export default function ChatWindow({ user }) {
   const [messages, setMessages] = useState([]);
@@ -10,7 +11,7 @@ export default function ChatWindow({ user }) {
   const fetchMessages = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/messages', {
+      const response = await fetch(`${API_BASE_URL}/api/messages`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -68,7 +69,7 @@ export default function ChatWindow({ user }) {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/messages', {
+      const response = await fetch(`${API_BASE_URL}/api/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

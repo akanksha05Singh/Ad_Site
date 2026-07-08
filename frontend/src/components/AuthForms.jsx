@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
 export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
   if (!isOpen) return null;
@@ -35,7 +36,9 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
     setLoading(true);
 
     try {
-      const endpoint = activeTab === 'login' ? '/api/auth/login' : '/api/auth/signup';
+      const endpoint = activeTab === 'login' 
+        ? `${API_BASE_URL}/api/auth/login` 
+        : `${API_BASE_URL}/api/auth/signup`;
       const bodyData = activeTab === 'login' 
         ? { email: formData.email, password: formData.password }
         : formData;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 export default function AdminPanel() {
   const [listings, setListings] = useState([]);
@@ -9,7 +10,7 @@ export default function AdminPanel() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/listings');
+      const response = await fetch(`${API_BASE_URL}/api/listings`);
       const data = await response.json();
       if (response.ok && data.success) {
         setListings(data.data || []);
@@ -35,7 +36,7 @@ export default function AdminPanel() {
       let response;
       
       if (action === 'delete') {
-        response = await fetch(`/api/listings/${id}`, {
+        response = await fetch(`${API_BASE_URL}/api/listings/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -43,7 +44,7 @@ export default function AdminPanel() {
         });
       } else {
         // Approve listing (update status to active)
-        response = await fetch(`/api/listings/${id}`, {
+        response = await fetch(`${API_BASE_URL}/api/listings/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
