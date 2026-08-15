@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 
-export default function ListingModal({ isOpen, onClose, onListingCreated }) {
+export default function ListingModal({ isOpen, onClose, onListingCreated, user }) {
   if (!isOpen) return null;
 
   const [formData, setFormData] = useState({
     title: '',
-    category: 'classified',
+    category: 'job',
     price: '',
     location: '',
+    state: '',
     contactEmail: '',
+    contactPhone: '',
     description: ''
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        contactEmail: prev.contactEmail || user?.email || '',
+        contactPhone: prev.contactPhone || user?.phone || ''
+      }));
+    }
+  }, [isOpen, user]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -63,10 +75,12 @@ export default function ListingModal({ isOpen, onClose, onListingCreated }) {
       // Success
       setFormData({
         title: '',
-        category: 'classified',
+        category: 'job',
         price: '',
         location: '',
+        state: '',
         contactEmail: '',
+        contactPhone: '',
         description: ''
       });
       
@@ -120,35 +134,20 @@ export default function ListingModal({ isOpen, onClose, onListingCreated }) {
               </div>
             )}
 
-            {/* Category Toggle */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Category</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, category: 'classified' }))}
-                  className={`py-3 rounded-xl border text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                    formData.category === 'classified'
-                      ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700 font-extrabold shadow-sm'
-                      : 'border-slate-200 text-slate-500 hover:border-slate-350 hover:text-slate-800'
-                  }`}
-                >
-                  <span className={`h-2 w-2 rounded-full ${formData.category === 'classified' ? 'bg-indigo-500' : 'bg-slate-300'}`} />
-                  Classified Ad
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, category: 'job' }))}
-                  className={`py-3 rounded-xl border text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                    formData.category === 'job'
-                      ? 'border-emerald-600 bg-emerald-50/50 text-emerald-700 font-extrabold shadow-sm'
-                      : 'border-slate-200 text-slate-500 hover:border-slate-350 hover:text-slate-800'
-                  }`}
-                >
-                  <span className={`h-2 w-2 rounded-full ${formData.category === 'job' ? 'bg-emerald-500' : 'bg-slate-300'}`} />
-                  Job Opening
-                </button>
-              </div>
+
+
+            {/* Category */}
+            <div className="space-y-1">
+              <label htmlFor="category" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Category</label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all bg-white"
+              >
+                <option value="job">JOB</option>
+              </select>
             </div>
 
             {/* Title */}
@@ -165,12 +164,12 @@ export default function ListingModal({ isOpen, onClose, onListingCreated }) {
               />
             </div>
 
-            {/* Row for Price & Location */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Price / Salary */}
+            {/* Row for Price, Location & State */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Price */}
               <div className="space-y-1">
                 <label htmlFor="price" className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                  {formData.category === 'job' ? 'Salary (NOK / year)' : 'Price (NOK)'}
+                  {formData.category === 'job' ? 'Salary (INR/Month)' : 'Price (NOK)'}
                 </label>
                 <input
                   type="number"
@@ -179,7 +178,7 @@ export default function ListingModal({ isOpen, onClose, onListingCreated }) {
                   min="0"
                   value={formData.price}
                   onChange={handleChange}
-                  placeholder={formData.category === 'job' ? 'e.g. 750000' : 'e.g. 1500'}
+                  placeholder="e.g. 15000"
                   className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
                 />
               </div>
@@ -197,20 +196,49 @@ export default function ListingModal({ isOpen, onClose, onListingCreated }) {
                   className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
                 />
               </div>
+
+              {/* State */}
+              <div className="space-y-1">
+                <label htmlFor="state" className="text-xs font-bold text-slate-500 uppercase tracking-wide">State</label>
+                <input
+                  type="text"
+                  id="state"
+                  name="state"
+                  value={formData.state || ''}
+                  onChange={handleChange}
+                  placeholder="e.g. Kerala"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
+                />
+              </div>
             </div>
 
-            {/* Contact Email */}
-            <div className="space-y-1">
-              <label htmlFor="contactEmail" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Contact Email</label>
-              <input
-                type="email"
-                id="contactEmail"
-                name="contactEmail"
-                value={formData.contactEmail}
-                onChange={handleChange}
-                placeholder="e.g. contact@domain.no"
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
-              />
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label htmlFor="contactEmail" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Contact Email</label>
+                <input
+                  type="email"
+                  id="contactEmail"
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                  readOnly
+                  placeholder="e.g. contact@domain.no"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-slate-50 cursor-not-allowed focus:outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="contactPhone" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Contact Phone</label>
+                <input
+                  type="tel"
+                  id="contactPhone"
+                  name="contactPhone"
+                  value={formData.contactPhone}
+                  onChange={handleChange}
+                  placeholder="e.g. +47 123 45 678"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
+                />
+              </div>
             </div>
 
             {/* Description */}

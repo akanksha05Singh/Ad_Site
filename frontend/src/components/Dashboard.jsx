@@ -6,10 +6,10 @@ export default function Dashboard({ user }) {
       
       {/* Title Header */}
       <div className="space-y-1">
-        <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
+        <h1 className="font-outfit text-3xl sm:text-4xl font-medium text-slate-950 tracking-tight">
           My Dashboard
         </h1>
-        <p className="text-xs font-semibold text-slate-400">
+        <p className="text-sm font-normal text-slate-500">
           Manage all your listings, applications, and communications.
         </p>
       </div>
@@ -25,9 +25,9 @@ export default function Dashboard({ user }) {
             </svg>
           </div>
           <div>
-            <h4 className="font-outfit font-extrabold text-3xl text-slate-900 tracking-tight">3</h4>
-            <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wide">Active Listings</p>
-            <p className="text-[11px] font-bold text-[#0047ab] mt-1.5">+1 this week</p>
+            <h4 className="font-outfit font-medium text-4xl text-slate-900 tracking-tight">3</h4>
+            <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1 uppercase tracking-wide">Active Listings</p>
+            <p className="text-xs sm:text-sm font-normal text-[#0047ab] mt-1.5">+1 this week</p>
           </div>
         </div>
 
@@ -39,9 +39,9 @@ export default function Dashboard({ user }) {
             </svg>
           </div>
           <div>
-            <h4 className="font-outfit font-extrabold text-3xl text-slate-900 tracking-tight">87</h4>
-            <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wide">Total Applicants</p>
-            <p className="text-[11px] font-bold text-indigo-600 mt-1.5">+12 today</p>
+            <h4 className="font-outfit font-medium text-4xl text-slate-900 tracking-tight">87</h4>
+            <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1 uppercase tracking-wide">Total Applicants</p>
+            <p className="text-xs sm:text-sm font-normal text-indigo-600 mt-1.5">+12 today</p>
           </div>
         </div>
 
@@ -54,9 +54,9 @@ export default function Dashboard({ user }) {
             </svg>
           </div>
           <div>
-            <h4 className="font-outfit font-extrabold text-3xl text-slate-900 tracking-tight">1.2K</h4>
-            <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wide">Profile Views</p>
-            <p className="text-[11px] font-bold text-[#f05a28] mt-1.5">+34 today</p>
+            <h4 className="font-outfit font-medium text-4xl text-slate-900 tracking-tight">1.2K</h4>
+            <p className="text-xs sm:text-sm font-normal text-slate-500 mt-1 uppercase tracking-wide">Profile Views</p>
+            <p className="text-xs sm:text-sm font-normal text-[#f05a28] mt-1.5">+34 today</p>
           </div>
         </div>
 
@@ -64,11 +64,11 @@ export default function Dashboard({ user }) {
 
       {/* Recent Activity Section (Figma Match) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
-        <h3 className="font-outfit text-base font-extrabold text-slate-900">
+        <h3 className="font-outfit text-xl font-medium text-slate-900">
           Recent Activity
         </h3>
 
-        <div className="divide-y divide-slate-100 font-semibold">
+        <div className="divide-y divide-slate-100 font-medium">
           {/* Activity 1 */}
           <div className="flex items-start gap-4 py-4 first:pt-0 last:pb-0">
             <div className="h-9 w-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
@@ -77,10 +77,10 @@ export default function Dashboard({ user }) {
               </svg>
             </div>
             <div className="space-y-0.5">
-              <p className="text-xs text-slate-800">
-                Priya Nair applied to <span className="font-bold text-slate-900">Senior Product Designer</span>
+              <p className="text-sm text-slate-800">
+                Priya Nair applied to <span className="font-medium text-slate-900">Senior Product Designer</span>
               </p>
-              <p className="text-[10px] text-slate-400">2m ago</p>
+              <p className="text-xs text-slate-500 mt-0.5">2m ago</p>
             </div>
           </div>
 
@@ -92,10 +92,10 @@ export default function Dashboard({ user }) {
               </svg>
             </div>
             <div className="space-y-0.5">
-              <p className="text-xs text-slate-800">
-                New message from <span className="font-bold text-slate-900">Vikram</span> about BMW 3 Series
+              <p className="text-sm text-slate-800">
+                New message from <span className="font-medium text-slate-900">Vikram</span> about BMW 3 Series
               </p>
-              <p className="text-[10px] text-slate-400">45m ago</p>
+              <p className="text-xs text-slate-500 mt-0.5">45m ago</p>
             </div>
           </div>
 
@@ -108,10 +108,10 @@ export default function Dashboard({ user }) {
               </svg>
             </div>
             <div className="space-y-0.5">
-              <p className="text-xs text-slate-800">
-                Your Creta listing got <span className="font-bold text-slate-900">15 new views</span>
+              <p className="text-sm text-slate-800">
+                Your Creta listing got <span className="font-medium text-slate-900">15 new views</span>
               </p>
-              <p className="text-[10px] text-slate-400">2h ago</p>
+              <p className="text-xs text-slate-500 mt-0.5">2h ago</p>
             </div>
           </div>
 
@@ -123,10 +123,10 @@ export default function Dashboard({ user }) {
               </svg>
             </div>
             <div className="space-y-0.5">
-              <p className="text-xs text-slate-800">
-                Staff Engineer listing promoted to <span className="font-bold text-slate-900">Featured</span>
+              <p className="text-sm text-slate-800">
+                Staff Engineer listing promoted to <span className="font-medium text-slate-900">Featured</span>
               </p>
-              <p className="text-[10px] text-slate-400">Yesterday</p>
+              <p className="text-xs text-slate-500 mt-0.5">Yesterday</p>
             </div>
           </div>
         </div>

@@ -95,13 +95,13 @@ export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigg
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h3 className="font-outfit text-xl font-bold text-slate-900 mb-2">Failed to load listings</h3>
+        <h3 className="font-outfit text-xl font-medium text-slate-900 mb-2">Failed to load listings</h3>
         <p className="text-slate-500 max-w-md mx-auto text-sm leading-relaxed mb-6">
           {error}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-slate-900 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 transition-colors"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-slate-900 text-sm font-normal text-white shadow-sm hover:bg-brand-600 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" />
@@ -120,7 +120,7 @@ export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigg
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <h3 className="font-outfit text-xl font-bold text-slate-900 mb-1">No listings found</h3>
+        <h3 className="font-outfit text-xl font-medium text-slate-900 mb-1">No listings found</h3>
         <p className="text-slate-500 max-w-sm mx-auto text-sm">
           We couldn't find any listings matching your search parameters. Try broadening your keywords.
         </p>

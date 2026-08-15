@@ -3,12 +3,23 @@ import React, { useState } from 'react';
 export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) {
   const [fullName, setFullName] = useState(user?.name || 'Arjun Sharma');
   const [emailAddress, setEmailAddress] = useState(user?.email || 'arjun@example.com');
-  const [phoneNumber, setPhoneNumber] = useState('+91 98765 43210');
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone || '+91 98765 43210');
   const [location, setLocation] = useState('Bengaluru, Karnataka');
   const [aboutMe, setAboutMe] = useState('Product-focused professional based in Bengaluru.');
+  const [profilePhoto, setProfilePhoto] = useState(user?.profilePhoto || null);
   
   const [activeSubTab, setActiveSubTab] = useState('settings'); // 'settings', 'career', 'company'
   const [alertMessage, setAlertMessage] = useState('');
+
+  const handlePhotoUpload = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePhoto(e.target.result);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,7 +28,9 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
     const updatedUser = {
       ...user,
       name: fullName,
-      email: emailAddress
+      email: emailAddress,
+      phone: phoneNumber,
+      profilePhoto: profilePhoto
     };
 
     // Update parent states & localStorage
@@ -34,7 +47,7 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
     <div className="space-y-8 animate-in fade-in duration-200">
       
       {/* Title */}
-      <h1 className="font-outfit text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
+      <h1 className="font-outfit text-2xl sm:text-3xl font-medium text-slate-950 tracking-tight">
         My Profile
       </h1>
 
@@ -43,17 +56,21 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
         {/* Left Column Drawer Profile Card */}
         <aside className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
-            <div className="h-16 w-16 rounded-full bg-[#0047ab] text-white flex items-center justify-center font-extrabold text-2xl border-4 border-slate-50 shadow-sm">
-              {fullName.charAt(0).toUpperCase()}
+            <div className="h-16 w-16 rounded-full bg-[#0047ab] text-white flex items-center justify-center font-medium text-2xl border-4 border-slate-50 shadow-sm overflow-hidden shrink-0">
+              {profilePhoto ? (
+                <img src={profilePhoto} alt="Profile" className="h-full w-full object-cover" />
+              ) : (
+                fullName.charAt(0).toUpperCase()
+              )}
             </div>
             <div>
-              <h3 className="font-outfit font-extrabold text-base text-slate-900">{fullName}</h3>
-              <p className="text-[10px] font-semibold text-slate-400 mt-0.5">{emailAddress}</p>
+              <h3 className="font-outfit font-medium text-base text-slate-900">{fullName}</h3>
+              <p className="text-xs font-semibold text-slate-400 mt-0.5">{emailAddress}</p>
             </div>
           </div>
 
           <div className="border-t border-slate-100 pt-4">
-            <nav className="flex flex-col gap-1 text-xs font-bold text-slate-500">
+            <nav className="flex flex-col gap-1 text-sm font-medium text-slate-500">
               
               {/* Account Settings Tab */}
               <button
@@ -74,7 +91,7 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
                   </svg>
                 </div>
                 <div>
-                  <p className="font-bold">Account Settings</p>
+                  <p className="font-medium">Account Settings</p>
                   <p className="text-[9px] text-slate-450 mt-0.5">Name, email, password</p>
                 </div>
               </button>
@@ -91,7 +108,7 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
                   </svg>
                 </div>
                 <div>
-                  <p className="font-bold">My Ads & Listings</p>
+                  <p className="font-medium">My Ads & Listings</p>
                   <p className="text-[9px] text-slate-455 mt-0.5">Manage your listings</p>
                 </div>
               </button>
@@ -114,7 +131,7 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
                   </svg>
                 </div>
                 <div>
-                  <p className="font-bold">Career Profile</p>
+                  <p className="font-medium">Career Profile</p>
                   <p className="text-[9px] text-slate-455 mt-0.5">For job seekers</p>
                 </div>
               </button>
@@ -137,7 +154,7 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
                   </svg>
                 </div>
                 <div>
-                  <p className="font-bold">Company Info</p>
+                  <p className="font-medium">Company Info</p>
                   <p className="text-[9px] text-slate-455 mt-0.5">For employers</p>
                 </div>
               </button>
@@ -153,7 +170,7 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
               
               {/* Alert Feedback Message */}
               {alertMessage && (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-250 text-emerald-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                <div className="p-3.5 bg-emerald-50 border border-emerald-250 text-emerald-700 text-sm font-medium rounded-xl flex items-center gap-2">
                   <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -162,8 +179,31 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
               )}
 
               <div>
-                <h3 className="font-outfit text-base font-extrabold text-slate-900">Account Settings</h3>
-                <p className="text-[11px] font-semibold text-slate-400 mt-0.5">Used for buying and selling across all categories</p>
+                <h3 className="font-outfit text-base font-medium text-slate-900">Account Settings</h3>
+                <p className="text-sm font-semibold text-slate-400 mt-0.5">Used for buying and selling across all categories</p>
+              </div>
+
+              {/* Profile Photo Upload */}
+              <div className="flex items-center gap-6 pb-2">
+                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+                  {profilePhoto ? (
+                    <img src={profilePhoto} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold text-slate-400">{fullName.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <div>
+                  <label className="cursor-pointer px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors inline-block shadow-sm">
+                    Upload Photo
+                    <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                  </label>
+                  {profilePhoto && (
+                    <button type="button" onClick={() => setProfilePhoto(null)} className="ml-3 px-4 py-2 bg-white border border-rose-200 text-rose-600 rounded-xl text-sm font-medium hover:bg-rose-50 transition-colors inline-block shadow-sm">
+                      Delete Photo
+                    </button>
+                  )}
+                  <p className="text-[10px] font-semibold text-slate-400 mt-2 uppercase tracking-wide">JPG, GIF or PNG. Max size of 800K</p>
+                </div>
               </div>
 
               {/* Form Input fields */}
@@ -171,56 +211,56 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
                 
                 {/* Full Name */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">Full Name</label>
+                  <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">Full Name</label>
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
                   />
                 </div>
 
                 {/* Email Address */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">Email Address</label>
+                  <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">Email Address</label>
                   <input
                     type="email"
                     value={emailAddress}
-                    onChange={(e) => setEmailAddress(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
+                    readOnly
+                    className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 focus:outline-none cursor-not-allowed"
                   />
                 </div>
 
                 {/* Phone Number */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">Phone Number</label>
+                  <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">Phone Number</label>
                   <input
                     type="text"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
                   />
                 </div>
 
                 {/* City / Location */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">City / Location</label>
+                  <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">City / Location</label>
                   <input
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
                   />
                 </div>
 
                 {/* About Me (Full-width) */}
                 <div className="sm:col-span-2 space-y-1.5">
-                  <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">About Me</label>
+                  <label className="text-xs font-medium text-slate-400 uppercase tracking-wide">About Me</label>
                   <textarea
                     rows={4}
                     value={aboutMe}
                     onChange={(e) => setAboutMe(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all resize-none"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all resize-none"
                   />
                 </div>
 
@@ -230,7 +270,22 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
               <div className="flex justify-end pt-2 border-t border-slate-100">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[#0047ab] hover:bg-[#0f52ba] text-xs font-bold text-white shadow-sm transition-all focus:outline-none"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '0.625rem 1.5rem',
+                    borderRadius: '9999px',
+                    border: '1.5px solid #000000',
+                    backgroundColor: '#ffffff',
+                    color: '#000000',
+                    fontSize: '0.875rem',
+                    fontWeight: 400,
+                    fontFamily: 'var(--font-sans)',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.18s ease, color 0.18s ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.color = '#000000'; }}
                 >
                   Save Changes
                 </button>
@@ -243,8 +298,8 @@ export default function UserProfile({ user, onProfileUpdate, setWorkspaceTab }) 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <h4 className="font-outfit font-bold text-slate-900 text-sm">Form Panel Unlocked</h4>
-                <p className="text-xs text-slate-450 mt-1 max-w-sm mx-auto">This sub-profile section is active and ready for input in the premium plan upgrade.</p>
+                <h4 className="font-outfit font-medium text-slate-900 text-sm">Form Panel Unlocked</h4>
+                <p className="text-sm text-slate-450 mt-1 max-w-sm mx-auto">This sub-profile section is active and ready for input in the premium plan upgrade.</p>
               </div>
             </div>
           )}

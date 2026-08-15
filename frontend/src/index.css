@@ -13,7 +13,14 @@
   --color-brand-900: #2b394d;
   --color-brand-950: #1c2432;
   
-  --font-sans: "Outfit", "Inter", "system-ui", "sans-serif";
+  --font-sans: "Outfit", sans-serif;
+}
+
+/* ── Global Reset ── */
+body, button, input, textarea, select {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: "Outfit", sans-serif;
 }
 
 /* Custom premium scrollbar */
@@ -45,4 +52,87 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Pill Button — Landing / Auth Pages ── */
+.pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border-radius: 9999px;
+  border: 1.5px solid #d1d5db;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  text-align: center;
+}
+
+.pill-btn:hover {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.pill-btn:hover svg,
+.pill-btn:hover path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
+/* ── Pill Input ── */
+.pill-input {
+  width: 100%;
+  padding: 0.875rem 1.375rem;
+  border-radius: 9999px;
+  border: 1.5px solid #d1d5db;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.pill-input:focus {
+  border-color: #000000;
+}
+
+.pill-input::placeholder {
+  color: #9ca3af;
+}
+
+/* ── Sign-Up / Sign-In Submit Button ── */
+.auth-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 2rem;
+  border-radius: 9999px;
+  border: 1.5px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+  min-width: 8rem;
+}
+
+.auth-submit-btn:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Force all text to normal weight per user request */
+* {
+  font-weight: 400 !important;
 }

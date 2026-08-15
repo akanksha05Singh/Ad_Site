@@ -6,6 +6,9 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
 
   const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
   const [showEmailForm, setShowEmailForm] = useState(false); // hides inputs initially (Figma match)
+  const [showVerificationForm, setShowVerificationForm] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [unverifiedUserId, setUnverifiedUserId] = useState(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -15,6 +18,31 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleVerificationSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (!verificationCode.trim()) return setError('Verification code is required');
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: unverifiedUserId, code: verificationCode })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Verification failed');
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      onAuthSuccess(data.user, data.token);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,7 +82,21 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.requiresVerification) {
+          setUnverifiedUserId(data.userId);
+          setShowVerificationForm(true);
+          return;
+        }
         throw new Error(data.error || 'Authentication failed');
+      }
+
+      if (data.message === 'Verification required') {
+        setUnverifiedUserId(data.userId);
+        setShowVerificationForm(true);
+        if (data.verificationToken) {
+           console.log("[MVP INFO] Verification Token (normally emailed):", data.verificationToken);
+        }
+        return;
       }
 
       // Success
@@ -70,17 +112,33 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
     }
   };
 
-  // Mock social logins for prototyping feedback
-  const handleSocialMockClick = (provider) => {
-    // Fill credentials for demo
-    setFormData({
-      name: "Arjun Sharma",
-      email: "arjun@example.com",
-      password: "password",
-      role: "admin"
-    });
-    setShowEmailForm(true);
-    setError(`Continue with ${provider} initiated. Review form credentials and click submit.`);
+  // Mock social logins for prototyping feedback (Bypasses verification)
+  const handleSocialMockClick = async (provider) => {
+    setError('');
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: "Arjun Sharma",
+          email: "arjun@example.com",
+          provider: provider,
+          role: "user"
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Social login failed');
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      onAuthSuccess(data.user, data.token);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,13 +160,12 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
           {/* Modal Header */}
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0047ab] text-white font-extrabold text-sm shadow-sm">
-                F
-              </span>
-              <span className="font-outfit text-sm font-extrabold text-slate-900">
-                freeads<span className="text-[#0047ab]">.no</span>
-              </span>
+            <div className="flex items-center">
+              <img 
+                src="/logo.png" 
+                alt="freeads.no" 
+                style={{ height: '24px', width: 'auto', display: 'block' }} 
+              />
             </div>
             {/* Close button */}
             <button
@@ -141,8 +198,31 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
             </div>
           )}
 
-          {/* INITIAL SOCIAL LOGIN OPTIONS (Mockup Parity) */}
-          {!showEmailForm ? (
+          {showVerificationForm ? (
+            <form onSubmit={handleVerificationSubmit} className="space-y-4">
+              <div className="space-y-1 text-center mb-6">
+                <h3 className="font-outfit text-xl font-bold text-slate-900">Verify your email</h3>
+                <p className="text-xs text-slate-500">We've generated a 6-digit code for your email. Enter it below to continue.</p>
+              </div>
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  placeholder="Enter 6-digit code"
+                  className="w-full text-center tracking-widest rounded-xl border border-slate-200 px-4 py-3 text-lg font-bold text-slate-800 focus:border-[#0047ab] focus:outline-none transition-all bg-slate-50/30 hover:bg-slate-50/50 focus:bg-white"
+                  maxLength={6}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl border-[1.5px] border-black bg-black text-white hover:bg-white hover:text-black font-bold text-sm active:scale-98 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              >
+                {loading ? 'Verifying...' : 'Verify Email'}
+              </button>
+            </form>
+          ) : !showEmailForm ? (
             <div className="space-y-3">
               {/* Google Button */}
               <button
@@ -261,7 +341,7 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-[#0047ab] hover:bg-[#0f52ba] text-white font-bold text-xs active:scale-98 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl border-[1.5px] border-black bg-black hover:bg-white text-white hover:text-black font-bold text-sm active:scale-98 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (activeTab === 'login' ? 'Sign In' : 'Create Account')}
               </button>

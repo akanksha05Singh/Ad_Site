@@ -101,12 +101,12 @@ export default function MyListings({ user }) {
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-outfit text-2xl font-bold text-slate-900">Manage Listings</h2>
+          <h2 className="font-outfit text-2xl font-medium text-slate-900">Manage Listings</h2>
           <p className="text-sm text-slate-500">Edit, remove, or check the status of your advertisements and jobs.</p>
         </div>
         <button
           onClick={fetchMyListings}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-sm font-normal text-slate-600 hover:bg-slate-50"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" />
@@ -132,8 +132,8 @@ export default function MyListings({ user }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <h3 className="font-outfit text-lg font-bold text-slate-900 mb-1">No postings found</h3>
-          <p className="text-slate-500 max-w-sm mx-auto text-xs">
+          <h3 className="font-outfit text-lg font-medium text-slate-900 mb-1">No postings found</h3>
+          <p className="text-slate-500 max-w-sm mx-auto text-sm">
             You haven't posted any classified ads or job openings yet. Click 'Post an Ad' at the top to publish one.
           </p>
         </div>
@@ -142,7 +142,7 @@ export default function MyListings({ user }) {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-slate-50 border-b border-slate-100 text-sm font-normal text-slate-400 uppercase tracking-wider">
                   <th className="px-6 py-4">Title</th>
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Price / Salary</th>
@@ -154,9 +154,9 @@ export default function MyListings({ user }) {
               <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
                 {listings.map((listing) => (
                   <tr key={listing._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4 font-bold text-slate-900">{listing.title}</td>
+                    <td className="px-6 py-4 font-medium text-slate-900">{listing.title}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-sm font-normal ${
                         listing.category === 'job' 
                           ? 'bg-emerald-50 text-emerald-700' 
                           : 'bg-indigo-50 text-indigo-700'
@@ -164,14 +164,14 @@ export default function MyListings({ user }) {
                         {listing.category === 'job' ? 'Job' : 'Ad'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-semibold text-slate-900">
+                    <td className="px-6 py-4 font-medium text-slate-900">
                       {listing.category === 'job' 
                         ? `${Number(listing.price).toLocaleString()} NOK / year` 
                         : `${Number(listing.price).toLocaleString()} NOK`}
                     </td>
                     <td className="px-6 py-4 font-medium text-slate-500">{listing.location}</td>
                     <td className="px-6 py-4">
-                      <span className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs uppercase tracking-wide">
+                      <span className="flex items-center gap-1.5 text-emerald-600 font-normal text-sm uppercase tracking-wide">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                         Active
                       </span>
@@ -179,13 +179,13 @@ export default function MyListings({ user }) {
                     <td className="px-6 py-4 text-right space-x-2">
                       <button
                         onClick={() => handleEditClick(listing)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-normal text-slate-600 hover:bg-slate-50 transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(listing._id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-rose-100 bg-rose-50/50 text-xs font-semibold text-rose-700 hover:bg-rose-100/50 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-rose-100 bg-rose-50/50 text-sm font-normal text-rose-700 hover:bg-rose-100/50 transition-colors"
                       >
                         Delete
                       </button>
@@ -207,7 +207,7 @@ export default function MyListings({ user }) {
             
             <div className="relative inline-block transform overflow-hidden rounded-3xl bg-white text-left align-middle shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
               <div className="border-b border-slate-100 px-6 py-4 flex justify-between items-center bg-slate-50/50">
-                <h3 className="font-outfit text-lg font-bold text-slate-950">Edit Listing</h3>
+                <h3 className="font-outfit text-lg font-medium text-slate-950">Edit Listing</h3>
                 <button onClick={() => setIsEditOpen(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -217,7 +217,7 @@ export default function MyListings({ user }) {
 
               <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Title</label>
+                  <label className="text-sm font-normal text-slate-500 uppercase tracking-wide">Title</label>
                   <input
                     type="text"
                     value={selectedListing.title}
@@ -229,7 +229,7 @@ export default function MyListings({ user }) {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    <label className="text-sm font-normal text-slate-500 uppercase tracking-wide">
                       {selectedListing.category === 'job' ? 'Salary (NOK / yr)' : 'Price (NOK)'}
                     </label>
                     <input
@@ -241,7 +241,7 @@ export default function MyListings({ user }) {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Location</label>
+                    <label className="text-sm font-normal text-slate-500 uppercase tracking-wide">Location</label>
                     <input
                       type="text"
                       value={selectedListing.location}
@@ -253,7 +253,7 @@ export default function MyListings({ user }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Contact Email</label>
+                  <label className="text-sm font-normal text-slate-500 uppercase tracking-wide">Contact Email</label>
                   <input
                     type="email"
                     value={selectedListing.contactEmail}
@@ -264,7 +264,7 @@ export default function MyListings({ user }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Description</label>
+                  <label className="text-sm font-normal text-slate-500 uppercase tracking-wide">Description</label>
                   <textarea
                     value={selectedListing.description}
                     onChange={(e) => setSelectedListing(prev => ({ ...prev, description: e.target.value }))}
@@ -278,13 +278,13 @@ export default function MyListings({ user }) {
                   <button
                     type="button"
                     onClick={() => setIsEditOpen(false)}
-                    className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-normal text-slate-600 hover:bg-slate-50"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-slate-950 text-sm font-semibold text-white hover:bg-brand-600"
+                    className="px-5 py-2 rounded-xl bg-slate-950 text-sm font-normal text-white hover:bg-brand-600"
                   >
                     Save Changes
                   </button>

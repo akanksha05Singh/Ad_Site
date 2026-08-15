@@ -154,20 +154,19 @@ export default function AdminConsole({ user, onExit }) {
   return (
     <div className="fixed inset-0 z-50 flex bg-slate-50 overflow-hidden font-sans">
       
-      {/* Dark Sidebar Panel (Figma Match #090d16) */}
-      <aside className="w-64 bg-[#090d16] text-slate-350 flex flex-col shrink-0">
+      {/* Light Sidebar Panel */}
+      <aside className="w-64 bg-white border-r border-slate-200 text-slate-600 flex flex-col shrink-0">
         
         {/* Brand header */}
-        <div className="p-6 border-b border-slate-900/60 space-y-1 bg-slate-950/20">
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f05a28] text-white font-extrabold text-base shadow-sm">
-              F
-            </span>
-            <span className="font-outfit text-base font-extrabold text-white tracking-tight">
-              freeads<span className="text-[#f05a28]">.no</span>
-            </span>
+        <div className="p-6 border-b border-slate-200 space-y-1 bg-slate-50">
+          <div className="flex items-center gap-3 shrink-0">
+            <img 
+              src="/logo.png" 
+              alt="freeads.no" 
+              style={{ height: '24px', width: 'auto', display: 'block' }} 
+            />
           </div>
-          <p className="text-[9px] font-bold text-emerald-500 tracking-widest uppercase pl-0.5 pt-1">
+          <p className="text-[9px] font-bold text-emerald-600 tracking-widest uppercase pl-0.5 pt-1">
             • Admin Console
           </p>
         </div>
@@ -179,7 +178,7 @@ export default function AdminConsole({ user, onExit }) {
             type="button"
             onClick={() => setAdminTab('overview')}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-              adminTab === 'overview' ? 'bg-[#0f172a] text-white font-extrabold' : 'text-slate-400 hover:bg-[#0f172a]/40 hover:text-white'
+              adminTab === 'overview' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +192,7 @@ export default function AdminConsole({ user, onExit }) {
             type="button"
             onClick={() => setAdminTab('queue')}
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${
-              adminTab === 'queue' ? 'bg-[#0f172a] text-white font-extrabold' : 'text-slate-400 hover:bg-[#0f172a]/40 hover:text-white'
+              adminTab === 'queue' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -214,7 +213,7 @@ export default function AdminConsole({ user, onExit }) {
             type="button"
             onClick={() => setAdminTab('gov')}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-              adminTab === 'gov' ? 'bg-[#0f172a] text-white font-extrabold' : 'text-slate-400 hover:bg-[#0f172a]/40 hover:text-white'
+              adminTab === 'gov' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,7 +227,7 @@ export default function AdminConsole({ user, onExit }) {
             type="button"
             onClick={() => setAdminTab('scraper')}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-              adminTab === 'scraper' ? 'bg-[#0f172a] text-white font-extrabold' : 'text-slate-400 hover:bg-[#0f172a]/40 hover:text-white'
+              adminTab === 'scraper' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
             }`}
           >
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,14 +238,14 @@ export default function AdminConsole({ user, onExit }) {
         </nav>
 
         {/* Bottom Panel controls */}
-        <div className="p-4 border-t border-slate-900/65 text-xs font-bold space-y-1 bg-slate-950/10">
-          <button type="button" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-[#0f172a]/40 hover:text-white text-left">
+        <div className="p-4 border-t border-slate-200 text-xs font-bold space-y-1 bg-slate-50">
+          <button type="button" onClick={(e) => e.preventDefault()} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 text-left">
             <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             </svg>
             <span>Admin Settings</span>
           </button>
-          <button type="button" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-[#0f172a]/40 hover:text-white text-left">
+          <button type="button" onClick={(e) => e.preventDefault()} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 text-left">
             <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -255,7 +254,7 @@ export default function AdminConsole({ user, onExit }) {
           <button
             type="button"
             onClick={onExit}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#0f172a]/40 hover:text-rose-450 text-left text-rose-500 mt-2"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 hover:text-rose-600 text-left text-rose-500 mt-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7" />
@@ -748,7 +747,7 @@ export default function AdminConsole({ user, onExit }) {
 
                 {/* Scraper Terminal Output Logs */}
                 {scraperLogs.length > 0 && (
-                  <div className="rounded-xl bg-[#090d16] p-4 text-[10px] font-mono text-emerald-400 space-y-1.5 border border-slate-900 shadow-inner">
+                  <div className="rounded-xl bg-slate-900 p-4 text-[10px] font-mono text-emerald-400 space-y-1.5 shadow-inner">
                     {scraperLogs.map((log, index) => (
                       <p key={index}>{log}</p>
                     ))}
