@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ListingCard from './ListingCard';
 import { API_BASE_URL } from '../config';
 
-export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigger }) {
+export default function BrowseGrid({ searchQuery, selectedCategory, location, minPrice, refreshTrigger }) {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,6 +24,14 @@ export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigg
 
         if (searchQuery && searchQuery.trim() !== '') {
           params.append('q', searchQuery);
+        }
+
+        if (location && location.trim() !== '') {
+          params.append('location', location);
+        }
+
+        if (minPrice && minPrice.toString().trim() !== '') {
+          params.append('minPrice', minPrice);
         }
 
         if (params.toString()) {
@@ -60,7 +68,7 @@ export default function BrowseGrid({ searchQuery, selectedCategory, refreshTrigg
       active = false;
       clearTimeout(delayDebounce);
     };
-  }, [searchQuery, selectedCategory, refreshTrigger]);
+  }, [searchQuery, selectedCategory, location, minPrice, refreshTrigger]);
 
   if (loading) {
     return (

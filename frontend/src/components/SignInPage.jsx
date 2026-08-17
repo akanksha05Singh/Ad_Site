@@ -8,9 +8,13 @@ import { API_BASE_URL } from '../config';
    Google: mock OAuth stub for prototype.
 ───────────────────────────────────────────────────────────────────*/
 export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
-  const [view, setView] = React.useState('options'); // 'options' | 'email' | 'forgot_password' | 'reset_password'
+  const [view, setView] = React.useState('options'); // 'options' | 'email' | 'forgot_password' | 'reset_password' | 'verify'
   const [formData, setFormData] = React.useState({ email: '', password: '', resetCode: '', newPassword: '' });
   const [mockResetToken, setMockResetToken] = React.useState(null);
+  const [verifyCode, setVerifyCode] = React.useState('');
+  const [pendingUserId, setPendingUserId] = React.useState(null);
+  const [mockVerifyToken, setMockVerifyToken] = React.useState(null);
+  const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState('');
@@ -32,7 +36,31 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
         body: JSON.stringify({ email: formData.email, password: formData.password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
+      if (!res.ok) {
+        if (data.requiresVerification) {
+          setPendingUserId(data.userId);
+          
+          // Call the resend verification endpoint to get a new code for MVP dev note
+          try {
+            const resendRes = await fetch(`${API_BASE_URL}/api/auth/resend-verification`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: data.userId }),
+            });
+            const resendData = await resendRes.json();
+            if (resendRes.ok) {
+              setMockVerifyToken(resendData.verificationToken);
+            }
+          } catch (e) {
+            console.error('Failed to resend verification', e);
+          }
+          
+          setSuccess('Email not verified. Please check your email for the code.');
+          setView('verify');
+          return;
+        }
+        throw new Error(data.error || 'Login failed');
+      }
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       onAuthSuccess(data.user, data.token);
@@ -182,16 +210,29 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                 required
                 autoComplete="email"
               />
-              <input
-                className="pill-input"
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  className="pill-input"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  autoComplete="current-password"
+                  style={{ width: '100%', paddingRight: '2.5rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: 0
+                  }}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.25rem' }}>
                 <a href="#" onClick={(e) => { e.preventDefault(); setView('forgot_password'); setError(''); }} style={{ color: '#2563eb', fontSize: '0.8125rem', textDecoration: 'none', cursor: 'pointer' }}>Forgot password?</a>
               </div>
@@ -313,7 +354,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                   fontSize: '0.8125rem',
                   marginBottom: '0.5rem',
                 }}>
-                  <strong>[MVP Dev Note]</strong> Your reset code is: <strong>{mockResetToken}</strong>
+                  <strong>[MVP Prototype Note]</strong> In the live app, this code is emailed to you. Your test code is: <strong>{mockResetToken}</strong>
                 </div>
               )}
 
@@ -330,15 +371,28 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                 onChange={handleChange}
                 required
               />
-              <input
-                className="pill-input"
-                type="password"
-                name="newPassword"
-                placeholder="New Password"
-                value={formData.newPassword}
-                onChange={handleChange}
-                required
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  className="pill-input"
+                  type={showPassword ? "text" : "password"}
+                  name="newPassword"
+                  placeholder="New Password"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                  required
+                  style={{ width: '100%', paddingRight: '2.5rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: 0
+                  }}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.25rem' }}>
                 <button
                   className="auth-submit-btn"
@@ -347,6 +401,73 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                   style={{ opacity: loading ? 0.6 : 1 }}
                 >
                   {loading ? 'Resetting…' : 'Reset Password'}
+                </button>
+              </div>
+            </form>
+          ) : view === 'verify' ? (
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setError('');
+              setSuccess('');
+              if (!verifyCode) return setError('Verification code is required.');
+
+              setLoading(true);
+              try {
+                const res = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ userId: pendingUserId, code: verifyCode }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                setSuccess('Email verified! Signing you in…');
+                setTimeout(() => {
+                  onAuthSuccess(data.user, data.token);
+                }, 800);
+              } catch (err) {
+                setError(err.message);
+              } finally {
+                setLoading(false);
+              }
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {mockVerifyToken && (
+                <div style={{
+                  padding: '1rem',
+                  backgroundColor: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '8px',
+                  color: '#1e40af',
+                  fontSize: '0.8125rem',
+                  marginBottom: '1rem',
+                }}>
+                  <strong>[MVP Prototype Note]</strong> In the live app, this code is emailed to you. Your test code is: <strong>{mockVerifyToken}</strong>
+                </div>
+              )}
+              
+              <div>
+                <input
+                  className="pill-input"
+                  type="text"
+                  name="verifyCode"
+                  value={verifyCode}
+                  onChange={(e) => setVerifyCode(e.target.value)}
+                  autoComplete="one-time-code"
+                  placeholder="Enter 6-digit verification code"
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.5rem' }}>
+                <button
+                  className="auth-submit-btn"
+                  type="submit"
+                  disabled={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
+                >
+                  {loading ? 'Verifying…' : 'Verify Email'}
                 </button>
               </div>
             </form>
@@ -410,6 +531,24 @@ function EnvelopeIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="4" width="20" height="16" rx="2"/>
       <path d="M2 7l10 7 10-7"/>
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  );
+}
+
+function EyeOffIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+      <line x1="1" y1="1" x2="23" y2="23"></line>
     </svg>
   );
 }

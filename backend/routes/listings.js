@@ -17,7 +17,7 @@ const getAuthUser = async (req) => {
 // @desc    Get all listings with optional search and category filters
 router.get('/', async (req, res) => {
   try {
-    const { category, q, owner } = req.query;
+    const { category, q, owner, location, minPrice } = req.query;
     let query = {};
 
     if (category && ['classified', 'job'].includes(category)) {
@@ -26,6 +26,14 @@ router.get('/', async (req, res) => {
 
     if (owner) {
       query.owner = owner;
+    }
+    
+    if (location && location.trim() !== '') {
+      query.location = new RegExp(location.trim(), 'i');
+    }
+
+    if (minPrice && !isNaN(parseFloat(minPrice))) {
+      query.price = { $gte: parseFloat(minPrice) };
     }
 
     if (q && q.trim() !== '') {

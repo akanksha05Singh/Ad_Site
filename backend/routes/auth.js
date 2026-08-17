@@ -268,6 +268,37 @@ router.post('/verify-email', async (req, res) => {
   }
 });
 
+// @route   POST /api/auth/resend-verification
+// @desc    Resend verification code
+// @access  Public
+router.post('/resend-verification', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ success: false, error: 'User ID is required' });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+    if (user.isVerified) return res.status(400).json({ success: false, error: 'User is already verified' });
+
+    // Generate new code
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+
+    console.log(`[MVP] Resent Verification Code for ${user.email}: ${verificationToken}`);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Verification code resent',
+      verificationToken
+    });
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    return res.status(500).json({ success: false, error: 'Server error while resending code' });
+  }
+});
+
 // @route   POST /api/auth/forgot-password
 // @desc    Request a password reset
 // @access  Public

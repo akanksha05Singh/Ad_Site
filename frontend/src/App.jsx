@@ -36,6 +36,8 @@ export default function App() {
   // Listing creation & Search States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [filterLocation, setFilterLocation] = useState('');
+  const [filterMinSalary, setFilterMinSalary] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -62,7 +64,7 @@ export default function App() {
     setUser(authUser);
     setToken(authToken);
     setActiveTab('dashboard'); 
-    setWorkspaceTab('overview');
+    setWorkspaceTab('find-jobs');
     setActivePage('app');
   };
 
@@ -104,29 +106,64 @@ export default function App() {
   const handleDropdownTabClick = (tabName) => {
     if (tabName === 'feed') {
       setActiveTab('feed');
-    } else if (tabName === 'chat') {
-      setActiveTab('dashboard');
-      setWorkspaceTab('messages');
     } else if (tabName === 'admin') {
-      setActiveTab('admin'); // set activeTab to 'admin' to load dark admin console!
-    } else if (tabName === 'applicants') {
-      setActiveTab('dashboard');
-      setWorkspaceTab('applicants');
-    } else if (tabName === 'saved') {
-      setActiveTab('dashboard');
-      setWorkspaceTab('saved');
-    } else if (tabName === 'profile') {
-      setActiveTab('dashboard');
-      setWorkspaceTab('profile'); // load UserProfile/AccountSettings!
+      setActiveTab('admin');
     } else {
       setActiveTab('dashboard');
-      setWorkspaceTab('overview');
+      setWorkspaceTab(tabName);
     }
   };
 
   // Render Screens inside Dashboard Right Column
   const renderWorkspaceContent = () => {
     switch (workspaceTab) {
+      case 'find-jobs':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+              <h2 className="font-outfit text-xl font-medium text-slate-900">Find Jobs</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Keywords</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Software Engineer"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0047ab] transition-colors"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Location</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Oslo"
+                    value={filterLocation}
+                    onChange={(e) => setFilterLocation(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0047ab] transition-colors"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Min Salary (NOK)</label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 500000"
+                    value={filterMinSalary}
+                    onChange={(e) => setFilterMinSalary(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0047ab] transition-colors"
+                  />
+                </div>
+              </div>
+            </div>
+            <BrowseGrid 
+              searchQuery={searchQuery} 
+              selectedCategory="job" 
+              location={filterLocation}
+              minPrice={filterMinSalary}
+              refreshTrigger={refreshTrigger} 
+            />
+          </div>
+        );
       case 'listings':
         return <MyListings user={user} />;
       case 'messages':
@@ -477,8 +514,13 @@ export default function App() {
         user={user}
         onLogout={handleLogout}
         onJobsClick={() => {
-          setActiveTab('browse');
-          setActivePage('app');
+          if (user) {
+            setActiveTab('dashboard');
+            setWorkspaceTab('find-jobs');
+            setActivePage('app');
+          } else {
+            setActivePage('signin');
+          }
         }}
         onDashboardClick={() => {
           setActiveTab('dashboard');
@@ -536,191 +578,8 @@ export default function App() {
       {/* Main Container */}
       <main className="flex-grow mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         {activeTab === 'dashboard' && user ? (
-          /* Figma-aligned 2-Column Logged In Layout */
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-            
-            {/* Left Card navigation panel */}
-            <aside className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-5">
-              {/* User block details */}
-              <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                <div className="h-10 w-10 rounded-full bg-[#0047ab] text-white flex items-center justify-center font-normal text-sm shadow-sm shrink-0 overflow-hidden border border-slate-200">
-                  {user.profilePhoto ? (
-                    <img src={user.profilePhoto} alt="Profile" className="h-full w-full object-cover" />
-                  ) : (
-                    user.name.charAt(0).toUpperCase()
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-outfit font-medium text-slate-900 text-sm truncate">{user.name}</h4>
-                  <p className="text-xs font-normal text-slate-400 tracking-wide uppercase mt-0.5">Free plan</p>
-                </div>
-              </div>
-
-              {/* Sidebar navigation list */}
-              <nav className="flex flex-col gap-1 text-sm font-normal text-slate-500">
-                {/* Overview link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('overview')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'overview' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <span>Overview</span>
-                  </div>
-                </button>
-
-                {/* My Listings link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('listings')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'listings' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                    </svg>
-                    <span>My Listings</span>
-                  </div>
-                  <span className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-slate-100 text-xs font-normal text-slate-500">
-                    4
-                  </span>
-                </button>
-
-                {/* Applicants link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('applicants')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'applicants' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>Applicants & Leads</span>
-                  </div>
-                  <span className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-slate-100 text-xs font-normal text-slate-500">
-                    2
-                  </span>
-                </button>
-
-                {/* Saved Items link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('saved')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'saved' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
-                    <span>Saved Items</span>
-                  </div>
-                  <span className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-slate-100 text-xs font-normal text-slate-500">
-                    3
-                  </span>
-                </button>
-
-                {/* Messages link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('messages')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'messages' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    <span>Messages</span>
-                  </div>
-                  <span className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-slate-100 text-xs font-normal text-slate-500">
-                    4
-                  </span>
-                </button>
-
-                {/* Billing link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('billing')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'billing' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    <span>Billing</span>
-                  </div>
-                </button>
-
-                {/* Profile link */}
-                <button
-                  type="button"
-                  onClick={() => setWorkspaceTab('profile')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                    workspaceTab === 'profile' 
-                      ? 'bg-blue-50 text-[#0047ab]' 
-                      : 'hover:bg-slate-50 hover:text-slate-950'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span>My Profile</span>
-                  </div>
-                </button>
-
-                {/* Admin Console link (Direct entry for prototype testing!) */}
-                {user && user.role === 'admin' && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('admin')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-amber-600 hover:bg-slate-50 hover:text-amber-700 transition-all font-medium"
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      <span>Admin Console</span>
-                    </div>
-                    <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
-                  </button>
-                )}
-
-              </nav>
-            </aside>
-
-            {/* Right Workspace container */}
-            <div className="lg:col-span-3 min-w-0">
-              {renderWorkspaceContent()}
-            </div>
-
+          <div className="w-full">
+            {renderWorkspaceContent()}
           </div>
         ) : activeTab === 'browse' ? (
           <div className="space-y-6">

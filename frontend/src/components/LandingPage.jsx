@@ -46,41 +46,6 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
         >
           <LogoMark />
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
-              <button
-                onClick={onDashboardClick}
-                style={{ ...navSignInStyle, backgroundColor: '#0047ab', color: '#ffffff', borderColor: '#0047ab' }}
-                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#0f52ba'; }}
-                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#0047ab'; }}
-              >
-                Dashboard
-              </button>
-              <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: 400 }}>
-                {user.name}
-              </span>
-              <button
-                onClick={onLogout}
-                style={navSignInStyle}
-                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.color = '#000000'; }}
-              >
-                Sign out
-              </button>
-            </div>
-          ) : (
-            <button
-              id="landing-signin-btn"
-              style={navSignInStyle}
-              onClick={onSignInClick}
-              onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-              onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.color = '#000000'; }}
-            >
-              Sign in
-            </button>
-          )}
-        </div>
       </header>
       )}
 
