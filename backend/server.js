@@ -12,6 +12,7 @@ const authRouter = require('./routes/auth');
 const messagesRouter = require('./routes/messages');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // 1. Production HTTP Headers Security (Helmet protection)
 app.use(helmet());
