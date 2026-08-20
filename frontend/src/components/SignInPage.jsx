@@ -10,10 +10,8 @@ import { API_BASE_URL } from '../config';
 export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
   const [view, setView] = React.useState('options'); // 'options' | 'email' | 'forgot_password' | 'reset_password' | 'verify'
   const [formData, setFormData] = React.useState({ email: '', password: '', resetCode: '', newPassword: '' });
-  const [mockResetToken, setMockResetToken] = React.useState(null);
   const [verifyCode, setVerifyCode] = React.useState('');
   const [pendingUserId, setPendingUserId] = React.useState(null);
-  const [mockVerifyToken, setMockVerifyToken] = React.useState(null);
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -40,17 +38,13 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
         if (data.requiresVerification) {
           setPendingUserId(data.userId);
           
-          // Call the resend verification endpoint to get a new code for MVP dev note
+          // Call the resend verification endpoint to trigger an email
           try {
-            const resendRes = await fetch(`${API_BASE_URL}/api/auth/resend-verification`, {
+            await fetch(`${API_BASE_URL}/api/auth/resend-verification`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ userId: data.userId }),
             });
-            const resendData = await resendRes.json();
-            if (resendRes.ok) {
-              setMockVerifyToken(resendData.verificationToken);
-            }
           } catch (e) {
             console.error('Failed to resend verification', e);
           }
@@ -265,10 +259,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Request failed');
                 
-                if (data.resetToken) {
-                  setMockResetToken(data.resetToken);
-                }
-                setSuccess('If the email exists, a reset code was sent.');
+                setSuccess('If the email exists, a reset code was sent to your inbox.');
                 setView('reset_password');
               } catch (err) {
                 setError(err.message);
@@ -344,20 +335,6 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
               }
             }} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               
-              {mockResetToken && (
-                <div style={{
-                  padding: '1rem',
-                  backgroundColor: '#eff6ff',
-                  border: '1px solid #bfdbfe',
-                  borderRadius: '8px',
-                  color: '#1e40af',
-                  fontSize: '0.8125rem',
-                  marginBottom: '0.5rem',
-                }}>
-                  <strong>[MVP Prototype Note]</strong> In the live app, this code is emailed to you. Your test code is: <strong>{mockResetToken}</strong>
-                </div>
-              )}
-
               <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem', lineHeight: '1.4' }}>
                 Enter the 6-digit code sent to {formData.email} and your new password.
               </p>
@@ -433,20 +410,6 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                 setLoading(false);
               }
             }} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {mockVerifyToken && (
-                <div style={{
-                  padding: '1rem',
-                  backgroundColor: '#eff6ff',
-                  border: '1px solid #bfdbfe',
-                  borderRadius: '8px',
-                  color: '#1e40af',
-                  fontSize: '0.8125rem',
-                  marginBottom: '1rem',
-                }}>
-                  <strong>[MVP Prototype Note]</strong> In the live app, this code is emailed to you. Your test code is: <strong>{mockVerifyToken}</strong>
-                </div>
-              )}
-              
               <div>
                 <input
                   className="pill-input"

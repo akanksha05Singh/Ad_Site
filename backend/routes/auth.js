@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
 
 // Helper to sanitize user output
 const sanitizeUser = (user) => {
@@ -89,14 +90,20 @@ router.post('/signup', async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // In a real app, send email here. For MVP, we return it or console log it.
-    console.log(`[MVP] Verification Code for ${email}: ${verificationToken}`);
+    const emailSent = await sendEmail({
+      to: email,
+      subject: 'Welcome to FreeAds! Verify your email',
+      html: `<h2>Welcome to FreeAds!</h2><p>Your verification code is: <strong>${verificationToken}</strong></p><p>This code will expire in 15 minutes.</p>`
+    });
+
+    if (!emailSent) {
+      console.error('Failed to send verification email');
+    }
 
     return res.status(201).json({
       success: true,
-      message: 'Verification required',
-      userId: savedUser._id,
-      verificationToken // Sending back for MVP testing purposes
+      message: 'Verification required. Please check your email.',
+      userId: savedUser._id
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -286,12 +293,19 @@ router.post('/resend-verification', async (req, res) => {
     user.verificationTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
 
-    console.log(`[MVP] Resent Verification Code for ${user.email}: ${verificationToken}`);
+    const emailSent = await sendEmail({
+      to: user.email,
+      subject: 'FreeAds: New Verification Code',
+      html: `<h2>Verify your email</h2><p>Your new verification code is: <strong>${verificationToken}</strong></p><p>This code will expire in 15 minutes.</p>`
+    });
+
+    if (!emailSent) {
+      console.error('Failed to send resend verification email');
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'Verification code resent',
-      verificationToken
+      message: 'Verification code resent. Please check your email.',
     });
   } catch (error) {
     console.error('Resend verification error:', error);
@@ -322,12 +336,19 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPasswordExpiry = resetTokenExpiry;
     await user.save();
 
-    console.log(`[MVP] Password Reset Code for ${email}: ${resetToken}`);
+    const emailSent = await sendEmail({
+      to: user.email,
+      subject: 'FreeAds: Password Reset Request',
+      html: `<h2>Password Reset Request</h2><p>Your password reset code is: <strong>${resetToken}</strong></p><p>If you did not request this, please ignore this email. This code will expire in 15 minutes.</p>`
+    });
+
+    if (!emailSent) {
+      console.error('Failed to send password reset email');
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'If email exists, reset link sent',
-      resetToken // Return it for MVP testing purposes
+      message: 'If email exists, reset link sent. Please check your email.',
     });
   } catch (error) {
     console.error('Forgot password error:', error);

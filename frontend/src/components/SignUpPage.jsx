@@ -16,7 +16,7 @@ export default function SignUpPage({ onAuthSuccess, onGoSignIn, onGoHome }) {
     role: 'user',
   });
   const [verifyCode, setVerifyCode] = useState('');
-  const [mockToken, setMockToken] = useState(null); // MVP only: surface token in UI
+  const [pendingUserId, setPendingUserId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -72,9 +72,8 @@ export default function SignUpPage({ onAuthSuccess, onGoSignIn, onGoHome }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Signup failed');
 
-      if (data.message === 'Verification required') {
+      if (data.message && data.message.includes('Verification required')) {
         setPendingUserId(data.userId);
-        setMockToken(data.verificationToken);
         setView('verify');
         setSuccess('Check your email for the verification code.');
       } else {
@@ -338,20 +337,6 @@ export default function SignUpPage({ onAuthSuccess, onGoSignIn, onGoHome }) {
 
           {view === 'verify' && (
             <form onSubmit={handleVerifySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {mockToken && (
-                <div style={{
-                  padding: '1rem',
-                  backgroundColor: '#eff6ff',
-                  border: '1px solid #bfdbfe',
-                  borderRadius: '8px',
-                  color: '#1e40af',
-                  fontSize: '0.8125rem',
-                  marginBottom: '1rem',
-                }}>
-                  <strong>[MVP Prototype Note]</strong> In the live app, this code is emailed to you. Your test code is: <strong>{mockToken}</strong>
-                </div>
-              )}
-              
               <div>
                 <label style={labelStyle}>Verification Code<RedAsterisk /></label>
                 <input
