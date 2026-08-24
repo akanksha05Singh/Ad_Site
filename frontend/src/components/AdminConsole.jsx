@@ -16,6 +16,10 @@ export default function AdminConsole({ user, onExit }) {
   // adminTab: 'overview', 'queue', 'gov', 'scraper'
   const [adminTab, setAdminTab] = useState('overview');
   const [currency, setCurrency] = useState('INR');
+  
+  // API Config
+  const API_URL = '/api';
+  const getAuthToken = () => localStorage.getItem('token');
 
   // 1. Moderation Queue state
   const [queueItems, setQueueItems] = useState([
@@ -109,34 +113,90 @@ export default function AdminConsole({ user, onExit }) {
   const [targetUrl, setTargetUrl] = useState('');
   const [scraperLogs, setScraperLogs] = useState([]);
   const [scrapeLoading, setScrapeLoading] = useState(false);
-  const [automationTasks, setAutomationTasks] = useState([
-    { id: "SCR-01", name: "LinkedIn Jobs – India", frequency: "Daily", count: 1842, lastRun: "Today, 06:00", active: true },
-    { id: "SCR-02", name: "Naukri.com – IT Category", frequency: "Daily", count: 3210, lastRun: "Today, 06:05", active: true },
-    { id: "SCR-03", name: "Indeed.no – Norway", frequency: "Weekly", count: 418, lastRun: "Mon, 08:00", active: true },
-    { id: "SCR-04", name: "Glassdoor – Remote Global", frequency: "Weekly", count: 290, lastRun: "Jun 14, 08:00", active: false },
-    { id: "SCR-05", name: "Finn.no – Technology", frequency: "Daily", count: 674, lastRun: "Today, 06:10", active: true }
-  ]);
+  const [scraperSources, setScraperSources] = useState([]);
+  const [addingSource, setAddingSource] = useState(false);
 
-  const toggleScraperActive = (id) => {
-    setAutomationTasks(automationTasks.map(t => t.id === id ? { ...t, active: !t.active } : t));
+  // Fetch Scraper Sources
+  React.useEffect(() => {
+    if (adminTab === 'scraper') {
+      fetchScraperSources();
+    }
+  }, [adminTab]);
+
+  const fetchScraperSources = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/scraper-sources`, {
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setScraperSources(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch scraper sources');
+    }
   };
 
-  const runScraperTask = (name) => {
+  const handleAddSource = async () => {
+    if (!targetUrl) return;
+    setAddingSource(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/scraper-sources`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}` 
+        },
+        body: JSON.stringify({ url: targetUrl })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setScraperSources([data.data, ...scraperSources]);
+        setTargetUrl('');
+        setScraperLogs(prev => [...prev, `[SUCCESS] Added ${targetUrl} to automation queue.`]);
+      } else {
+        setScraperLogs(prev => [...prev, `[ERROR] ${data.error}`]);
+      }
+    } catch (err) {
+      setScraperLogs(prev => [...prev, `[ERROR] Failed to add source.`]);
+    } finally {
+      setAddingSource(false);
+    }
+  };
+
+  const handleDeleteSource = async (id) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/scraper-sources/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
+      });
+      if (res.ok) {
+        setScraperSources(scraperSources.filter(s => s._id !== id));
+      }
+    } catch (err) {
+      console.error('Failed to delete source');
+    }
+  };
+
+  const handleForceRun = async () => {
     setScrapeLoading(true);
-    setScraperLogs(prev => [...prev, `[INIT] Triggering scrape job for ${name}...`]);
-    
-    setTimeout(() => {
-      setScraperLogs(prev => [...prev, `[CONNECT] Successfully connected to target API.`]);
-    }, 500);
-
-    setTimeout(() => {
-      setScraperLogs(prev => [...prev, `[PARSE] Scraped and parsed 12 new listings.`]);
-    }, 1200);
-
-    setTimeout(() => {
-      setScraperLogs(prev => [...prev, `[SYNC] Seeding listings to local MongoDB database...`]);
+    setScraperLogs(prev => [...prev, `[INIT] Triggering manual scrape for all active sources...`]);
+    try {
+      const res = await fetch(`${API_URL}/admin/scraper-sources/run`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setScraperLogs(prev => [...prev, `[SUCCESS] ${data.message}`]);
+      } else {
+        setScraperLogs(prev => [...prev, `[ERROR] Failed to start manual scrape.`]);
+      }
+    } catch (err) {
+      setScraperLogs(prev => [...prev, `[ERROR] Failed to start manual scrape.`]);
+    } finally {
       setScrapeLoading(false);
-    }, 2000);
+    }
   };
 
   // Helper pills styling
@@ -735,13 +795,14 @@ export default function AdminConsole({ user, onExit }) {
                   </div>
                   <button
                     type="button"
-                    onClick={() => runScraperTask("Manual URL")}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#0047ab] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#0f52ba] transition-all shrink-0 focus:outline-none"
+                    onClick={handleAddSource}
+                    disabled={addingSource}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#0047ab] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#0f52ba] transition-all shrink-0 focus:outline-none disabled:opacity-50"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
-                    Fetch & Parse Data
+                    {addingSource ? 'Adding...' : 'Add Scraper Source'}
                   </button>
                 </div>
 
@@ -763,10 +824,19 @@ export default function AdminConsole({ user, onExit }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-outfit text-sm font-extrabold text-slate-900">Automation Queue</h3>
-                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Recurring scrape tasks · 4 active</p>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Automated scraping runs daily at midnight (UTC)</p>
                   </div>
-                  <button className="px-4 py-2 bg-[#0047ab] hover:bg-[#0f52ba] text-xs font-bold text-white rounded-xl shadow-sm transition-all focus:outline-none">
-                    + Add Source
+                  <button
+                    type="button"
+                    onClick={handleForceRun}
+                    disabled={scrapeLoading}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#f05a28] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#f26522] transition-all shrink-0 focus:outline-none disabled:opacity-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Force Run All Scrapers
                   </button>
                 </div>
 
@@ -774,62 +844,43 @@ export default function AdminConsole({ user, onExit }) {
                   <table className="w-full text-left text-xs font-semibold text-slate-500 min-w-[700px]">
                     <thead className="bg-slate-50 text-[10px] text-slate-450 uppercase tracking-wider border-b border-slate-150">
                       <tr>
-                        <th className="px-4 py-3.5">ID</th>
-                        <th className="px-4 py-3.5">Target Source</th>
-                        <th className="px-4 py-3.5">Frequency</th>
-                        <th className="px-4 py-3.5">Jobs Scraped</th>
-                        <th className="px-4 py-3.5">Last Run</th>
+                        <th className="px-4 py-3.5">Target URL</th>
                         <th className="px-4 py-3.5">Status</th>
-                        <th className="px-4 py-3.5">Actions</th>
+                        <th className="px-4 py-3.5">Jobs Found (All Time)</th>
+                        <th className="px-4 py-3.5">Last Scraped</th>
+                        <th className="px-4 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {automationTasks.map((t) => (
-                        <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-4 py-4 text-[#0047ab] font-bold">{t.id}</td>
-                          <td className="px-4 py-4 font-bold text-slate-900">{t.name}</td>
+                      {scraperSources.map((source) => (
+                        <tr key={source._id} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-4 py-4 text-[#0047ab] font-bold max-w-[250px] truncate" title={source.url}>{source.url}</td>
                           <td className="px-4 py-4">
-                            <span className={`px-2.5 py-1 rounded-lg text-[9px] font-extrabold uppercase ${
-                              t.frequency === 'Daily' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-650'
-                            }`}>
-                              {t.frequency}
+                            <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide bg-emerald-50 text-emerald-600 border border-emerald-100">
+                              {source.status}
                             </span>
                           </td>
-                          <td className="px-4 py-4 font-bold text-slate-900">{t.count.toLocaleString()}</td>
-                          <td className="px-4 py-4 text-slate-400 font-medium">{t.lastRun}</td>
-                          <td className="px-4 py-4">
-                            <span className={`inline-flex items-center gap-1 font-bold ${t.active ? 'text-emerald-600' : 'text-amber-600'}`}>
-                              <span className={`h-1.5 w-1.5 rounded-full ${t.active ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                              {t.active ? 'Active' : 'Paused'}
-                            </span>
+                          <td className="px-4 py-4 font-bold text-slate-900">{source.jobsFound}</td>
+                          <td className="px-4 py-4 text-slate-450 font-medium">
+                            {source.lastScrapedAt ? new Date(source.lastScrapedAt).toLocaleString() : 'Never'}
                           </td>
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-2 font-bold">
-                              <button
-                                onClick={() => toggleScraperActive(t.id)}
-                                className={`px-2.5 py-1.5 border rounded-lg text-[10px] transition-all focus:outline-none ${
-                                  t.active 
-                                    ? 'border-amber-200 text-amber-600 bg-amber-50/50 hover:bg-amber-50' 
-                                    : 'border-emerald-200 text-emerald-600 bg-emerald-50/50 hover:bg-emerald-50'
-                                }`}
-                              >
-                                {t.active ? 'Pause' : 'Resume'}
-                              </button>
-                              <button
-                                onClick={() => runScraperTask(t.name)}
-                                className="px-2.5 py-1.5 border border-blue-200 text-[#0047ab] bg-blue-50/50 hover:bg-blue-50 rounded-lg text-[10px] transition-all focus:outline-none"
-                              >
-                                Run
-                              </button>
-                              <button className="p-1.5 border border-slate-200 hover:border-slate-300 rounded-lg text-slate-400 hover:text-slate-600 transition-all focus:outline-none">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
-                            </div>
+                          <td className="px-4 py-4 text-right">
+                            <button
+                              onClick={() => handleDeleteSource(source._id)}
+                              className="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-[10px] font-bold transition-colors"
+                            >
+                              Delete
+                            </button>
                           </td>
                         </tr>
                       ))}
+                      {scraperSources.length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-8 text-center text-slate-400">
+                            No scraper sources added yet. Add a URL above to start scraping.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

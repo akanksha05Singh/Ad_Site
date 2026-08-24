@@ -51,6 +51,23 @@ const ListingSchema = new mongoose.Schema({
     enum: ['active', 'pending'],
     default: 'active'
   },
+  // New Job Filtering Fields
+  state: {
+    type: String,
+    trim: true
+  },
+  occupationCategory: {
+    type: String,
+    trim: true
+  },
+  employmentType: {
+    type: String, // e.g. "Full-time", "Part-time"
+    trim: true
+  },
+  workFromHome: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -14,10 +14,15 @@ const getAuthUser = async (req) => {
 };
 
 // @route   GET /api/listings
-// @desc    Get all listings with optional search and category filters
+// @desc    Get all listings with search, filters, and pagination
 router.get('/', async (req, res) => {
   try {
-    const { category, q, owner, location, minPrice } = req.query;
+    const { 
+      category, q, owner, location, minPrice,
+      state, occupationCategory, employmentType, workFromHome,
+      page = 1, limit = 100
+    } = req.query;
+    
     let query = {};
 
     if (category && ['classified', 'job'].includes(category)) {
@@ -30,6 +35,22 @@ router.get('/', async (req, res) => {
     
     if (location && location.trim() !== '') {
       query.location = new RegExp(location.trim(), 'i');
+    }
+
+    if (state && state.trim() !== '') {
+      query.state = new RegExp(state.trim(), 'i');
+    }
+
+    if (occupationCategory && occupationCategory.trim() !== '') {
+      query.occupationCategory = new RegExp(occupationCategory.trim(), 'i');
+    }
+
+    if (employmentType && employmentType.trim() !== '') {
+      query.employmentType = new RegExp(employmentType.trim(), 'i');
+    }
+
+    if (workFromHome === 'true') {
+      query.workFromHome = true;
     }
 
     if (minPrice && !isNaN(parseFloat(minPrice))) {
@@ -45,13 +66,25 @@ router.get('/', async (req, res) => {
       ];
     }
 
+    // Pagination logic
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 100;
+    const startIndex = (pageNum - 1) * limitNum;
+
+    const total = await Listing.countDocuments(query);
+
     const listings = await Listing.find(query)
       .populate('owner', 'name email avatar role')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limitNum);
     
     return res.status(200).json({
       success: true,
       count: listings.length,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+      currentPage: pageNum,
       data: listings
     });
   } catch (error) {

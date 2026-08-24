@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import ListingCard from './ListingCard';
+import JobFiltersSidebar from './JobFiltersSidebar';
 import { API_BASE_URL } from '../config';
 
 export default function BrowseGrid({ searchQuery, selectedCategory, location, minPrice, refreshTrigger }) {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // New Job Filters
+  const [jobFilters, setJobFilters] = useState({
+    state: '',
+    occupationCategory: '',
+    fullTime: false,
+    partTime: false,
+    workFromHome: false
+  });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 100;
 
   useEffect(() => {
     let active = true;
@@ -38,6 +53,16 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
           url += `?${params.toString()}`;
         }
 
+        // Add Job Filters
+        if (jobFilters.state) url += (url.includes('?') ? '&' : '?') + `state=${encodeURIComponent(jobFilters.state)}`;
+        if (jobFilters.occupationCategory) url += (url.includes('?') ? '&' : '?') + `occupationCategory=${encodeURIComponent(jobFilters.occupationCategory)}`;
+        if (jobFilters.fullTime) url += (url.includes('?') ? '&' : '?') + `employmentType=Full-time`;
+        if (jobFilters.partTime) url += (url.includes('?') ? '&' : '?') + `employmentType=Part-time`;
+        if (jobFilters.workFromHome) url += (url.includes('?') ? '&' : '?') + `workFromHome=true`;
+        
+        // Add Pagination
+        url += (url.includes('?') ? '&' : '?') + `page=${currentPage}&limit=${limit}`;
+
         const response = await fetch(url);
         const data = await response.json();
 
@@ -47,6 +72,7 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
 
         if (active) {
           setListings(data.data || []);
+          setTotalPages(data.totalPages || 1);
         }
       } catch (err) {
         if (active) {
@@ -68,28 +94,39 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
       active = false;
       clearTimeout(delayDebounce);
     };
-  }, [searchQuery, selectedCategory, location, minPrice, refreshTrigger]);
+  }, [searchQuery, selectedCategory, location, minPrice, refreshTrigger, jobFilters, currentPage]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        {/* Loading skeleton wrapper */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm animate-pulse overflow-hidden h-[420px]">
-              <div className="aspect-video w-full bg-slate-200" />
-              <div className="p-5 flex-grow space-y-4">
-                <div className="h-6 w-3/4 bg-slate-200 rounded-lg" />
-                <div className="h-5 w-1/3 bg-slate-200 rounded-lg" />
-                <div className="space-y-2 mt-2">
-                  <div className="h-4 w-full bg-slate-200 rounded-lg" />
-                  <div className="h-4 w-5/6 bg-slate-200 rounded-lg" />
+      <div className="flex gap-8">
+        {selectedCategory === 'job' && (
+          <div className="hidden lg:block w-[300px] flex-shrink-0">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-[600px] animate-pulse" />
+          </div>
+        )}
+        <div className="flex-1 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className="flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm animate-pulse overflow-hidden h-[420px]">
+                <div className="aspect-video w-full bg-slate-200" />
+                <div className="p-5 flex-grow space-y-4">
+                  <div className="h-6 w-3/4 bg-slate-200 rounded-lg" />
+                  <div className="h-5 w-1/3 bg-slate-200 rounded-lg" />
+                  <div className="space-y-2 mt-2">
+                    <div className="h-4 w-full bg-slate-200 rounded-lg" />
+                    <div className="h-4 w-5/6 bg-slate-200 rounded-lg" />
+                  </div>
+                  <div className="h-4 w-1/2 bg-slate-200 rounded-lg mt-auto" />
+                  <div className="h-10 w-full bg-slate-200 rounded-xl mt-4" />
                 </div>
-                <div className="h-4 w-1/2 bg-slate-200 rounded-lg mt-auto" />
-                <div className="h-10 w-full bg-slate-200 rounded-xl mt-4" />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -120,27 +157,71 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
     );
   }
 
-  if (listings.length === 0) {
-    return (
-      <div className="w-full text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm px-4">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 mb-4 border border-slate-100">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+  const renderGrid = () => {
+    if (listings.length === 0) {
+      return (
+        <div className="w-full flex-1 text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm px-4">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 mb-4 border border-slate-100">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 className="font-outfit text-xl font-medium text-slate-900 mb-1">No listings found</h3>
+          <p className="text-slate-500 max-w-sm mx-auto text-sm">
+            We couldn't find any listings matching your search parameters. Try broadening your keywords.
+          </p>
         </div>
-        <h3 className="font-outfit text-xl font-medium text-slate-900 mb-1">No listings found</h3>
-        <p className="text-slate-500 max-w-sm mx-auto text-sm">
-          We couldn't find any listings matching your search parameters. Try broadening your keywords.
-        </p>
+      );
+    }
+
+    return (
+      <div className="flex-1 flex flex-col">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {listings.map((listing) => (
+            <ListingCard key={listing._id || listing.id} listing={listing} />
+          ))}
+        </div>
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mb-12">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-slate-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-600 px-4">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-slate-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     );
-  }
+  };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {listings.map((listing) => (
-        <ListingCard key={listing._id || listing.id} listing={listing} />
-      ))}
+    <div className="flex gap-8 items-start relative min-h-screen">
+      {/* Show sidebar only for job category */}
+      {selectedCategory === 'job' && (
+        <div className="hidden lg:block w-[300px] flex-shrink-0 sticky top-24">
+          <JobFiltersSidebar 
+            filters={jobFilters} 
+            setFilters={setJobFilters}
+            onApply={() => setCurrentPage(1)} 
+          />
+        </div>
+      )}
+      
+      {renderGrid()}
     </div>
   );
 }

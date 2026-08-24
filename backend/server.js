@@ -10,6 +10,10 @@ const { seedDatabaseIfNeeded } = require('./seedData');
 const listingsRouter = require('./routes/listings');
 const authRouter = require('./routes/auth');
 const messagesRouter = require('./routes/messages');
+const adminRouter = require('./routes/admin');
+
+// Initialize Cron Jobs
+require('./scraper/cronJob');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -41,6 +45,7 @@ app.use('/api/auth', authRateLimiter);
 app.use('/api/listings', listingsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/messages', messagesRouter);
+app.use('/api/admin', adminRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -62,7 +67,7 @@ mongoose.connect(MONGODB_URI, mongooseOptions)
   .then(async () => {
     console.log('Successfully connected to MongoDB with production connection pool configuration.');
     // Seed sample listings if database is empty
-    await seedDatabaseIfNeeded(Listing);
+    // await seedDatabaseIfNeeded(Listing);
     
     // Start Express Server
     app.listen(PORT, () => {
