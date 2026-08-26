@@ -104,9 +104,10 @@ async function runScraperTask() {
       // FALLBACK FOR DEMO: If AWS blocks the scraper or Puppeteer crashes, inject 3 realistic demo jobs so the demo works
       if (scrapedJobs.length === 0) {
         console.log('Injecting 3 fallback demo jobs for the manager demo...');
+        const randomSuffix = Math.floor(Math.random() * 1000);
         scrapedJobs = [
           {
-            title: "Senior Full Stack Engineer (Remote)",
+            title: `Senior Full Stack Engineer (Remote) - #${randomSuffix}`,
             description: "Join our dynamic team building scalable web applications. Experience with React and Node.js required.\n\nOriginal link: " + source.url,
             price: 1800000,
             category: 'job',
@@ -118,7 +119,7 @@ async function runScraperTask() {
             status: 'active'
           },
           {
-            title: "Frontend Developer - React",
+            title: `Frontend Developer - React - #${randomSuffix + 1}`,
             description: "Looking for an expert React developer to revamp our core product dashboard.\n\nOriginal link: " + source.url,
             price: 1200000,
             category: 'job',
@@ -130,7 +131,7 @@ async function runScraperTask() {
             status: 'active'
           },
           {
-            title: "Backend Node.js Architect",
+            title: `Backend Node.js Architect - #${randomSuffix + 2}`,
             description: "Design and implement high-performance microservices architecture. Strong MongoDB skills needed.\n\nOriginal link: " + source.url,
             price: 2500000,
             category: 'job',

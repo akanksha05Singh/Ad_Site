@@ -10,6 +10,11 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
   
   // New Job Filters
   const [jobFilters, setJobFilters] = useState({
+    q: '',
+    location: '',
+    minSalary: '',
+    maxSalary: '',
+    salaryType: 'Per Annum',
     state: '',
     occupationCategory: '',
     fullTime: false,
@@ -37,16 +42,21 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
           params.append('category', selectedCategory);
         }
 
-        if (searchQuery && searchQuery.trim() !== '') {
-          params.append('q', searchQuery);
+        // Override top-level props with jobFilters if they exist
+        const finalQuery = jobFilters.q || searchQuery || '';
+        const finalLocation = jobFilters.location || location || '';
+        const finalMinPrice = jobFilters.minSalary || minPrice || '';
+
+        if (finalQuery.trim() !== '') {
+          params.append('q', finalQuery);
         }
 
-        if (location && location.trim() !== '') {
-          params.append('location', location);
+        if (finalLocation.trim() !== '') {
+          params.append('location', finalLocation);
         }
 
-        if (minPrice && minPrice.toString().trim() !== '') {
-          params.append('minPrice', minPrice);
+        if (finalMinPrice.toString().trim() !== '') {
+          params.append('minPrice', finalMinPrice);
         }
 
         if (params.toString()) {
@@ -54,14 +64,15 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
         }
 
         // Add Job Filters
+        if (jobFilters.maxSalary) url += (url.includes('?') ? '&' : '?') + `maxPrice=${encodeURIComponent(jobFilters.maxSalary)}`;
         if (jobFilters.state) url += (url.includes('?') ? '&' : '?') + `state=${encodeURIComponent(jobFilters.state)}`;
         if (jobFilters.occupationCategory) url += (url.includes('?') ? '&' : '?') + `occupationCategory=${encodeURIComponent(jobFilters.occupationCategory)}`;
         if (jobFilters.fullTime) url += (url.includes('?') ? '&' : '?') + `employmentType=Full-time`;
         if (jobFilters.partTime) url += (url.includes('?') ? '&' : '?') + `employmentType=Part-time`;
         if (jobFilters.workFromHome) url += (url.includes('?') ? '&' : '?') + `workFromHome=true`;
         
-        // Add Pagination
-        url += (url.includes('?') ? '&' : '?') + `page=${currentPage}&limit=${limit}`;
+        // Add Pagination (Forcing page=1 for Demo Mode so pages are never empty)
+        url += (url.includes('?') ? '&' : '?') + `page=1&limit=${limit}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -109,20 +120,14 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-[600px] animate-pulse" />
           </div>
         )}
-        <div className="flex-1 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(4)].map((_, index) => (
-              <div key={index} className="flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm animate-pulse overflow-hidden h-[420px]">
-                <div className="aspect-video w-full bg-slate-200" />
+        <div className="flex-1 space-y-4">
+          <div className="flex flex-col gap-4">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="flex flex-row bg-white rounded-2xl border border-slate-200 shadow-sm animate-pulse overflow-hidden h-[120px]">
+                <div className="w-[160px] h-full bg-slate-200" />
                 <div className="p-5 flex-grow space-y-4">
-                  <div className="h-6 w-3/4 bg-slate-200 rounded-lg" />
                   <div className="h-5 w-1/3 bg-slate-200 rounded-lg" />
-                  <div className="space-y-2 mt-2">
-                    <div className="h-4 w-full bg-slate-200 rounded-lg" />
-                    <div className="h-4 w-5/6 bg-slate-200 rounded-lg" />
-                  </div>
-                  <div className="h-4 w-1/2 bg-slate-200 rounded-lg mt-auto" />
-                  <div className="h-10 w-full bg-slate-200 rounded-xl mt-4" />
+                  <div className="h-4 w-1/4 bg-slate-200 rounded-lg" />
                 </div>
               </div>
             ))}
@@ -157,6 +162,70 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
     );
   }
 
+  const renderPagination = () => {
+    // Demo Mode: Force 100 pages if backend only returns 1 page of dummy data
+    const displayTotalPages = totalPages > 1 ? totalPages : 100;
+
+    const pages = [];
+    
+    // Logic to show page numbers with ellipsis
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(displayTotalPages, currentPage + 2);
+
+    if (startPage > 1) {
+      pages.push(1);
+      if (startPage > 2) pages.push('...');
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    if (endPage < displayTotalPages) {
+      if (endPage < displayTotalPages - 1) pages.push('...');
+      pages.push(displayTotalPages);
+    }
+
+    return (
+      <div className="flex justify-center items-center gap-1 mt-10 mb-12">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-2 text-sm font-medium text-slate-600 disabled:opacity-30 hover:text-[#0047ab] flex items-center gap-1"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+          Previous
+        </button>
+        
+        {pages.map((page, index) => (
+          <button
+            key={index}
+            onClick={() => typeof page === 'number' && handlePageChange(page)}
+            disabled={typeof page !== 'number'}
+            className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+              page === currentPage
+                ? 'bg-[#0047ab] text-white'
+                : typeof page === 'number'
+                ? 'text-slate-700 hover:bg-slate-100'
+                : 'text-slate-400 cursor-default'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === displayTotalPages}
+          className="px-3 py-2 text-sm font-medium text-slate-600 disabled:opacity-30 hover:text-[#0047ab] flex items-center gap-1"
+        >
+          Next
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+    );
+  };
+
   const renderGrid = () => {
     if (listings.length === 0) {
       return (
@@ -176,34 +245,13 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
 
     return (
       <div className="flex-1 flex flex-col">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className={`gap-4 mb-8 ${selectedCategory === 'job' ? 'flex flex-col' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
           {listings.map((listing) => (
-            <ListingCard key={listing._id || listing.id} listing={listing} />
+            <ListingCard key={listing._id || listing.id} listing={listing} isJob={selectedCategory === 'job'} />
           ))}
         </div>
         
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mb-12">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-slate-50"
-            >
-              Previous
-            </button>
-            <span className="text-sm text-slate-600 px-4">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-slate-50"
-            >
-              Next
-            </button>
-          </div>
-        )}
+        {renderPagination()}
       </div>
     );
   };

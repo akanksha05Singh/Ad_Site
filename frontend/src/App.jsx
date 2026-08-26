@@ -120,46 +120,8 @@ export default function App() {
       case 'find-jobs':
         return (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-              <h2 className="font-outfit text-xl font-medium text-slate-900">Find Jobs</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Keywords</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Software Engineer"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0047ab] transition-colors"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Location</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Oslo"
-                    value={filterLocation}
-                    onChange={(e) => setFilterLocation(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0047ab] transition-colors"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Min Salary (NOK)</label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 500000"
-                    value={filterMinSalary}
-                    onChange={(e) => setFilterMinSalary(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0047ab] transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
             <BrowseGrid 
-              searchQuery={searchQuery} 
               selectedCategory="job" 
-              location={filterLocation}
-              minPrice={filterMinSalary}
               refreshTrigger={refreshTrigger} 
             />
           </div>
