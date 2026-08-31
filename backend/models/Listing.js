@@ -12,8 +12,12 @@ const ListingSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: [true, 'Price or Salary is required'],
+    required: [true, 'Price or Min Salary is required'],
     min: [0, 'Price must be a positive number']
+  },
+  maxPrice: {
+    type: Number,
+    min: [0, 'Max Salary must be a positive number']
   },
   category: {
     type: String,

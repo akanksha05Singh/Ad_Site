@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Indian Numbering System Formatter (e.g. 42,50,000)
 function formatIndianCurrency(num) {
@@ -36,7 +36,8 @@ const formatFigmaPrice = (price, category, title) => {
 };
 
 export default function ListingCard({ listing, isJob: forceIsJob }) {
-  const { title, price, category, location, imageUrl } = listing;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { title, price, category, location, imageUrl, description } = listing;
 
   const isJob = forceIsJob || category === 'job';
   const lowercaseTitle = title.toLowerCase();
@@ -83,6 +84,7 @@ export default function ListingCard({ listing, isJob: forceIsJob }) {
   // Horizontal List Layout (Long format)
   if (isJob) {
     return (
+      <div className="flex flex-col gap-1">
       <article className="group flex flex-row bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden items-center p-3 gap-5">
         
         {/* Left: Thumbnail Image with Badge Overlay */}
@@ -90,7 +92,7 @@ export default function ListingCard({ listing, isJob: forceIsJob }) {
           <img 
             src={cardImage} 
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover"
             loading="lazy"
           />
           <span className="absolute top-2 left-2 inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide shadow-sm z-10 bg-[#f05a28] text-white">
@@ -100,7 +102,11 @@ export default function ListingCard({ listing, isJob: forceIsJob }) {
 
         {/* Middle: Details */}
         <div className="flex flex-col flex-grow min-w-0">
-          <h3 className="font-outfit text-base md:text-lg font-bold text-slate-900 group-hover:text-[#0047ab] transition-colors truncate" title={title}>
+          <h3 
+            className="text-base font-bold text-slate-900 group-hover:text-[#0047ab] transition-colors cursor-pointer" 
+            title={title}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
             {title}
           </h3>
           <p className="text-sm font-medium text-slate-500 mt-1 truncate">
@@ -115,17 +121,22 @@ export default function ListingCard({ listing, isJob: forceIsJob }) {
           </div>
         </div>
 
-        {/* Right: Salary & Action */}
-        <div className="flex flex-col items-end pr-2 flex-shrink-0 space-y-3">
-          <span className="font-outfit font-extrabold text-[#0047ab] text-lg md:text-xl tracking-tight">
+        {/* Right: Salary */}
+        <div className="flex flex-col items-end pr-2 flex-shrink-0">
+          <span className="text-base text-[#0047ab]">
             {priceDisplay}
           </span>
-          <button className="px-5 py-2 bg-slate-900 hover:bg-[#0047ab] text-white text-sm font-medium rounded-lg transition-colors shadow-sm hidden md:block">
-            View Job
-          </button>
         </div>
 
       </article>
+
+      {/* Expanded Accordion Description */}
+      {isExpanded && description && (
+        <div className="mt-2 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 whitespace-pre-wrap">
+          {description}
+        </div>
+      )}
+      </div>
     );
   }
 

@@ -6,7 +6,7 @@ const SidebarContainer = styled.div`
   background: white;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #cbd5e1;
   flex-shrink: 0;
   height: fit-content;
   position: sticky;
@@ -142,9 +142,21 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
   };
 
   const handleInputChange = (field) => (e) => {
+    let value = e.target.value;
+    
+    // Auto-format numbers with commas for salary fields
+    if (field === 'minSalary' || field === 'maxSalary') {
+      const rawValue = value.replace(/,/g, '');
+      if (rawValue === '' || !isNaN(rawValue)) {
+        value = rawValue ? Number(rawValue).toLocaleString('en-IN') : '';
+      } else {
+        return; // Ignore non-numeric input
+      }
+    }
+
     setLocalFilters(prev => ({
       ...prev,
-      [field]: e.target.value
+      [field]: value
     }));
   };
 
@@ -158,28 +170,23 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
   };
 
   const handleApply = () => {
-    setFilters(localFilters);
-    if (onApply) onApply(localFilters);
+    const filtersToApply = { ...localFilters };
+    
+    if (filtersToApply.minSalary) {
+      const minVal = Number(filtersToApply.minSalary.replace(/,/g, ''));
+      if (minVal > 0 && minVal < 1000) {
+        filtersToApply.minSalary = '1,000';
+        setLocalFilters(prev => ({ ...prev, minSalary: '1,000' }));
+      }
+    }
+    
+    setFilters(filtersToApply);
+    if (onApply) onApply(filtersToApply);
   };
 
   return (
     <SidebarContainer>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <div style={{ color: '#0f172a' }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="14" cy="6" r="3"></circle>
-            <line x1="4" y1="6" x2="11" y2="6"></line>
-            <line x1="17" y1="6" x2="20" y2="6"></line>
-            
-            <circle cx="8" cy="12" r="3"></circle>
-            <line x1="4" y1="12" x2="5" y2="12"></line>
-            <line x1="11" y1="12" x2="20" y2="12"></line>
-            
-            <circle cx="16" cy="18" r="3"></circle>
-            <line x1="4" y1="18" x2="13" y2="18"></line>
-            <line x1="19" y1="18" x2="20" y2="18"></line>
-          </svg>
-        </div>
         <ClearButton onClick={clearFilters}>Clear all</ClearButton>
       </div>
 
@@ -197,24 +204,20 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
 
       <FilterSection>
         <FilterTitle>Salary Range</FilterTitle>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
           <Input 
-            type="number" 
+            type="text" 
             placeholder="Min (₹)" 
             value={localFilters.minSalary || ''} 
             onChange={handleInputChange('minSalary')} 
           />
           <Input 
-            type="number" 
+            type="text" 
             placeholder="Max (₹)" 
             value={localFilters.maxSalary || ''} 
             onChange={handleInputChange('maxSalary')} 
           />
         </div>
-        <Select value={localFilters.salaryType || 'Per Annum'} onChange={handleSelectChange('salaryType')}>
-          <option value="Per Annum">Per Annum</option>
-          <option value="Per Month">Per Month</option>
-        </Select>
       </FilterSection>
 
       <FilterSection>

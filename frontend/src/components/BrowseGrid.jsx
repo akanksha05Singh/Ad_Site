@@ -56,7 +56,9 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
         }
 
         if (finalMinPrice.toString().trim() !== '') {
-          params.append('minPrice', finalMinPrice);
+          // Remove commas from formatted salary
+          const cleanMin = finalMinPrice.toString().replace(/,/g, '');
+          params.append('minPrice', cleanMin);
         }
 
         if (params.toString()) {
@@ -64,7 +66,10 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
         }
 
         // Add Job Filters
-        if (jobFilters.maxSalary) url += (url.includes('?') ? '&' : '?') + `maxPrice=${encodeURIComponent(jobFilters.maxSalary)}`;
+        if (jobFilters.maxSalary) {
+          const cleanMax = jobFilters.maxSalary.toString().replace(/,/g, '');
+          url += (url.includes('?') ? '&' : '?') + `maxPrice=${encodeURIComponent(cleanMax)}`;
+        }
         if (jobFilters.state) url += (url.includes('?') ? '&' : '?') + `state=${encodeURIComponent(jobFilters.state)}`;
         if (jobFilters.occupationCategory) url += (url.includes('?') ? '&' : '?') + `occupationCategory=${encodeURIComponent(jobFilters.occupationCategory)}`;
         if (jobFilters.fullTime) url += (url.includes('?') ? '&' : '?') + `employmentType=Full-time`;
@@ -109,7 +114,6 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) {
