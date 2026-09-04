@@ -8,9 +8,25 @@ const SidebarContainer = styled.div`
   padding: 24px;
   border: 1px solid #cbd5e1;
   flex-shrink: 0;
-  height: fit-content;
+  height: calc(100vh - 120px);
   position: sticky;
   top: 100px;
+  overflow-y: auto;
+
+  /* Custom subtle scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
 `;
 
 const FilterSection = styled.div`
@@ -163,7 +179,8 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
   const clearFilters = () => {
     const empty = { 
       q: '', location: '', minSalary: '', maxSalary: '', salaryType: 'Per Annum',
-      state: '', occupationCategory: '', fullTime: false, partTime: false, workFromHome: false 
+      state: '', occupationCategory: '', fullTime: false, partTime: false, workFromHome: false,
+      gender: ''
     };
     setLocalFilters(empty);
     setFilters(empty);
@@ -302,7 +319,46 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
               checked={localFilters.workFromHome} 
               onChange={handleCheckboxChange('workFromHome')} 
             />
-            Work from home
+            Work from Home
+          </CheckboxLabel>
+        </CheckboxGroup>
+      </FilterSection>
+
+      <FilterSection>
+        <FilterTitle>Gender</FilterTitle>
+        <CheckboxGroup>
+          <CheckboxLabel>
+            <input 
+              type="radio"
+              name="gender"
+              value="Male"
+              checked={localFilters.gender === 'Male'}
+              onChange={(e) => setLocalFilters(prev => ({ ...prev, gender: e.target.value }))}
+              style={{ marginRight: '8px' }}
+            />
+            Male (1)
+          </CheckboxLabel>
+          <CheckboxLabel>
+            <input 
+              type="radio"
+              name="gender"
+              value="Female"
+              checked={localFilters.gender === 'Female'}
+              onChange={(e) => setLocalFilters(prev => ({ ...prev, gender: e.target.value }))}
+              style={{ marginRight: '8px' }}
+            />
+            Female (2)
+          </CheckboxLabel>
+          <CheckboxLabel>
+            <input 
+              type="radio"
+              name="gender"
+              value=""
+              checked={!localFilters.gender || localFilters.gender === ''}
+              onChange={(e) => setLocalFilters(prev => ({ ...prev, gender: e.target.value }))}
+              style={{ marginRight: '8px' }}
+            />
+            Any
           </CheckboxLabel>
         </CheckboxGroup>
       </FilterSection>

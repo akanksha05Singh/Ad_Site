@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
   try {
     const { 
       category, q, owner, location, minPrice,
-      state, occupationCategory, employmentType, workFromHome,
+      state, occupationCategory, employmentType, workFromHome, gender,
       page = 1, limit = 100
     } = req.query;
     
@@ -51,6 +51,10 @@ router.get('/', async (req, res) => {
 
     if (workFromHome === 'true') {
       query.workFromHome = true;
+    }
+
+    if (gender && gender.trim() !== '' && gender !== 'Any') {
+      query.gender = gender.trim();
     }
 
     if (minPrice && !isNaN(parseFloat(minPrice))) {
@@ -97,7 +101,11 @@ router.get('/', async (req, res) => {
 // @desc    Create a new listing
 router.post('/', async (req, res) => {
   try {
-    const { title, description, price, category, location, contactEmail } = req.body;
+    const { 
+      title, description, price, maxPrice, category, location, contactEmail,
+      state, occupationCategory, employmentType, workFromHome,
+      contactPhone, contactWhatsapp, gender 
+    } = req.body;
 
     if (!title || !description || price === undefined || !category || !location || !contactEmail) {
       return res.status(400).json({
@@ -113,11 +121,20 @@ router.post('/', async (req, res) => {
       title,
       description,
       price,
+      maxPrice,
       category,
       location,
       contactEmail,
+      state,
+      occupationCategory,
+      employmentType,
+      workFromHome,
+      contactPhone,
+      contactWhatsapp,
+      gender,
       owner: user ? user._id : null,
-      status: 'active'
+      status: 'active',
+      isScraped: false
     });
 
     const savedListing = await newListing.save();

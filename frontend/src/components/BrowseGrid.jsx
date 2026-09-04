@@ -76,8 +76,8 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
         if (jobFilters.partTime) url += (url.includes('?') ? '&' : '?') + `employmentType=Part-time`;
         if (jobFilters.workFromHome) url += (url.includes('?') ? '&' : '?') + `workFromHome=true`;
         
-        // Add Pagination (Forcing page=1 for Demo Mode so pages are never empty)
-        url += (url.includes('?') ? '&' : '?') + `page=1&limit=${limit}`;
+        // Add Pagination
+        url += (url.includes('?') ? '&' : '?') + `page=${currentPage}&limit=${limit}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -167,8 +167,7 @@ export default function BrowseGrid({ searchQuery, selectedCategory, location, mi
   }
 
   const renderPagination = () => {
-    // Demo Mode: Force 100 pages if backend only returns 1 page of dummy data
-    const displayTotalPages = totalPages > 1 ? totalPages : 100;
+    const displayTotalPages = totalPages;
 
     const pages = [];
     

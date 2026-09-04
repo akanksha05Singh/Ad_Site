@@ -72,6 +72,30 @@ const ListingSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isScraped: {
+    type: Boolean,
+    default: false
+  },
+  originalLink: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  contactPhone: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  contactWhatsapp: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Any'],
+    default: 'Any'
+  },
   createdAt: {
     type: Date,
     default: Date.now

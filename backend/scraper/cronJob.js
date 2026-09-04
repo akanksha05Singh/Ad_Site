@@ -62,11 +62,42 @@ async function scrapeJobBoard(url) {
           link = `${baseUrl}${link}`;
         }
         
+        // Extract Image (Company Logo)
+        let imageUrl = $(el).find('img').first().attr('src') || '';
+        if (imageUrl && !imageUrl.startsWith('http')) {
+          const baseUrl = new URL(url).origin;
+          imageUrl = `${baseUrl}${imageUrl}`;
+        }
+
+        // Try to extract Salary Range from text
+        let minPrice = Math.floor(Math.random() * (1200000 - 500000 + 1)) + 500000;
+        let maxPrice = minPrice + Math.floor(Math.random() * 800000) + 200000;
+        const allText = $(el).text().replace(/,/g, '');
+        // Generic regex looking for patterns like 100000 - 150000 or 100k - 150k
+        const salaryMatch = allText.match(/(?:Rs\.?|₹|\$|€|£)?\s*(\d{2,3})(?:k|,\d{3})\s*[-to]+\s*(?:Rs\.?|₹|\$|€|£)?\s*(\d{2,3})(?:k|,\d{3})/i);
+        if (salaryMatch) {
+           let minExtracted = parseInt(salaryMatch[1], 10);
+           let maxExtracted = parseInt(salaryMatch[2], 10);
+           // Convert k to thousands
+           if (minExtracted < 1000) minExtracted *= 1000;
+           if (maxExtracted < 1000) maxExtracted *= 1000;
+           
+           if (minExtracted > 0 && maxExtracted > minExtracted) {
+             // Convert to roughly INR if it was small
+             minPrice = minExtracted * 10;
+             maxPrice = maxExtracted * 10;
+           }
+        }
+        
         if (title && title.length > 5) {
           jobs.push({
             title: title,
-            description: `${company ? `Company: ${company}\n\n` : ''}${descSnippet}\n\nOriginal link: ${link || 'N/A'}`,
-            price: Math.floor(Math.random() * (1200000 - 500000 + 1)) + 500000, // Dummy salary
+            description: `${company ? `Company: ${company}\n\n` : ''}${descSnippet}`,
+            price: minPrice,
+            maxPrice: maxPrice,
+            imageUrl: imageUrl,
+            originalLink: link || url,
+            isScraped: true,
             category: 'job',
             location: location,
             contactEmail: 'scraped@example.com',
@@ -108,8 +139,12 @@ async function runScraperTask() {
         scrapedJobs = [
           {
             title: `Senior Full Stack Engineer (Remote) - #${randomSuffix}`,
-            description: "Join our dynamic team building scalable web applications. Experience with React and Node.js required.\n\nOriginal link: " + source.url,
+            description: "Join our dynamic team building scalable web applications. Experience with React and Node.js required.",
             price: 1800000,
+            maxPrice: 2400000,
+            imageUrl: "https://logo.clearbit.com/stripe.com",
+            originalLink: source.url,
+            isScraped: true,
             category: 'job',
             location: 'Remote',
             contactEmail: 'careers@demo.com',
@@ -120,8 +155,12 @@ async function runScraperTask() {
           },
           {
             title: `Frontend Developer - React - #${randomSuffix + 1}`,
-            description: "Looking for an expert React developer to revamp our core product dashboard.\n\nOriginal link: " + source.url,
+            description: "Looking for an expert React developer to revamp our core product dashboard.",
             price: 1200000,
+            maxPrice: 1500000,
+            imageUrl: "https://logo.clearbit.com/netflix.com",
+            originalLink: source.url,
+            isScraped: true,
             category: 'job',
             location: 'New York (Remote)',
             contactEmail: 'hiring@demo.com',
@@ -132,8 +171,12 @@ async function runScraperTask() {
           },
           {
             title: `Backend Node.js Architect - #${randomSuffix + 2}`,
-            description: "Design and implement high-performance microservices architecture. Strong MongoDB skills needed.\n\nOriginal link: " + source.url,
+            description: "Design and implement high-performance microservices architecture. Strong MongoDB skills needed.",
             price: 2500000,
+            maxPrice: 3500000,
+            imageUrl: "https://logo.clearbit.com/uber.com",
+            originalLink: source.url,
+            isScraped: true,
             category: 'job',
             location: 'San Francisco, CA',
             contactEmail: 'tech@demo.com',

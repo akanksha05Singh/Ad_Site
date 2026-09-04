@@ -13,12 +13,14 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, user }
     state: '',
     contactEmail: '',
     contactPhone: '',
+    contactWhatsapp: '',
     description: '',
     occupationCategory: '',
     employmentType: '', // 'Full-time' or 'Part-time' or both via checkboxes
     fullTime: false,
     partTime: false,
-    workFromHome: false
+    workFromHome: false,
+    gender: 'Any'
   });
 
   useEffect(() => {
@@ -238,6 +240,21 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, user }
                     <span className="text-sm font-medium text-slate-700">Work from Home</span>
                   </label>
                 </div>
+
+                <div className="space-y-1 mt-2">
+                  <label htmlFor="gender" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Gender Preference</label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all bg-white"
+                  >
+                    <option value="Any">Any Gender</option>
+                    <option value="Male">Male (1)</option>
+                    <option value="Female">Female (2)</option>
+                  </select>
+                </div>
               </>
             )}
 
@@ -323,7 +340,7 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, user }
             </div>
 
             {/* Contact Information */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
                 <label htmlFor="contactEmail" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Contact Email</label>
                 <input
@@ -344,6 +361,18 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, user }
                   id="contactPhone"
                   name="contactPhone"
                   value={formData.contactPhone}
+                  onChange={handleChange}
+                  placeholder="e.g. +47 123 45 678"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="contactWhatsapp" className="text-xs font-bold text-slate-500 uppercase tracking-wide">WhatsApp</label>
+                <input
+                  type="tel"
+                  id="contactWhatsapp"
+                  name="contactWhatsapp"
+                  value={formData.contactWhatsapp}
                   onChange={handleChange}
                   placeholder="e.g. +47 123 45 678"
                   className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all"
