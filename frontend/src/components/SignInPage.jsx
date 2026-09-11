@@ -11,6 +11,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
   const [view, setView] = React.useState('options'); // 'options' | 'email' | 'forgot_password' | 'reset_password' | 'verify'
   const [formData, setFormData] = React.useState({ email: '', password: '', resetCode: '', newPassword: '' });
   const [verifyCode, setVerifyCode] = React.useState('');
+  const [demoResetToken, setDemoResetToken] = React.useState(null); // Added for MVP Demo Mode
   const [pendingUserId, setPendingUserId] = React.useState(null);
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -260,6 +261,9 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
                 if (!res.ok) throw new Error(data.error || 'Request failed');
                 
                 setSuccess('If the email exists, a reset code was sent to your inbox.');
+                if (data.resetToken) {
+                  setDemoResetToken(data.resetToken);
+                }
                 setView('reset_password');
               } catch (err) {
                 setError(err.message);
@@ -336,8 +340,15 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
             }} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               
               <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '0.5rem', lineHeight: '1.4' }}>
-                Enter the 6-digit code sent to {formData.email} and your new password.
+                Enter the 6-digit code sent to your email and your new password.
               </p>
+              
+              {demoResetToken && (
+                <div style={{ padding: '12px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', marginBottom: '16px' }}>
+                  <p style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>MVP Demo Mode Active</p>
+                  <p style={{ fontSize: '0.875rem', color: '#1e40af' }}>Your password reset code is: <strong style={{ fontSize: '1.125rem', letterSpacing: '2px' }}>{demoResetToken}</strong></p>
+                </div>
+              )}
               
               <input
                 className="pill-input"

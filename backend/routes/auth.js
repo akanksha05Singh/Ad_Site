@@ -350,6 +350,7 @@ router.post('/forgot-password', async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'If email exists, reset link sent. Please check your email.',
+      resetToken: resetToken // MVP Demo Mode
     });
   } catch (error) {
     console.error('Forgot password error:', error);
