@@ -5,14 +5,13 @@ const sendEmail = async ({ to, subject, text, html }) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        // HARDCODED FOR MVP DEMO TO AVOID PM2 ENV BUGS
         user: 'freeads.testing@gmail.com',
         pass: 'qqfvjrstbsgawvar',
       },
     });
 
     const mailOptions = {
-      from: `FreeAds <${process.env.EMAIL_USER}>`,
+      from: 'FreeAds <freeads.testing@gmail.com>',
       to,
       subject,
       text,
