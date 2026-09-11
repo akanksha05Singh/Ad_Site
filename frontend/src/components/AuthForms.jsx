@@ -90,7 +90,7 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      if (data.message === 'Verification required') {
+      if (data.message && data.message.includes('Verification required')) {
         setUnverifiedUserId(data.userId);
         setShowVerificationForm(true);
         if (data.verificationToken) {
