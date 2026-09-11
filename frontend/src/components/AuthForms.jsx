@@ -94,6 +94,7 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
         setUnverifiedUserId(data.userId);
         setShowVerificationForm(true);
         if (data.verificationToken) {
+           setFormData(prev => ({ ...prev, verificationTokenDisplay: data.verificationToken }));
            console.log("[MVP INFO] Verification Token (normally emailed):", data.verificationToken);
         }
         return;
@@ -200,10 +201,20 @@ export default function AuthForms({ isOpen, onClose, onAuthSuccess }) {
 
           {showVerificationForm ? (
             <form onSubmit={handleVerificationSubmit} className="space-y-4">
-              <div className="space-y-1 text-center mb-6">
-                <h3 className="font-outfit text-xl font-bold text-slate-900">Verify your email</h3>
-                <p className="text-xs text-slate-500">We've generated a 6-digit code for your email. Enter it below to continue.</p>
-              </div>
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-slate-800">Verify your email</h3>
+                  <p className="text-sm text-slate-500 mt-2">
+                    We've sent a 6-digit code to your email.
+                  </p>
+                  
+                  {/* MVP DEMO DISPLAY - Showing the code directly so they don't have to check spam */}
+                  {formData.verificationTokenDisplay && (
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-xs text-blue-600 font-semibold uppercase mb-1">MVP Demo Mode Active</p>
+                      <p className="text-sm text-blue-800">Your verification code is: <strong className="text-lg tracking-widest">{formData.verificationTokenDisplay}</strong></p>
+                    </div>
+                  )}
+                </div>
               <div className="space-y-1">
                 <input
                   type="text"

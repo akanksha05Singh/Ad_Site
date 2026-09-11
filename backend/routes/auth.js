@@ -103,7 +103,8 @@ router.post('/signup', async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'Verification required. Please check your email.',
-      userId: savedUser._id
+      userId: savedUser._id,
+      verificationToken: verificationToken // Added for MVP Demo Purposes
     });
   } catch (error) {
     console.error('Signup error:', error);
