@@ -18,7 +18,7 @@ export default function AdminConsole({ user, onExit }) {
  const [currency, setCurrency] = useState('INR');
  
  // API Config
- const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
+ const API_URL = '/api';
  const getAuthToken = () => localStorage.getItem('token');
 
  // 1. Moderation Queue state
