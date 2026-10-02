@@ -56,6 +56,16 @@ const ListingSchema = new mongoose.Schema({
     default: 'active'
   },
   // New Job Filtering Fields
+  companyName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  companyWebsite: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   state: {
     type: String,
     trim: true
@@ -96,6 +106,10 @@ const ListingSchema = new mongoose.Schema({
     enum: ['Male', 'Female', 'Any'],
     default: 'Any'
   },
+  isFeatured: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -105,9 +119,9 @@ const ListingSchema = new mongoose.Schema({
 // Virtual for formatted price or salary string
 ListingSchema.virtual('formattedPrice').get(function() {
   if (this.category === 'job') {
-    return `${this.price.toLocaleString()} NOK / year`;
+    return `₹${this.price.toLocaleString()} / month`;
   }
-  return `${this.price.toLocaleString()} NOK`;
+  return `₹${this.price.toLocaleString()}`;
 });
 
 // Ensure virtuals are serialized

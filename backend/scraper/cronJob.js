@@ -31,8 +31,9 @@ async function scrapeJobBoard(url) {
     // Try to find generic job listing wrappers
     // Many job boards use these class names
     const selectors = [
+      '.srp-jobtuple-wrapper', '.cust-job-tuple', '.jobTuple', '.employer-block', '.job-row',
       '.job-listing', '.job-card', '.listing-item', '.result-card', 
-      'article', '.search-result', 'li.job'
+      '.search-result', 'li.job', '.card', 'article'
     ];
     
     let matchedSelector = null;
@@ -49,11 +50,11 @@ async function scrapeJobBoard(url) {
         const title = $(el).find('h2, h3, .job-title, .title').first().text().trim();
         
         // Extract Company/Description
-        const company = $(el).find('.company, .employer, h4').first().text().trim();
-        const descSnippet = $(el).find('.description, .summary, p').first().text().trim();
+        const company = $(el).find('.company, .employer, .comp-name, .company-name, h4, a.comp-name').first().text().trim() || 'Unknown Company';
+        const descSnippet = $(el).find('.description, .job-desc, .summary, p, .job-description').first().text().trim() || 'Details available on the original job posting.';
         
         // Extract Location
-        const location = $(el).find('.location, .loc').first().text().trim() || 'Norway (Remote Possible)';
+        const location = $(el).find('.location, .loc, .locWdth, .job-location').first().text().trim() || 'Maharashtra';
         
         // Link to original (sometimes relative)
         let link = $(el).find('a').first().attr('href');
@@ -100,8 +101,9 @@ async function scrapeJobBoard(url) {
             isScraped: true,
             category: 'job',
             location: location,
+            companyName: company || '',
             contactEmail: 'scraped@example.com',
-            state: 'Oslo', // Default state
+            state: 'Maharashtra', // Default state
             employmentType: 'Full-time',
             workFromHome: location.toLowerCase().includes('remote') || location.toLowerCase().includes('home'),
             status: 'active'
@@ -132,61 +134,8 @@ async function runScraperTask() {
       
       console.log(`Successfully extracted ${scrapedJobs.length} jobs from ${source.url}`);
       
-      // FALLBACK FOR DEMO: If AWS blocks the scraper or Puppeteer crashes, inject 3 realistic demo jobs so the demo works
-      if (scrapedJobs.length === 0) {
-        console.log('Injecting 3 fallback demo jobs for the manager demo...');
-        const randomSuffix = Math.floor(Math.random() * 1000);
-        scrapedJobs = [
-          {
-            title: `Senior Full Stack Engineer (Remote) - #${randomSuffix}`,
-            description: "Join our dynamic team building scalable web applications. Experience with React and Node.js required.",
-            price: 1800000,
-            maxPrice: 2400000,
-            imageUrl: "https://logo.clearbit.com/stripe.com",
-            originalLink: source.url,
-            isScraped: true,
-            category: 'job',
-            location: 'Remote',
-            contactEmail: 'careers@demo.com',
-            state: 'All States',
-            employmentType: 'Full-time',
-            workFromHome: true,
-            status: 'active'
-          },
-          {
-            title: `Frontend Developer - React - #${randomSuffix + 1}`,
-            description: "Looking for an expert React developer to revamp our core product dashboard.",
-            price: 1200000,
-            maxPrice: 1500000,
-            imageUrl: "https://logo.clearbit.com/netflix.com",
-            originalLink: source.url,
-            isScraped: true,
-            category: 'job',
-            location: 'New York (Remote)',
-            contactEmail: 'hiring@demo.com',
-            state: 'New York',
-            employmentType: 'Part-time',
-            workFromHome: true,
-            status: 'active'
-          },
-          {
-            title: `Backend Node.js Architect - #${randomSuffix + 2}`,
-            description: "Design and implement high-performance microservices architecture. Strong MongoDB skills needed.",
-            price: 2500000,
-            maxPrice: 3500000,
-            imageUrl: "https://logo.clearbit.com/uber.com",
-            originalLink: source.url,
-            isScraped: true,
-            category: 'job',
-            location: 'San Francisco, CA',
-            contactEmail: 'tech@demo.com',
-            state: 'California',
-            employmentType: 'Full-time',
-            workFromHome: false,
-            status: 'active'
-          }
-        ];
-      }
+      // Real scraped jobs only. Removed demo fallback logic.
+
       
       let insertedCount = 0;
       
@@ -221,5 +170,6 @@ cron.schedule('0 0 * * *', runScraperTask, {
 });
 
 module.exports = {
-  runScraperTask // Exporting for manual trigger capability
+  runScraperTask, // Exporting for manual trigger capability
+  scrapeJobBoard // Exporting for direct scraping endpoint
 };

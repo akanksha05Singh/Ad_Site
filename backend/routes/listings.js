@@ -18,8 +18,8 @@ const getAuthUser = async (req) => {
 router.get('/', async (req, res) => {
   try {
     const { 
-      category, q, owner, location, minPrice,
-      state, occupationCategory, employmentType, workFromHome, gender,
+      category, q, owner, location, minPrice, contactEmail,
+      state, occupationCategory, employmentType, workFromHome, gender, isScraped,
       page = 1, limit = 100
     } = req.query;
     
@@ -32,9 +32,14 @@ router.get('/', async (req, res) => {
     if (owner) {
       query.owner = owner;
     }
+
+    if (contactEmail) {
+      query.contactEmail = contactEmail;
+    }
     
     if (location && location.trim() !== '') {
-      query.location = new RegExp(location.trim(), 'i');
+      const locRegex = new RegExp(location.trim(), 'i');
+      query.$or = [{ location: locRegex }, { state: locRegex }];
     }
 
     if (state && state.trim() !== '') {
@@ -57,6 +62,10 @@ router.get('/', async (req, res) => {
       query.gender = gender.trim();
     }
 
+    if (isScraped !== undefined) {
+      query.isScraped = isScraped === 'true';
+    }
+
     if (minPrice && !isNaN(parseFloat(minPrice))) {
       query.price = { $gte: parseFloat(minPrice) };
     }
@@ -68,6 +77,12 @@ router.get('/', async (req, res) => {
         { description: searchRegex },
         { location: searchRegex }
       ];
+    }
+
+    // Filter out expired listings (older than 30 days) for public feeds
+    if (!owner && !contactEmail) {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      query.createdAt = { $gte: thirtyDaysAgo };
     }
 
     // Pagination logic
@@ -104,7 +119,7 @@ router.post('/', async (req, res) => {
     const { 
       title, description, price, maxPrice, category, location, contactEmail,
       state, occupationCategory, employmentType, workFromHome,
-      contactPhone, contactWhatsapp, gender 
+      contactPhone, contactWhatsapp, gender, isFeatured, companyName, companyWebsite
     } = req.body;
 
     if (!title || !description || price === undefined || !category || !location || !contactEmail) {
@@ -132,6 +147,9 @@ router.post('/', async (req, res) => {
       contactPhone,
       contactWhatsapp,
       gender,
+      isFeatured: isFeatured || false,
+      companyName: companyName || '',
+      companyWebsite: companyWebsite || '',
       owner: user ? user._id : null,
       status: 'active',
       isScraped: false
@@ -172,16 +190,18 @@ router.put('/:id', async (req, res) => {
       return res.status(403).json({ success: false, error: 'Forbidden: You do not own this listing' });
     }
 
-    const { title, description, price, category, location, contactEmail, status } = req.body;
+    const allowedFields = [
+      'title', 'description', 'price', 'maxPrice', 'category', 'location', 'state',
+      'contactEmail', 'contactPhone', 'contactWhatsapp', 'status',
+      'companyName', 'companyWebsite', 'occupationCategory', 'employmentType',
+      'workFromHome', 'gender', 'isFeatured'
+    ];
     
-    // Update fields
-    if (title) listing.title = title;
-    if (description) listing.description = description;
-    if (price !== undefined) listing.price = price;
-    if (category) listing.category = category;
-    if (location) listing.location = location;
-    if (contactEmail) listing.contactEmail = contactEmail;
-    if (status) listing.status = status;
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        listing[field] = req.body[field];
+      }
+    });
 
     const updatedListing = await listing.save();
 
@@ -223,6 +243,39 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting listing:', error);
     return res.status(500).json({ success: false, error: 'Server error deleting listing' });
+  }
+});
+
+// @route   POST /api/listings/:id/repost
+// @desc    Repost a listing (bumps createdAt to now)
+router.post('/:id/repost', async (req, res) => {
+  try {
+    const user = await getAuthUser(req);
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+      return res.status(404).json({ success: false, error: 'Listing not found' });
+    }
+
+    // Check ownership
+    if (listing.owner && listing.owner.toString() !== user._id.toString() && user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Forbidden: You cannot repost this listing' });
+    }
+
+    listing.createdAt = Date.now();
+    await listing.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Listing successfully reposted',
+      data: listing
+    });
+  } catch (error) {
+    console.error('Error reposting listing:', error);
+    return res.status(500).json({ success: false, error: 'Server error reposting listing' });
   }
 });
 

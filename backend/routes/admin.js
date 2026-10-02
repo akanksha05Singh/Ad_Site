@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ScraperSource = require('../models/ScraperSource');
 const User = require('../models/User');
-const { runScraperTask } = require('../scraper/cronJob');
+const { runScraperTask, scrapeJobBoard } = require('../scraper/cronJob');
 
 // Middleware to verify admin (simplified)
 const isAdmin = async (req, res, next) => {
@@ -85,6 +85,41 @@ router.post('/scraper-sources/run', isAdmin, async (req, res) => {
     res.status(200).json({ success: true, message: 'Scraping job triggered manually in the background.' });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Server Error' });
+  }
+});
+
+// @route   POST /api/admin/scrape-direct
+// @desc    Directly scrape a URL and return results without saving to DB yet (or saving immediately)
+router.post('/scrape-direct', isAdmin, async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ success: false, error: 'URL is required' });
+    }
+    
+    // Simple URL validation
+    try {
+      new URL(url);
+    } catch (_) {
+      return res.status(400).json({ success: false, error: 'Invalid URL format' });
+    }
+
+    const scrapedJobs = await scrapeJobBoard(url);
+    
+    // Save to DB immediately
+    const savedJobs = [];
+    for (const jobData of scrapedJobs) {
+      const existing = await require('../models/Listing').findOne({ title: jobData.title, category: 'job' });
+      if (!existing) {
+        const newListing = new require('../models/Listing')(jobData);
+        await newListing.save();
+        savedJobs.push(newListing);
+      }
+    }
+
+    res.status(200).json({ success: true, count: savedJobs.length, data: savedJobs });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server Error during direct scraping' });
   }
 });
 

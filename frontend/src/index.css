@@ -132,7 +132,7 @@ body, button, input, textarea, select {
   color: #ffffff;
 }
 
-/* Force all text to normal weight per user request */
+/* Maintain all fonts in same size per user request, but allow bolding */
 * {
-  font-weight: 400 !important;
+  font-size: 15px !important;
 }
