@@ -5,13 +5,13 @@ const sendEmail = async ({ to, subject, text, html }) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'freeads.testing@gmail.com',
-        pass: 'qqfvjrstbsgawvar',
+        user: 'freeadsapp6@gmail.com',
+        pass: 'mbqicykfcptasepx',
       },
     });
 
     const mailOptions = {
-      from: 'FreeAds <freeads.testing@gmail.com>',
+      from: 'FreeAds <freeadsapp6@gmail.com>',
       to,
       subject,
       text,
