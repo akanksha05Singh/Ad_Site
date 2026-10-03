@@ -225,7 +225,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
  background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: 0
  }}
  >
- {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+ {showPassword ? <EyeIcon /> : <EyeOffIcon />}
  </button>
  </div>
  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.25rem' }}>
@@ -378,7 +378,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
  background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: 0
  }}
  >
- {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+ {showPassword ? <EyeIcon /> : <EyeOffIcon />}
  </button>
  </div>
  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.25rem' }}>

@@ -43,7 +43,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
  padding: '0 2.5rem',
  height: '64px',
- borderBottom: '0',
+ border: 'none', borderBottom: 'none',
  boxShadow: 'none'
  }}>
  <button 
@@ -129,20 +129,20 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
  >
  <div style={{
- width: '40px', height: '40px',
- borderRadius: '12px',
+ width: '32px', height: '32px',
+ borderRadius: '10px',
  backgroundColor: '#ff6b57',
  display: 'flex', alignItems: 'center', justifyContent: 'center',
  boxShadow: '0 4px 14px rgba(255, 107, 87, 0.25)',
  }}>
- <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+ <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
  <rect x="2" y="7" width="20" height="14" rx="2"/>
  <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
  <path d="M12 12v4"/>
  <path d="M8 12h8"/>
  </svg>
  </div>
- <span style={{ fontSize: '1rem', fontWeight: 600, color: '#000000', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+ <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#000000', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
  JOBS
  </span>
  </div>
@@ -167,7 +167,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  flex: '1 1 200px',
  maxWidth: '300px',
  padding: '1.5rem 1rem',
- borderRadius: '12px',
+ borderRadius: '10px',
  border: '1px solid #e5e7eb',
  textAlign: 'center',
  backgroundColor: '#ffffff',

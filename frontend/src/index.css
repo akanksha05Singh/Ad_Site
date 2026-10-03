@@ -132,7 +132,4 @@ body, button, input, textarea, select {
   color: #ffffff;
 }
 
-/* Maintain all fonts in same size per user request, but allow bolding */
-* {
-  font-size: 15px !important;
-}
+
