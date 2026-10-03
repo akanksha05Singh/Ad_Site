@@ -31,6 +31,14 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  status: {
+    type: String,
+    enum: ['active', 'suspended', 'blocked'],
+    default: 'active'
+  },
+  suspensionEndDate: {
+    type: Date
+  },
   bookmarks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Listing'

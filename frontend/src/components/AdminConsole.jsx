@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import AdminUsers from './admin/AdminUsers';
+import AdminListings from './admin/AdminListings';
+import AdminSettings from './admin/AdminSettings';
 
 // Indian Numbering System Formatter
 function formatIndianCurrency(num) {
@@ -268,18 +271,32 @@ export default function AdminConsole({ user, onExit }) {
  )}
  </button>
 
- {/* User Governance */}
+ {/* User Management */}
  <button
  type="button"
- onClick={() => setAdminTab('gov')}
+ onClick={() => setAdminTab('users')}
  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
- adminTab === 'gov' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+ adminTab === 'users' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
  }`}
  >
  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
  </svg>
- <span>User & Company Gov.</span>
+ <span>User Management</span>
+ </button>
+
+ {/* Manage Ads */}
+ <button
+ type="button"
+ onClick={() => setAdminTab('listings')}
+ className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+ adminTab === 'listings' ? 'bg-slate-100 text-slate-900 font-extrabold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+ }`}
+ >
+ <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+ </svg>
+ <span>Manage Ads</span>
  </button>
 
  {/* Job Scraper Control */}
@@ -299,11 +316,11 @@ export default function AdminConsole({ user, onExit }) {
 
  {/* Bottom Panel controls */}
  <div className="p-4 border-t border-slate-200 text-xs font-bold space-y-1 bg-slate-50">
- <button type="button" onClick={(e) => e.preventDefault()} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 text-left">
+ <button type="button" onClick={() => setAdminTab('settings')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-left ${adminTab === 'settings' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'}`}>
  <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
  </svg>
- <span>Admin Settings</span>
+ <span>Platform Settings</span>
  </button>
  <button type="button" onClick={(e) => e.preventDefault()} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 text-left">
  <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -886,6 +903,28 @@ export default function AdminConsole({ user, onExit }) {
  </div>
  </div>
 
+ </div>
+ </div>
+ )}
+
+ {/* TAB 5: User Management */}
+ {adminTab === 'users' && (
+ <div className="animate-in fade-in duration-200">
+ <AdminUsers token={getAuthToken()} />
+ </div>
+ )}
+
+ {/* TAB 6: Manage Ads */}
+ {adminTab === 'listings' && (
+ <div className="animate-in fade-in duration-200">
+ <AdminListings token={getAuthToken()} />
+ </div>
+ )}
+
+ {/* TAB 7: Settings */}
+ {adminTab === 'settings' && (
+ <div className="animate-in fade-in duration-200">
+ <AdminSettings token={getAuthToken()} />
  </div>
  )}
 

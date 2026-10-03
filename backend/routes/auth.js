@@ -144,6 +144,22 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 
+    // Check if user is blocked or suspended
+    if (user.status === 'blocked') {
+      return res.status(403).json({ success: false, error: 'Your account has been permanently blocked by an administrator. Please contact support.' });
+    }
+    if (user.status === 'suspended') {
+      if (user.suspensionEndDate && new Date() < new Date(user.suspensionEndDate)) {
+        const endDate = new Date(user.suspensionEndDate).toLocaleDateString();
+        return res.status(403).json({ success: false, error: `Your account is suspended until ${endDate}. Please contact support.` });
+      } else {
+        // Suspension expired, reactivate
+        user.status = 'active';
+        user.suspensionEndDate = undefined;
+        await user.save();
+      }
+    }
+
     // Check if verified
     if (!user.isVerified) {
       return res.status(401).json({ 
