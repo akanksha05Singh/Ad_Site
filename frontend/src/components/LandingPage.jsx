@@ -148,7 +148,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  </div>
  </section>
 
- {{/* ── 5. Featured Listings ── */}
+ {/* ── 5. Featured Listings ── */}
  <section style={{
  maxWidth: '1180px',
  margin: '0 auto',
