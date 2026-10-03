@@ -904,7 +904,6 @@ export default function AdminConsole({ user, onExit }) {
  </div>
 
  </div>
- </div>
  )}
 
  {/* TAB 5: User Management */}
