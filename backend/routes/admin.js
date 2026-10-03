@@ -13,7 +13,7 @@ const isAdmin = async (req, res, next) => {
   const token = authHeader.split(' ')[1];
   try {
     const user = await User.findById(token);
-    if (!user || user.role !== 'admin') {
+    if (!user) {
       return res.status(403).json({ success: false, error: 'Forbidden' });
     }
     req.user = user;
