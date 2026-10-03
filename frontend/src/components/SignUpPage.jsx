@@ -313,11 +313,7 @@ export default function SignUpPage({ onAuthSuccess, onGoSignIn, onGoHome }) {
  </svg>
  </span>
  </div>
- {formData.role === 'admin' && (
- <p style={{ fontSize: '0.75rem', color: '#f97316', marginTop: '0.375rem', marginLeft: '1rem', fontWeight: 400 }}>
- ⚠ Administrator role requires a verified admin@freeads.no email.
- </p>
- )}
+ 
  </div>
 
  {/* Submit */}
