@@ -148,52 +148,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  </div>
  </section>
 
- {/* ── 4. Analytics Strip ── */}
- <section style={{
- maxWidth: '1180px',
- margin: '0 auto',
- padding: '1rem 2.5rem 2.5rem',
- }}>
- <div style={{
- display: 'flex',
- gap: '1.25rem',
- justifyContent: 'center',
- flexWrap: 'wrap',
- }}>
- {[
- { value: totalJobs.toString(), label: 'Active Listing' },
- ].map((stat, i) => (
- <div key={i} style={{
- flex: '1 1 200px',
- maxWidth: '300px',
- padding: '1.5rem 1rem',
- borderRadius: '10px',
- border: '1px solid #e5e7eb',
- textAlign: 'center',
- backgroundColor: '#ffffff',
- }}>
- <p style={{
- fontWeight: 400,
- fontSize: '1.75rem',
- color: '#000000',
- margin: 0,
- }}>
- {stat.value}
- </p>
- <p style={{
- fontWeight: 400,
- fontSize: '0.875rem',
- color: '#4b5563',
- margin: '0.25rem 0 0',
- }}>
- {stat.label}
- </p>
- </div>
- ))}
- </div>
- </section>
-
- {/* ── 5. Featured Listings ── */}
+ {{/* ── 5. Featured Listings ── */}
  <section style={{
  maxWidth: '1180px',
  margin: '0 auto',
