@@ -68,7 +68,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  }}>
  <div style={{ flex: '1 1 340px', maxWidth: '520px' }}>
  <h1 style={{
- fontFamily: 'var(--font-sans)', fontSize: 'clamp(2rem, 4vw, 3rem)',
+ fontFamily: 'var(--font-sans)', fontSize: 'clamp(3rem, 6vw, 4.5rem)',
  fontWeight: 400,
  lineHeight: 1.15,
  color: '#000000',
@@ -79,7 +79,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  <span style={{ fontWeight: 600 }}>near you</span>
  </h1>
  <p style={{
- fontSize: '1.25rem',
+ fontSize: '0.875rem',
  fontWeight: 500,
  color: '#000000',
  margin: 0,
@@ -101,7 +101,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  <img
  src="/landing-hero.png"
  alt="Team working on exciting job opportunities"
- style={{ width: '100%', maxWidth: '850px', height: 'auto', display: 'block', transform: 'scale(1.25)', transformOrigin: 'center right' }}
+ style={{ width: '100%', maxWidth: '850px', height: 'auto', display: 'block', transform: 'scale(1.4)', transformOrigin: 'center right' }}
  />
  </div>
  </section>
@@ -121,7 +121,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  display: 'inline-flex',
  flexDirection: 'column',
  alignItems: 'center',
- gap: '0.75rem',
+ gap: '0.5rem',
  cursor: 'pointer',
  transition: 'transform 0.2s ease',
  }}
