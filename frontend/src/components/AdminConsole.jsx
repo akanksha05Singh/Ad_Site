@@ -18,13 +18,14 @@ function formatIndianCurrency(num) {
 export default function AdminConsole({ user, onExit }) {
  // adminTab: 'overview', 'queue', 'gov', 'scraper'
  const [adminTab, setAdminTab] = useState('overview');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
  const [currency, setCurrency] = useState('INR');
  
  // API Config
  const API_URL = '/api';
  const getAuthToken = () => localStorage.getItem('token');
 
- // 1. Moderation Queue state
+ // 1. Review Queue state
  const [queueItems, setQueueItems] = useState([
  {
  id: "AD-4401",
@@ -102,7 +103,7 @@ export default function AdminConsole({ user, onExit }) {
  setQueueItems(queueItems.map(item => item.id === id ? { ...item, status: 'rejected' } : item));
  };
 
- // 2. User & Company Governance state
+ // 2. Users & Companies state
  const companies = [
  { id: "S", name: "Swiggy Pvt. Ltd.", industry: "Food Tech", region: "IN", color: "bg-orange-500", verified: true, count: "48 postings", details: "Swiggy is a leading food ordering and delivery platform in India. Registered with verified corporate tax ID." },
  { id: "N", name: "NordTech AS", industry: "SaaS / B2B", region: "EU", color: "bg-blue-600", verified: false, count: "12 postings", details: "NordTech AS provides B2B software solutions for energy grids in Oslo. Currently pending document review." },
@@ -236,7 +237,7 @@ export default function AdminConsole({ user, onExit }) {
 
  {/* Navigation list */}
  <nav className="flex-grow p-4 space-y-1 text-xs font-bold">
- {/* Command Overview */}
+ {/* Dashboard */}
  <button
  type="button"
  onClick={() => setAdminTab('overview')}
@@ -271,7 +272,7 @@ export default function AdminConsole({ user, onExit }) {
  )}
  </button>
 
- {/* User Management */}
+ {/* Users */}
  <button
  type="button"
  onClick={() => setAdminTab('users')}
@@ -285,7 +286,7 @@ export default function AdminConsole({ user, onExit }) {
  <span>User Management</span>
  </button>
 
- {/* Manage Ads */}
+ {/* Listings */}
  <button
  type="button"
  onClick={() => setAdminTab('listings')}
@@ -299,7 +300,7 @@ export default function AdminConsole({ user, onExit }) {
  <span>Manage Ads</span>
  </button>
 
- {/* Job Scraper Control */}
+ {/* Scraper Settings Control */}
  <button
  type="button"
  onClick={() => setAdminTab('scraper')}
@@ -360,9 +361,24 @@ export default function AdminConsole({ user, onExit }) {
  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
  All Systems Operational
  </span>
- <div className="h-8 w-8 rounded-full bg-[#0047ab] text-white flex items-center justify-center font-extrabold text-xs">
- {user.name.charAt(0).toUpperCase()}
- </div>
+ <div className="relative">
+  <button 
+    onClick={() => setUserMenuOpen(!userMenuOpen)}
+    className="h-8 w-8 rounded-full bg-[#0047ab] text-white flex items-center justify-center font-extrabold text-xs cursor-pointer hover:opacity-90"
+  >
+    {user.name.charAt(0).toUpperCase()}
+  </button>
+  {userMenuOpen && (
+    <div className="absolute right-0 top-10 w-48 bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-50">
+      <div className="px-4 pb-2 mb-2 border-b border-slate-100">
+        <p className="font-medium text-slate-900 text-sm truncate">{user.name}</p>
+        <p className="text-xs text-slate-400 truncate">{user.email}</p>
+      </div>
+      <button onClick={onExit} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Back to Site</button>
+      <button onClick={() => { localStorage.removeItem('token'); window.location.reload(); }} className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-slate-50">Sign Out</button>
+    </div>
+  )}
+</div>
  </div>
  </header>
 
