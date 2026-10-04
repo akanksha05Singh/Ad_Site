@@ -6,23 +6,25 @@ const ScraperSource = require('../models/ScraperSource');
 const Listing = require('../models/Listing');
 
 async function scrapeJobBoard(url) {
-  let browser;
   try {
     console.log(`Starting scrape for URL: ${url}`);
     
-    // Launch puppeteer
-    browser = await puppeteer.launch({ 
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: process.platform === 'linux' ? '/usr/bin/chromium-browser' : undefined
+    // Fetch HTML directly to bypass all Chrome/Puppeteer AWS limits
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5'
+      },
+      // 30 second timeout
+      signal: AbortSignal.timeout(30000)
     });
-    const page = await browser.newPage();
     
-    // Some basic anti-bot bypass
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
-    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-    const content = await page.content();
+    const content = await response.text();
     
     const $ = cheerio.load(content);
     
@@ -119,8 +121,6 @@ async function scrapeJobBoard(url) {
   } catch (err) {
     console.error(`Error scraping ${url}:`, err);
     return [];
-  } finally {
-    if (browser) await browser.close();
   }
 }
 
