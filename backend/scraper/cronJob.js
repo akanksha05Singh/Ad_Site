@@ -57,7 +57,7 @@ async function scrapeJobBoard(url) {
         const descSnippet = $(el).find('.description, .job-desc, .summary, p, .job-description').first().text().trim() || 'Details available on the original job posting.';
         
         // Extract Location
-        const location = $(el).find('.location, .loc, .locWdth, .job-location').first().text().trim() || 'Maharashtra';
+        const location = $(el).find('.location, .loc, .locWdth, .job-location').first().text().trim() || 'Not Specified';
         
         // Link to original (sometimes relative)
         let link = $(el).find('a').first().attr('href');
@@ -73,9 +73,9 @@ async function scrapeJobBoard(url) {
           imageUrl = `${baseUrl}${imageUrl}`;
         }
 
-        // Try to extract Salary Range from text
-        let minPrice = Math.floor(Math.random() * (1200000 - 500000 + 1)) + 500000;
-        let maxPrice = minPrice + Math.floor(Math.random() * 800000) + 200000;
+        // Try to extract Salary Range from text, otherwise 0
+        let minPrice = 0;
+        let maxPrice = 0;
         const allText = $(el).text().replace(/,/g, '');
         // Generic regex looking for patterns like 100000 - 150000 or 100k - 150k
         const salaryMatch = allText.match(/(?:Rs\.?|₹|\$|€|£)?\s*(\d{2,3})(?:k|,\d{3})\s*[-to]+\s*(?:Rs\.?|₹|\$|€|£)?\s*(\d{2,3})(?:k|,\d{3})/i);
@@ -87,13 +87,12 @@ async function scrapeJobBoard(url) {
            if (maxExtracted < 1000) maxExtracted *= 1000;
            
            if (minExtracted > 0 && maxExtracted > minExtracted) {
-             // Convert to roughly INR if it was small
-             minPrice = minExtracted * 10;
-             maxPrice = maxExtracted * 10;
+             minPrice = minExtracted;
+             maxPrice = maxExtracted;
            }
         }
         
-        if (title && title.length > 5) {
+        if (title && title.length > 3) {
           jobs.push({
             title: title,
             description: `${company ? `Company: ${company}\n\n` : ''}${descSnippet}`,
@@ -104,10 +103,10 @@ async function scrapeJobBoard(url) {
             isScraped: true,
             category: 'job',
             location: location,
-            companyName: company || '',
-            contactEmail: 'scraped@example.com',
-            state: 'Maharashtra', // Default state
-            employmentType: 'Full-time',
+            companyName: company || 'Not Specified',
+            contactEmail: 'not-provided@scraped.local',
+            state: 'Not Specified',
+            employmentType: 'Not Specified',
             workFromHome: location.toLowerCase().includes('remote') || location.toLowerCase().includes('home'),
             status: 'pending' // Send scraped jobs to the Review Queue first
           });
