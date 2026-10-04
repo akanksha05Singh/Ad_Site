@@ -12,7 +12,7 @@ function formatIndianCurrency(num) {
  lastThree = ',' + lastThree;
  }
  const res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
- return '₹' + res;
+ return 'â‚¹' + res;
 }
 
 export default function AdminConsole({ user, onExit }) {
@@ -36,7 +36,7 @@ export default function AdminConsole({ user, onExit }) {
 
   const fetchQueueItems = async () => {
     try {
-      const res = await fetch(API_URL + '/listings?status=pending', {
+      const res = await fetch(API_URL + '/listings?limit=200', {
         headers: { Authorization: 'Bearer ' + getAuthToken() }
       });
       const data = await res.json();
@@ -50,7 +50,7 @@ export default function AdminConsole({ user, onExit }) {
           reason: 'Awaiting Moderation',
           posted: new Date(listing.createdAt || Date.now()).toLocaleDateString(),
           imageUrl: listing.imageUrl || 'https://via.placeholder.com/80',
-          status: 'pending'
+          status: listing.status || 'pending'
         })));
       }
     } catch (e) {
@@ -209,7 +209,7 @@ export default function AdminConsole({ user, onExit }) {
  />
  </div>
  <p className="text-[9px] font-bold text-emerald-600 tracking-widest uppercase pl-0.5 pt-1">
- • Admin Console
+ â€¢ Admin Console
  </p>
  </div>
 
@@ -331,7 +331,7 @@ export default function AdminConsole({ user, onExit }) {
  {adminTab === 'overview' ? 'Dashboard' : adminTab === 'queue' ? 'Review Queue' : adminTab === 'users' ? 'Users & Companies' : adminTab === 'listings' ? 'Manage Listings' : 'Scraper Settings Control'}
  </h2>
  <p className="text-[9px] text-slate-400 font-semibold">
- Last refreshed: just now · Platform time: 12:12:30 PM
+ Last refreshed: just now Â· Platform time: 12:12:30 PM
  </p>
  </div>
  <div className="flex items-center gap-3">
@@ -460,21 +460,21 @@ export default function AdminConsole({ user, onExit }) {
  </div>
  <div>
  <h3 className="font-outfit text-3xl font-extrabold text-slate-900 tracking-tight">
- {currency === 'INR' ? '₹2,94,501' : '€3,180'}
+ {currency === 'INR' ? 'â‚¹2,94,501' : 'â‚¬3,180'}
  </h3>
  <p className="text-[10px] font-bold text-emerald-600 mt-1 flex items-center gap-0.5">
- <span>↑ +18.4%</span> <span className="text-slate-400 font-semibold">vs last month</span>
+ <span>â†‘ +18.4%</span> <span className="text-slate-400 font-semibold">vs last month</span>
  </p>
  </div>
 
  <div className="text-[10px] font-semibold text-slate-500 space-y-1 border-t border-slate-100 pt-3">
  <div className="flex justify-between">
  <span>Featured - India</span> 
- <span className="font-bold text-slate-900">{currency === 'INR' ? '₹1,84,302' : '€1,990'}</span>
+ <span className="font-bold text-slate-900">{currency === 'INR' ? 'â‚¹1,84,302' : 'â‚¬1,990'}</span>
  </div>
  <div className="flex justify-between">
  <span>Featured - Europe</span> 
- <span className="font-bold text-slate-900">{currency === 'INR' ? '₹1,10,199' : '€1,190'}</span>
+ <span className="font-bold text-slate-900">{currency === 'INR' ? 'â‚¹1,10,199' : 'â‚¬1,190'}</span>
  </div>
  </div>
  </div>
@@ -490,7 +490,7 @@ export default function AdminConsole({ user, onExit }) {
  </div>
  <h3 className="font-outfit text-3xl font-extrabold text-slate-900 tracking-tight">710</h3>
  <p className="text-[10px] font-bold text-emerald-600 mt-1 flex items-center gap-1">
- <span>↑ Today</span> <span className="text-slate-400 font-semibold">· +24% vs yesterday</span>
+ <span>â†‘ Today</span> <span className="text-slate-400 font-semibold">Â· +24% vs yesterday</span>
  </p>
  </div>
 
@@ -540,12 +540,12 @@ export default function AdminConsole({ user, onExit }) {
  </thead>
  <tbody className="divide-y divide-slate-100">
  {[
- { id: "TXN-9821", name: "Razorpay Pvt. Ltd.", cat: "Jobs", tier: "Featured", region: "IN India", amount: "₹999", status: "Paid", date: "23 Jun, 10:14" },
- { id: "TXN-9820", name: "Vikram Khanna", cat: "Cars", tier: "Featured", region: "IN India", amount: "₹499", status: "Paid", date: "23 Jun, 09:52" },
- { id: "TXN-9819", name: "NordTech AS", cat: "Jobs", tier: "Featured", region: "EU Europe", amount: "₹999", status: "Pending", date: "23 Jun, 09:31" },
- { id: "TXN-9818", name: "Priya Nair", cat: "Items", tier: "Standard", region: "IN India", amount: "₹0", status: "Paid", date: "23 Jun, 08:45" },
- { id: "TXN-9817", name: "Berlin Motors GmbH", cat: "Cars", tier: "Featured", region: "EU Europe", amount: "₹499", status: "Paid", date: "22 Jun, 23:10" },
- { id: "TXN-9816", name: "Meesho India", cat: "Items", tier: "Featured", region: "IN India", amount: "₹499", status: "Failed", date: "22 Jun, 21:05" }
+ { id: "TXN-9821", name: "Razorpay Pvt. Ltd.", cat: "Jobs", tier: "Featured", region: "IN India", amount: "â‚¹999", status: "Paid", date: "23 Jun, 10:14" },
+ { id: "TXN-9820", name: "Vikram Khanna", cat: "Cars", tier: "Featured", region: "IN India", amount: "â‚¹499", status: "Paid", date: "23 Jun, 09:52" },
+ { id: "TXN-9819", name: "NordTech AS", cat: "Jobs", tier: "Featured", region: "EU Europe", amount: "â‚¹999", status: "Pending", date: "23 Jun, 09:31" },
+ { id: "TXN-9818", name: "Priya Nair", cat: "Items", tier: "Standard", region: "IN India", amount: "â‚¹0", status: "Paid", date: "23 Jun, 08:45" },
+ { id: "TXN-9817", name: "Berlin Motors GmbH", cat: "Cars", tier: "Featured", region: "EU Europe", amount: "â‚¹499", status: "Paid", date: "22 Jun, 23:10" },
+ { id: "TXN-9816", name: "Meesho India", cat: "Items", tier: "Featured", region: "IN India", amount: "â‚¹499", status: "Failed", date: "22 Jun, 21:05" }
  ].map((t) => (
  <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
  <td className="px-4 py-4 text-[#0047ab] font-bold">{t.id}</td>
@@ -559,7 +559,7 @@ export default function AdminConsole({ user, onExit }) {
  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
  t.tier === 'Featured' ? 'bg-[#f05a28] text-white border-transparent' : 'bg-slate-50 text-slate-450 border-slate-200'
  }`}>
- {t.tier === 'Featured' ? '★ Featured' : 'Standard'}
+ {t.tier === 'Featured' ? 'â˜… Featured' : 'Standard'}
  </span>
  </td>
  <td className="px-4 py-4 text-slate-400 font-medium uppercase tracking-wide">{t.region}</td>
@@ -590,11 +590,11 @@ export default function AdminConsole({ user, onExit }) {
  <div className="space-y-6 animate-in fade-in duration-200 bg-white rounded-2xl border border-slate-200 p-6">
  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
  <div className="flex gap-2">
- <button className="px-4 py-1.5 bg-orange-50 border border-orange-200 text-[#f05a28] text-xs font-bold rounded-lg">
+ <button onClick={() => setReviewFilter('pending')} className={px-4 py-1.5 border text-xs font-bold rounded-lg }>
  Pending {queueItems.filter(i => i.status === 'pending').length}
  </button>
  <button className="px-4 py-1.5 bg-slate-50 border border-slate-200 text-slate-500 text-xs font-bold rounded-lg">
- Approved {queueItems.filter(i => i.status === 'approved').length}
+ Approved {queueItems.filter(i => i.status === 'active').length}
  </button>
  <button className="px-4 py-1.5 bg-slate-50 border border-slate-200 text-slate-500 text-xs font-bold rounded-lg">
  Rejected {queueItems.filter(i => i.status === 'rejected').length}
@@ -620,7 +620,7 @@ export default function AdminConsole({ user, onExit }) {
  </tr>
  </thead>
  <tbody className="divide-y divide-slate-100">
- {queueItems.map((item) => (
+ {queueItems.filter(i => i.status === reviewFilter).map((item) => (
  <tr key={item.id} className={`hover:bg-slate-50/50 transition-colors ${item.status !== 'pending' ? 'opacity-40' : ''}`}>
  <td className="px-4 py-4 text-[#0047ab] font-bold">{item.id}</td>
  <td className="px-4 py-4">
@@ -644,7 +644,7 @@ export default function AdminConsole({ user, onExit }) {
  <td className="px-4 py-4 font-bold text-slate-700 truncate max-w-[80px]" title={item.seller}>{item.seller}</td>
  <td className="px-4 py-4">
  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-rose-100 bg-rose-50/50 text-rose-600 text-[10px] font-extrabold">
- ⚠️ {item.reason}
+ âš ï¸ {item.reason}
  </span>
  </td>
  <td className="px-4 py-4 text-slate-450 font-medium">{item.posted}</td>
@@ -691,7 +691,7 @@ export default function AdminConsole({ user, onExit }) {
  <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
  <div>
  <h3 className="font-outfit text-sm font-extrabold text-slate-900">Company Registry</h3>
- <p className="text-[10px] text-slate-400 font-semibold mt-0.5">5 registered · 2 verified</p>
+ <p className="text-[10px] text-slate-400 font-semibold mt-0.5">5 registered Â· 2 verified</p>
  </div>
  
  <div className="flex flex-col gap-1">
@@ -710,10 +710,10 @@ export default function AdminConsole({ user, onExit }) {
  <div className="min-w-0">
  <div className="flex items-center gap-1">
  <span className="font-bold text-slate-900 text-xs truncate max-w-[120px]">{c.name}</span>
- {c.verified && <span className="text-blue-500 text-xs">✓</span>}
- {c.block && <span className="text-rose-500 text-xs">⊘</span>}
+ {c.verified && <span className="text-blue-500 text-xs">âœ“</span>}
+ {c.block && <span className="text-rose-500 text-xs">âŠ˜</span>}
  </div>
- <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{c.industry} · {c.region}</p>
+ <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{c.industry} Â· {c.region}</p>
  </div>
  </div>
  <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -743,7 +743,7 @@ export default function AdminConsole({ user, onExit }) {
  <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-600 text-[8px] font-bold uppercase tracking-wider">Pending</span>
  )}
  </div>
- <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{selectedCompany.industry} Registry · Region {selectedCompany.region}</p>
+ <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{selectedCompany.industry} Registry Â· Region {selectedCompany.region}</p>
  </div>
  </div>
  <span className="text-xs font-bold text-slate-500">{selectedCompany.count}</span>
