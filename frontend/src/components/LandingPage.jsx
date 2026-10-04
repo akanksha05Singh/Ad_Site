@@ -3,17 +3,17 @@ import { API_BASE_URL } from '../config';
 import Footer from './Footer';
 import ListingCard from './ListingCard';
 
-/* ─────────────────────────────────────────────────────────────────
- LandingPage — Pixel-perfect home page matching Home page reference.jpg
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ LandingPage â€” Pixel-perfect home page matching Home page reference.jpg
  
  Sections:
- 1. Sticky Navbar — logo left / Sign-in pill button right
- 2. Hero — left text module + right illustration
- 3. JOB Category — single pill/icon (all others removed)
- 4. Analytics Strip— 2.4M+ / 2,450 / 3,470 counter blocks
- 5. Featured Listings — "PROMOTED" badge + 4-col card grid from API
- 6. Footer — logo + Support / Legal columns + copyright
-───────────────────────────────────────────────────────────────────*/
+ 1. Sticky Navbar â€” logo left / Sign-in pill button right
+ 2. Hero â€” left text module + right illustration
+ 3. JOB Category â€” single pill/icon (all others removed)
+ 4. Analytics Stripâ€” 2.4M+ / 2,450 / 3,470 counter blocks
+ 5. Featured Listings â€” "PROMOTED" badge + 4-col card grid from API
+ 6. Footer â€” logo + Support / Legal columns + copyright
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€*/
 export default function LandingPage({ onSignInClick, user, onLogout, hideHeader, hideFooter, onJobsClick, onHomeClick, onDashboardClick }) {
  const [listings, setListings] = useState([]);
  const [loadingListings, setLoadingListings] = useState(true);
@@ -35,7 +35,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  return (
  <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', fontFamily: 'var(--font-sans)' }}>
 
- {/* ── 1. Navbar ── */}
+ {/* â”€â”€ 1. Navbar â”€â”€ */}
  {!hideHeader && (
  <header style={{
  position: 'sticky', top: 0, zIndex: 40,
@@ -55,7 +55,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  </header>
  )}
 
- {/* ── 2. Hero Section ── */}
+ {/* â”€â”€ 2. Hero Section â”€â”€ */}
  <section style={{
  maxWidth: '1180px',
  margin: '0 auto',
@@ -68,18 +68,18 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  }}>
  <div style={{ flex: '1 1 340px', maxWidth: '520px' }}>
  <h1 style={{
- fontFamily: 'var(--font-sans)', fontSize: '3.5rem',
+ fontFamily: 'var(--font-sans)', fontSize: '2.5rem',
  fontWeight: 400,
  lineHeight: 1.15,
  color: '#000000',
  margin: 0,
- marginBottom: '1.25rem',
+ marginBottom: '1rem',
  }}>
- <span style={{ color: '#f05a28', fontWeight: 700 }}>job opportunities</span><br/>
+ <span style={{ color: '#ff6b6b', fontWeight: 700 }}>job opportunities</span><br/>
  <span style={{ fontWeight: 600 }}>near you</span>
  </h1>
  <p style={{
- fontSize: '1.25rem',
+ fontSize: '0.9rem',
  fontWeight: 500,
  color: '#000000',
  margin: 0,
@@ -101,12 +101,12 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  <img
  src="/landing-hero.png"
  alt="Team working on exciting job opportunities"
- style={{ width: '100%', maxWidth: '850px', height: 'auto', display: 'block', transform: 'none', transformOrigin: 'center right' }}
+ style={{ width: '100%', maxWidth: '600px', height: 'auto', display: 'block', transform: 'none', transformOrigin: 'center right' }}
  />
  </div>
  </section>
 
- {/* ── 3. JOB Category Pill (only category shown) ── */}
+ {/* â”€â”€ 3. JOB Category Pill (only category shown) â”€â”€ */}
  <section style={{
  maxWidth: '1180px',
  margin: '0 auto',
@@ -129,26 +129,26 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
  >
  <div style={{
- width: '32px', height: '32px',
- borderRadius: '10px',
+ width: '40px', height: '40px',
+ borderRadius: '12px',
  backgroundColor: '#ff6b57',
  display: 'flex', alignItems: 'center', justifyContent: 'center',
  boxShadow: '0 4px 14px rgba(255, 107, 87, 0.25)',
  }}>
- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+ <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
  <rect x="2" y="7" width="20" height="14" rx="2"/>
  <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
  <path d="M12 12v4"/>
  <path d="M8 12h8"/>
  </svg>
  </div>
- <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#000000', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+ <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#000000', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
  JOBS
  </span>
  </div>
  </section>
 
- {/* ── 5. Featured Listings ── */}
+ {/* â”€â”€ 5. Featured Listings â”€â”€ */}
  <section style={{
  maxWidth: '1180px',
  margin: '0 auto',
@@ -157,7 +157,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  {/* Section Header */}
  <div style={{
  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
- marginBottom: '1.25rem',
+ marginBottom: '1rem',
  paddingBottom: '0.875rem',
  borderBottom: '1px solid #e5e7eb',
  }}>
@@ -185,7 +185,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  </div>
  </div>
 
- {/* Card Grid — 4 columns */}
+ {/* Card Grid â€” 4 columns */}
  {loadingListings ? (
  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
  {Array.from({ length: 4 }).map((_, i) => (
@@ -211,7 +211,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  );
 }
 
-/* ── Helper Components ── */
+/* â”€â”€ Helper Components â”€â”€ */
 
 function LogoMark() {
  return (
@@ -227,7 +227,7 @@ function ChevronBtn({ direction }) {
  return (
  <button
  style={{
- width: '32px', height: '32px',
+ width: '40px', height: '40px',
  borderRadius: '50%',
  border: '1px solid #e5e7eb',
  backgroundColor: '#ffffff',
@@ -251,7 +251,7 @@ function SkeletonCard() {
  return (
  <div style={{
  border: '1px solid #e5e7eb',
- borderRadius: '10px',
+ borderRadius: '12px',
  padding: '1rem',
  minHeight: '120px',
  backgroundColor: '#fafafa',
@@ -264,7 +264,7 @@ function SkeletonCard() {
 }
 
 
-/* HeroIllustration — kept as legacy export but replaced by img tag above */
+/* HeroIllustration â€” kept as legacy export but replaced by img tag above */
 function HeroIllustration() {
  return (
  <img
@@ -308,7 +308,7 @@ function _LegacySVG() {
  {/* Keyboard */}
  <rect x="205" y="219" width="90" height="12" rx="4" fill="#e2e8f0"/>
 
- {/* ── Person 1 (seated, blue shirt) ── */}
+ {/* â”€â”€ Person 1 (seated, blue shirt) â”€â”€ */}
  {/* Body */}
  <ellipse cx="250" cy="198" rx="22" ry="26" fill="#38bdf8"/>
  {/* Head */}
@@ -323,7 +323,7 @@ function _LegacySVG() {
  <ellipse cx="228" cy="210" rx="9" ry="5" fill="#fde68a" transform="rotate(-15 228 210)"/>
  <ellipse cx="272" cy="210" rx="9" ry="5" fill="#fde68a" transform="rotate(15 272 210)"/>
 
- {/* ── Person 2 (standing left, red shirt) ── */}
+ {/* â”€â”€ Person 2 (standing left, red shirt) â”€â”€ */}
  {/* Body */}
  <rect x="90" y="152" width="38" height="68" rx="14" fill="#ef4444"/>
  {/* Head */}
@@ -345,12 +345,12 @@ function _LegacySVG() {
  <ellipse cx="100" cy="260" rx="11" ry="5" fill="#ef4444"/>
  <ellipse cx="119" cy="260" rx="11" ry="5" fill="#ef4444"/>
 
- {/* ── Person 3 (standing right 1, orange top) ── */}
+ {/* â”€â”€ Person 3 (standing right 1, orange top) â”€â”€ */}
  {/* Body */}
  <rect x="328" y="155" width="38" height="68" rx="14" fill="#f97316"/>
  {/* Head */}
  <circle cx="347" cy="140" r="18" fill="#fde68a"/>
- {/* Hair — bun */}
+ {/* Hair â€” bun */}
  <ellipse cx="347" cy="126" rx="14" ry="9" fill="#7c2d12"/>
  <circle cx="347" cy="119" r="7" fill="#7c2d12"/>
  {/* Eyes */}
@@ -363,12 +363,12 @@ function _LegacySVG() {
  <ellipse cx="338" cy="263" rx="11" ry="5" fill="#38bdf8"/>
  <ellipse cx="357" cy="263" rx="11" ry="5" fill="#38bdf8"/>
 
- {/* ── Person 4 (standing right 2, yellow top) ── */}
+ {/* â”€â”€ Person 4 (standing right 2, yellow top) â”€â”€ */}
  {/* Body */}
  <rect x="378" y="160" width="36" height="62" rx="14" fill="#fbbf24"/>
  {/* Head */}
  <circle cx="396" cy="146" r="18" fill="#fde68a"/>
- {/* Hair — ponytail */}
+ {/* Hair â€” ponytail */}
  <ellipse cx="396" cy="133" rx="16" ry="9" fill="#dc2626"/>
  <path d="M410 133 Q418 125 414 115" stroke="#dc2626" strokeWidth="8" strokeLinecap="round" fill="none"/>
  {/* Eyes */}
@@ -406,7 +406,7 @@ function _LegacySVG() {
  );
 }
 
-/* ── Nav Sign-in pill style ── */
+/* â”€â”€ Nav Sign-in pill style â”€â”€ */
 const navSignInStyle = {
  display: 'inline-flex',
  alignItems: 'center',
@@ -415,14 +415,14 @@ const navSignInStyle = {
  border: '1.5px solid #000000',
  backgroundColor: '#ffffff',
  color: '#000000',
- fontSize: '1.25rem',
+ fontSize: '0.9rem',
  fontWeight: 400,
  fontFamily: 'var(--font-sans)',
  cursor: 'pointer',
  transition: 'background-color 0.18s ease, color 0.18s ease',
 };
 
-/* ── Footer styles ── */
+/* â”€â”€ Footer styles â”€â”€ */
 const footerHeadStyle = {
  fontSize: '0.65rem',
  fontWeight: 700,
