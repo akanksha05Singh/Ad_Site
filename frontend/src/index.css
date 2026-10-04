@@ -17,9 +17,12 @@
 }
 
 /* ── Global Reset ── */
-body, button, input, textarea, select {
+body, input, textarea, select {
   background-color: #ffffff;
   color: #000000;
+  font-family: "Outfit", sans-serif;
+}
+button {
   font-family: "Outfit", sans-serif;
 }
 
