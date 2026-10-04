@@ -26,82 +26,58 @@ export default function AdminConsole({ user, onExit }) {
  const getAuthToken = () => localStorage.getItem('token');
 
  // 1. Review Queue state
- const [queueItems, setQueueItems] = useState([
- {
- id: "AD-4401",
- title: "Work From Home – Earn ₹50K/Month No Skills...",
- category: "Jobs",
- sellerType: "Individual",
- seller: "unknown_user",
- reason: "Suspicious Link",
- posted: "5m ago",
- imageUrl: "https://images.unsplash.com/photo-1580894732444-8fecef2271ff?auto=format&fit=crop&w=80&q=80",
- status: "pending"
- },
- {
- id: "AD-4400",
- title: "2020 Honda City ZX – Top Condition",
- category: "Cars",
- sellerType: "Individual",
- seller: "Rahul Verma",
- reason: "Duplicate Listing",
- posted: "18m ago",
- imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=80&q=80",
- status: "pending"
- },
- {
- id: "AD-4399",
- title: "Senior React Developer – ₹80 LPA",
- category: "Jobs",
- sellerType: "Company",
- seller: "TechCorp Ltd.",
- reason: "Salary Mismatch",
- posted: "34m ago",
- imageUrl: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=80&q=80",
- status: "pending"
- },
- {
- id: "AD-4398",
- title: "iPhone 15 Pro – Brand New Sealed",
- category: "Items",
- sellerType: "Individual",
- seller: "deal_hunter",
- reason: "Price Too Low – Scam Risk",
- posted: "1h ago",
- imageUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=80&q=80",
- status: "pending"
- },
- {
- id: "AD-4397",
- title: "2BHK Flat for Rent – Koramangala ₹18K",
- category: "Property",
- sellerType: "Individual",
- seller: "Anand Kumar",
- reason: "Missing RERA ID",
- posted: "2h ago",
- imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=80&q=80",
- status: "pending"
- },
- {
- id: "AD-4396",
- title: "Delivery Partner Jobs – No Documents Required",
- category: "Jobs",
- sellerType: "Individual",
- seller: "flexwork_in",
- reason: "Policy Violation",
- posted: "3h ago",
- imageUrl: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=80&q=80",
- status: "pending"
- }
- ]);
+ const [queueItems, setQueueItems] = useState([]);
+  
+  React.useEffect(() => {
+    if (adminTab === 'queue') {
+      fetchQueueItems();
+    }
+  }, [adminTab]);
 
- const handleApprove = (id) => {
- setQueueItems(queueItems.map(item => item.id === id ? { ...item, status: 'approved' } : item));
- };
+  const fetchQueueItems = async () => {
+    try {
+      const res = await fetch(API_URL + '/listings?status=pending', {
+        headers: { Authorization: 'Bearer ' + getAuthToken() }
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setQueueItems(data.data.map(listing => ({
+          id: listing._id,
+          title: listing.title,
+          category: listing.category === 'job' ? 'JOBS' : 'ITEMS',
+          sellerType: 'User',
+          seller: listing.contactEmail,
+          reason: 'Awaiting Moderation',
+          posted: new Date(listing.createdAt || Date.now()).toLocaleDateString(),
+          imageUrl: listing.imageUrl || 'https://via.placeholder.com/80',
+          status: 'pending'
+        })));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
- const handleReject = (id) => {
- setQueueItems(queueItems.map(item => item.id === id ? { ...item, status: 'rejected' } : item));
- };
+ const handleApprove = async (id) => {
+    try {
+      await fetch(API_URL + '/admin/listings/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getAuthToken() },
+        body: JSON.stringify({ status: 'active' })
+      });
+      fetchQueueItems();
+    } catch(e) {}
+  };
+
+ const handleReject = async (id) => {
+    try {
+      await fetch(API_URL + '/admin/listings/' + id, {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer ' + getAuthToken() }
+      });
+      fetchQueueItems();
+    } catch(e) {}
+  };
 
  // 2. Users & Companies state
  const companies = [
@@ -124,8 +100,10 @@ export default function AdminConsole({ user, onExit }) {
  React.useEffect(() => {
  if (adminTab === 'scraper') {
  fetchScraperSources();
- }
- }, [adminTab]);
+      const interval = setInterval(fetchScraperSources, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [adminTab]);
 
  const fetchScraperSources = async () => {
  try {
@@ -248,10 +226,10 @@ export default function AdminConsole({ user, onExit }) {
  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
  </svg>
- <span>Command Overview</span>
+ <span>Dashboard</span>
  </button>
 
- {/* Moderation Queue */}
+ {/* Review Queue */}
  <button
  type="button"
  onClick={() => setAdminTab('queue')}
@@ -263,7 +241,7 @@ export default function AdminConsole({ user, onExit }) {
  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
  </svg>
- <span>Moderation Queue</span>
+ <span>Review Queue</span>
  </div>
  {getActiveListingsCount() > 0 && (
  <span className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-[#f05a28] text-[10px] font-bold text-white animate-pulse">
@@ -283,7 +261,7 @@ export default function AdminConsole({ user, onExit }) {
  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
  </svg>
- <span>User Management</span>
+ <span>Users</span>
  </button>
 
  {/* Listings */}
@@ -297,7 +275,7 @@ export default function AdminConsole({ user, onExit }) {
  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
  </svg>
- <span>Manage Ads</span>
+ <span>Listings</span>
  </button>
 
  {/* Scraper Settings Control */}
@@ -311,7 +289,7 @@ export default function AdminConsole({ user, onExit }) {
  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
  </svg>
- <span>Job Scraper</span>
+ <span>Scraper Settings</span>
  </button>
  </nav>
 
@@ -350,7 +328,7 @@ export default function AdminConsole({ user, onExit }) {
  <header className="h-16 bg-white border-b border-slate-200 px-6 sm:px-8 flex items-center justify-between shrink-0">
  <div className="space-y-0.5">
  <h2 className="font-outfit text-sm font-extrabold text-slate-900 uppercase tracking-wide">
- {adminTab === 'overview' ? 'Command Overview' : adminTab === 'queue' ? 'Moderation Queue' : adminTab === 'gov' ? 'User & Company Governance' : 'Job Scraper Control'}
+ {adminTab === 'overview' ? 'Dashboard' : adminTab === 'queue' ? 'Review Queue' : adminTab === 'gov' ? 'Users & Companies' : 'Scraper Settings Control'}
  </h2>
  <p className="text-[9px] text-slate-400 font-semibold">
  Last refreshed: just now · Platform time: 12:12:30 PM
@@ -385,7 +363,7 @@ export default function AdminConsole({ user, onExit }) {
  {/* Content Wrapper */}
  <div className="p-6 sm:p-8 max-w-7xl w-full mx-auto space-y-8 flex-grow">
  
- {/* TAB 1: Command Overview */}
+ {/* TAB 1: Dashboard */}
  {adminTab === 'overview' && (
  <div className="space-y-8 animate-in fade-in duration-200">
  
@@ -607,7 +585,7 @@ export default function AdminConsole({ user, onExit }) {
  </div>
  )}
 
- {/* TAB 2: Moderation Queue */}
+ {/* TAB 2: Review Queue */}
  {adminTab === 'queue' && (
  <div className="space-y-6 animate-in fade-in duration-200 bg-white rounded-2xl border border-slate-200 p-6">
  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -802,7 +780,7 @@ export default function AdminConsole({ user, onExit }) {
  </div>
  )}
 
- {/* TAB 4: Job Scraper */}
+ {/* TAB 4: Scraper Settings */}
  {adminTab === 'scraper' && (
  <div className="space-y-8 animate-in fade-in duration-200">
  
@@ -922,14 +900,14 @@ export default function AdminConsole({ user, onExit }) {
  </div>
  )}
 
- {/* TAB 5: User Management */}
+ {/* TAB 5: Users */}
  {adminTab === 'users' && (
  <div className="animate-in fade-in duration-200">
  <AdminUsers token={getAuthToken()} />
  </div>
  )}
 
- {/* TAB 6: Manage Ads */}
+ {/* TAB 6: Listings */}
  {adminTab === 'listings' && (
  <div className="animate-in fade-in duration-200">
  <AdminListings token={getAuthToken()} />

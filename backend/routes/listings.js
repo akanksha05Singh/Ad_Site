@@ -20,10 +20,14 @@ router.get('/', async (req, res) => {
     const { 
       category, q, owner, location, minPrice, contactEmail,
       state, occupationCategory, employmentType, workFromHome, gender, isScraped,
-      page = 1, limit = 100
+      status, page = 1, limit = 100
     } = req.query;
     
     let query = {};
+
+    if (status) {
+      query.status = status;
+    }
 
     if (category && ['classified', 'job'].includes(category)) {
       query.category = category;

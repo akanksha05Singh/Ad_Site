@@ -53,7 +53,7 @@ const ListingSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['active', 'pending'],
-    default: 'active'
+    default: 'pending'
   },
   // New Job Filtering Fields
   companyName: {
