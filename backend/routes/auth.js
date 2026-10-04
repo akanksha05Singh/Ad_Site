@@ -3,14 +3,13 @@ const router = express.Router();
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 
-// Helper to sanitize user output
 const sanitizeUser = (user) => {
   return {
     id: user._id,
     name: user.name,
     email: user.email,
     avatar: user.avatar,
-    role: 'admin', // FORCED ADMIN FOR ALL USERS
+    role: user.role,
     bookmarks: user.bookmarks,
     createdAt: user.createdAt
   };
