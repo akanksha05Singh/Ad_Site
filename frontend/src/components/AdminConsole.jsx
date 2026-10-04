@@ -37,7 +37,7 @@ export default function AdminConsole({ user, onExit }) {
 
   const fetchQueueItems = async () => {
     try {
-      const res = await fetch(API_URL + '/listings?limit=200', {
+      const res = await fetch(API_URL + '/listings?limit=200&status=all', {
         headers: { Authorization: 'Bearer ' + getAuthToken() }
       });
       const data = await res.json();
@@ -47,8 +47,8 @@ export default function AdminConsole({ user, onExit }) {
           title: listing.title,
           category: listing.category === 'job' ? 'JOBS' : 'ITEMS',
           sellerType: 'User',
-          seller: listing.contactEmail,
-          reason: 'Awaiting Moderation',
+          seller: listing.contactEmail || 'N/A',
+          reason: listing.status === 'pending' ? 'Awaiting Moderation' : listing.status === 'active' ? 'Approved by Admin' : 'Rejected by Admin',
           posted: new Date(listing.createdAt || Date.now()).toLocaleDateString(),
           imageUrl: listing.imageUrl || 'https://via.placeholder.com/80',
           status: listing.status || 'pending'
