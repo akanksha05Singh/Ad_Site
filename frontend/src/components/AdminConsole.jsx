@@ -50,7 +50,7 @@ export default function AdminConsole({ user, onExit }) {
           seller: listing.contactEmail || 'N/A',
           reason: listing.status === 'pending' ? 'Awaiting Moderation' : listing.status === 'active' ? 'Approved by Admin' : 'Rejected by Admin',
           posted: new Date(listing.createdAt || Date.now()).toLocaleDateString(),
-          imageUrl: listing.imageUrl || 'https://via.placeholder.com/80',
+          imageUrl: listing.imageUrl || '',
           status: listing.status || 'pending'
         })));
       }
@@ -626,7 +626,13 @@ export default function AdminConsole({ user, onExit }) {
  <td className="px-4 py-4 text-[#0047ab] font-bold">{item.id}</td>
  <td className="px-4 py-4">
  <div className="flex items-center gap-3">
+ {item.imageUrl ? (
  <img src={item.imageUrl} alt="" className="w-9 h-9 rounded-lg object-cover bg-slate-100 border border-slate-150 shrink-0" />
+ ) : (
+ <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
+ <span className="text-slate-400 text-[10px] font-bold">No Img</span>
+ </div>
+ )}
  <span className="font-bold text-slate-900 line-clamp-1 max-w-[200px]" title={item.title}>
  {item.title}
  </span>
