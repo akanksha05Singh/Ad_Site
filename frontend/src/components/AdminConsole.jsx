@@ -590,15 +590,15 @@ export default function AdminConsole({ user, onExit }) {
  <div className="space-y-6 animate-in fade-in duration-200 bg-white rounded-2xl border border-slate-200 p-6">
  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
  <div className="flex gap-2">
- <button onClick={() => setReviewFilter('pending')} className={"px-4 py-1.5 border text-xs font-bold rounded-lg bg-orange-50 border-orange-200 text-[#f05a28]"}>
- Pending {queueItems.filter(i => i.status === 'pending').length}
- </button>
- <button className="px-4 py-1.5 bg-slate-50 border border-slate-200 text-slate-500 text-xs font-bold rounded-lg">
- Approved {queueItems.filter(i => i.status === 'active').length}
- </button>
- <button className="px-4 py-1.5 bg-slate-50 border border-slate-200 text-slate-500 text-xs font-bold rounded-lg">
- Rejected {queueItems.filter(i => i.status === 'rejected').length}
- </button>
+  <button onClick={() => setReviewFilter('pending')} className={`px-4 py-1.5 border text-xs font-bold rounded-lg ${reviewFilter === 'pending' ? 'bg-orange-50 border-orange-200 text-[#f05a28]' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+  Pending {queueItems.filter(i => i.status === 'pending').length}
+  </button>
+  <button onClick={() => setReviewFilter('active')} className={`px-4 py-1.5 border text-xs font-bold rounded-lg ${reviewFilter === 'active' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+  Approved {queueItems.filter(i => i.status === 'active').length}
+  </button>
+  <button onClick={() => setReviewFilter('rejected')} className={`px-4 py-1.5 border text-xs font-bold rounded-lg ${reviewFilter === 'rejected' ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+  Rejected {queueItems.filter(i => i.status === 'rejected').length}
+  </button>
  </div>
  <button type="button" className="text-xs font-bold text-slate-450 hover:text-slate-700">
  Reset Queue
