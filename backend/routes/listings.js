@@ -87,6 +87,9 @@ router.get('/', async (req, res) => {
     if (!owner && !contactEmail) {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       query.createdAt = { $gte: thirtyDaysAgo };
+      if (!status) {
+        query.status = 'active';
+      }
     }
 
     // Pagination logic

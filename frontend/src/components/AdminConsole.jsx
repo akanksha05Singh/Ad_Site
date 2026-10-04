@@ -325,7 +325,7 @@ export default function AdminConsole({ user, onExit }) {
  <main className="flex-grow flex flex-col h-full min-w-0 overflow-y-auto bg-slate-50/50">
  
  {/* Header Ribbon */}
- <header className="h-16 bg-white border-b border-slate-200 px-6 sm:px-8 flex items-center justify-between shrink-0">
+ <header className="h-16 bg-white border-b border-slate-200 px-6 sm:px-8 flex items-center justify-between shrink-0 relative z-50">
  <div className="space-y-0.5">
  <h2 className="font-outfit text-sm font-extrabold text-slate-900 uppercase tracking-wide">
  {adminTab === 'overview' ? 'Dashboard' : adminTab === 'queue' ? 'Review Queue' : adminTab === 'gov' ? 'Users & Companies' : 'Scraper Settings Control'}

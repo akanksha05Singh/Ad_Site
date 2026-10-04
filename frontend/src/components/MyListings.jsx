@@ -177,6 +177,14 @@ export default function MyListings({ user }) {
  <td className="px-6 py-4 font-medium text-slate-500">{listing.location}</td>
  <td className="px-6 py-4">
   {(() => {
+    if (listing.status === 'pending') {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50">
+          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+          Pending Review
+        </span>
+      );
+    }
     const expiry = getExpiryInfo(listing.createdAt);
     return (
       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide ${expiry.color} ${expiry.bg}`}>

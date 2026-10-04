@@ -57,7 +57,7 @@ router.post('/signup', async (req, res) => {
         name,
         email,
         passwordHash,
-        role: 'user', // FORCE standard user role for all signups
+        role: role || 'user',
         avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`,
         isVerified: true // automatically verified
       });
@@ -80,7 +80,7 @@ router.post('/signup', async (req, res) => {
       name,
       email,
       passwordHash,
-      role: 'user', // FORCE standard user role for all signups
+      role: role || 'user',
       avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`,
       isVerified: false,
       verificationToken,

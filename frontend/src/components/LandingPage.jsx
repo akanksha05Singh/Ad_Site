@@ -63,12 +63,12 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  display: 'flex',
  alignItems: 'center',
  justifyContent: 'space-between',
- gap: '4rem',
+ gap: '2rem',
  flexWrap: 'wrap',
  }}>
  <div style={{ flex: '1 1 340px', maxWidth: '520px' }}>
  <h1 style={{
- fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.5rem, 5vw, 3.75rem)',
+ fontFamily: 'var(--font-sans)', fontSize: '3.5rem',
  fontWeight: 400,
  lineHeight: 1.15,
  color: '#000000',
@@ -79,7 +79,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  <span style={{ fontWeight: 600 }}>near you</span>
  </h1>
  <p style={{
- fontSize: '0.875rem',
+ fontSize: '1.25rem',
  fontWeight: 500,
  color: '#000000',
  margin: 0,
@@ -101,7 +101,7 @@ export default function LandingPage({ onSignInClick, user, onLogout, hideHeader,
  <img
  src="/landing-hero.png"
  alt="Team working on exciting job opportunities"
- style={{ width: '100%', maxWidth: '850px', height: 'auto', display: 'block', transform: 'scale(1.1)', transformOrigin: 'center right' }}
+ style={{ width: '100%', maxWidth: '850px', height: 'auto', display: 'block', transform: 'none', transformOrigin: 'center right' }}
  />
  </div>
  </section>
@@ -415,7 +415,7 @@ const navSignInStyle = {
  border: '1.5px solid #000000',
  backgroundColor: '#ffffff',
  color: '#000000',
- fontSize: '0.875rem',
+ fontSize: '1.25rem',
  fontWeight: 400,
  fontFamily: 'var(--font-sans)',
  cursor: 'pointer',
