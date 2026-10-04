@@ -12,12 +12,13 @@ function formatIndianCurrency(num) {
  lastThree = ',' + lastThree;
  }
  const res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
- return 'Ã¢â€šÂ¹' + res;
+ return '₹' + res;
 }
 
 export default function AdminConsole({ user, onExit }) {
  // adminTab: 'overview', 'queue', 'gov', 'scraper'
  const [adminTab, setAdminTab] = useState('overview');
+ const [reviewFilter, setReviewFilter] = useState('pending');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
  const [currency, setCurrency] = useState('INR');
  
