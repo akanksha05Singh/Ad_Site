@@ -13,7 +13,8 @@ async function scrapeJobBoard(url) {
     // Launch puppeteer
     browser = await puppeteer.launch({ 
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.platform === 'linux' ? '/usr/bin/chromium-browser' : undefined
     });
     const page = await browser.newPage();
     
