@@ -58,7 +58,9 @@ export default function Navbar({
  <div className="flex items-center gap-3 sm:gap-4 shrink-0">
  {user ? (
  <div className="flex items-center gap-3 sm:gap-4 relative">
- {/* Post an Ad button */}
+ {user.role !== 'admin' && (
+  <>
+  {/* Post an Ad button */}
  <button
  type="button"
  onClick={onPostClick}
@@ -104,7 +106,10 @@ export default function Navbar({
  </svg>
  </button>
 
- {/* User Avatar Circle */}
+   </>
+  )}
+
+  {/* User Avatar Circle */}
  <button
  type="button"
  onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -127,6 +132,8 @@ export default function Navbar({
  </div>
 
  {/* Menu Options */}
+  {user.role !== 'admin' && (
+  <>
  <button
  type="button"
  onClick={() => handleUserMenuClick('find-jobs')}
@@ -215,7 +222,10 @@ export default function Navbar({
  Account Settings
  </button>
 
- {user && user.role === 'admin' && (
+   </>
+  )}
+
+  {user && user.role === 'admin' && (
  <button
  type="button"
  onClick={() => handleUserMenuClick('admin')}
