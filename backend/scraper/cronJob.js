@@ -106,7 +106,7 @@ async function scrapeJobBoard(url) {
             state: 'Maharashtra', // Default state
             employmentType: 'Full-time',
             workFromHome: location.toLowerCase().includes('remote') || location.toLowerCase().includes('home'),
-            status: 'active'
+            status: 'pending' // Send scraped jobs to the Review Queue first
           });
         }
       });
