@@ -104,7 +104,6 @@ async function scrapeJobBoard(url) {
             category: 'job',
             location: location,
             companyName: company || 'Not Specified',
-            contactEmail: 'not-provided@scraped.local',
             state: 'Not Specified',
             employmentType: 'Not Specified',
             workFromHome: location.toLowerCase().includes('remote') || location.toLowerCase().includes('home'),

@@ -34,12 +34,9 @@ const ListingSchema = new mongoose.Schema({
   },
   contactEmail: {
     type: String,
-    required: [true, 'Contact email is required'],
+    required: false,
     trim: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please fill a valid email address'
-    ]
+    default: ''
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
