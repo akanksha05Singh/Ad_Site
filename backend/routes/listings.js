@@ -70,6 +70,10 @@ router.get('/', async (req, res) => {
       query.isScraped = isScraped === 'true';
     }
 
+    if (req.query.isFeatured !== undefined) {
+      query.isFeatured = req.query.isFeatured === 'true';
+    }
+
     if (minPrice && !isNaN(parseFloat(minPrice))) {
       query.price = { $gte: parseFloat(minPrice) };
     }
@@ -126,10 +130,11 @@ router.post('/', async (req, res) => {
     const { 
       title, description, price, maxPrice, category, location, contactEmail,
       state, occupationCategory, employmentType, workFromHome,
-      contactPhone, contactWhatsapp, gender, isFeatured, companyName, companyWebsite
+      contactPhone, contactWhatsapp, gender, isFeatured, companyName, companyWebsite,
+      contactPerson, designation, phoneCountryCode, whatsappCountryCode, hidePhone
     } = req.body;
 
-    if (!title || !description || price === undefined || !category || !location || !contactEmail) {
+    if (!title || !description || price === undefined) {
       return res.status(400).json({
         success: false,
         error: 'Please provide all required fields'
@@ -144,16 +149,21 @@ router.post('/', async (req, res) => {
       description,
       price,
       maxPrice,
-      category,
-      location,
-      contactEmail,
-      state,
-      occupationCategory,
-      employmentType,
-      workFromHome,
-      contactPhone,
-      contactWhatsapp,
-      gender,
+      category: category || 'job',
+      location: location || '',
+      contactEmail: contactEmail || '',
+      state: state || '',
+      occupationCategory: occupationCategory || '',
+      employmentType: employmentType || 'Any',
+      workFromHome: workFromHome || false,
+      contactPhone: contactPhone || '',
+      contactWhatsapp: contactWhatsapp || '',
+      phoneCountryCode: phoneCountryCode || '+91',
+      whatsappCountryCode: whatsappCountryCode || '+91',
+      hidePhone: hidePhone || false,
+      contactPerson: contactPerson || '',
+      designation: designation || '',
+      gender: gender || 'Any',
       isFeatured: isFeatured || false,
       companyName: companyName || '',
       companyWebsite: companyWebsite || '',

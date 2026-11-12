@@ -3,38 +3,37 @@ const mongoose = require('mongoose');
 const ListingSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Title is required'],
+    required: [true, 'Job title is required'],
     trim: true
   },
   description: {
     type: String,
-    required: [true, 'Description is required']
+    required: [true, 'Job description is required']
   },
   price: {
     type: Number,
-    required: [true, 'Price or Min Salary is required'],
-    min: [0, 'Price must be a positive number']
+    required: [true, 'Min salary is required'],
+    min: [0, 'Min salary must be a positive number']
   },
   maxPrice: {
     type: Number,
-    min: [0, 'Max Salary must be a positive number']
+    min: [0, 'Max salary must be a positive number']
   },
   category: {
     type: String,
     enum: {
-      values: ['classified', 'job'],
-      message: '{VALUE} is not a valid category (must be "classified" or "job")'
+      values: ['classified', 'job', 'JOB'],
+      message: '{VALUE} is not a valid category'
     },
-    required: [true, 'Category is required']
+    default: 'job'
   },
   location: {
     type: String,
-    required: [true, 'Location is required'],
-    trim: true
+    trim: true,
+    default: ''
   },
   contactEmail: {
     type: String,
-    required: false,
     trim: true,
     default: ''
   },
@@ -50,9 +49,8 @@ const ListingSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['active', 'pending'],
-    default: 'pending'
+    default: 'active'
   },
-  // New Job Filtering Fields
   companyName: {
     type: String,
     trim: true,
@@ -65,15 +63,18 @@ const ListingSchema = new mongoose.Schema({
   },
   state: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   occupationCategory: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   employmentType: {
-    type: String, // e.g. "Full-time", "Part-time"
-    trim: true
+    type: String,
+    trim: true,
+    default: 'Any'
   },
   workFromHome: {
     type: Boolean,
@@ -88,19 +89,42 @@ const ListingSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  contactPerson: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  designation: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   contactPhone: {
     type: String,
     trim: true,
     default: ''
+  },
+  phoneCountryCode: {
+    type: String,
+    trim: true,
+    default: '+91'
+  },
+  hidePhone: {
+    type: Boolean,
+    default: false
   },
   contactWhatsapp: {
     type: String,
     trim: true,
     default: ''
   },
+  whatsappCountryCode: {
+    type: String,
+    trim: true,
+    default: '+91'
+  },
   gender: {
     type: String,
-    enum: ['Male', 'Female', 'Any'],
     default: 'Any'
   },
   isFeatured: {
@@ -113,7 +137,6 @@ const ListingSchema = new mongoose.Schema({
   }
 });
 
-// Virtual for formatted price or salary string
 ListingSchema.virtual('formattedPrice').get(function() {
   if (this.category === 'job') {
     return `₹${this.price.toLocaleString()} / month`;
@@ -121,7 +144,6 @@ ListingSchema.virtual('formattedPrice').get(function() {
   return `₹${this.price.toLocaleString()}`;
 });
 
-// Ensure virtuals are serialized
 ListingSchema.set('toJSON', { virtuals: true });
 ListingSchema.set('toObject', { virtuals: true });
 

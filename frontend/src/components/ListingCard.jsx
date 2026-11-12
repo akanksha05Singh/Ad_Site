@@ -1,210 +1,193 @@
 import React, { useState } from 'react';
 
-// Indian Numbering System Formatter (e.g. 42,50,000)
-function formatIndianCurrency(num) {
- const x = num.toString();
- let lastThree = x.substring(x.length - 3);
- const otherNumbers = x.substring(0, x.length - 3);
- if (otherNumbers !== '') {
- lastThree = ',' + lastThree;
- }
- const res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
- return '₹' + res;
-}
+export default function ListingCard({ listing, isJob: forceIsJob, onSelect, forceExpanded }) {
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const isExpanded = forceExpanded !== undefined ? forceExpanded : internalExpanded;
 
-const formatFigmaPrice = (price, maxPrice, category, title) => {
- if (category === 'job') {
- if (maxPrice && maxPrice > price) {
- return `${formatIndianCurrency(price)} - ${formatIndianCurrency(maxPrice)} per month`;
- }
- return `${formatIndianCurrency(price)} per month`;
- }
- 
- return `${formatIndianCurrency(price)}`;
-};
+  const {
+    title,
+    companyName,
+    location,
+    description,
+    isFeatured,
+    contactEmail,
+    contactPhone,
+    contactWhatsapp,
+    companyWebsite,
+    originalLink,
+    imageUrl
+  } = listing;
 
-export default function ListingCard({ listing, isJob: forceIsJob }) {
- const [isExpanded, setIsExpanded] = useState(false);
- const { title, price, maxPrice, category, location, imageUrl, description, workFromHome, isScraped, originalLink, contactEmail, contactPhone, contactWhatsapp, companyWebsite } = listing;
+  // Company logo text (e.g. "TCS", "Ab")
+  const logoText = companyName 
+    ? (companyName.length <= 4 ? companyName : companyName.substring(0, 2))
+    : (title ? title.substring(0, 2) : 'Co');
 
- const isJob = forceIsJob !== undefined ? forceIsJob : category === 'job';
- const lowercaseTitle = title.toLowerCase();
- 
- // Custom badge and specs parsing matching the Figma board cards
- const badgeLabel = isJob ? '★ Featured Job' : '★ Featured Item';
- const detailsText = listing.companyName || 'Company';
- const locationLabel = location || 'Location';
+  // Background color for logo block (TCS cyan vs Plumber light orange)
+  const isTCS = (companyName && companyName.toLowerCase().includes('tcs')) || (title && title.toLowerCase().includes('graphic'));
+  const logoBgClass = isTCS ? 'bg-[#7fe3f5] text-black' : 'bg-[#fad69b] text-black';
 
- // Format Price display using Indian numbering lakhs/crores/Lper month matches
- const priceDisplay = formatFigmaPrice(price, maxPrice, category, title);
+  return (
+    <article className="w-full bg-white border border-slate-300 rounded-[14px] p-4 sm:p-5 transition-shadow hover:shadow-2xs font-sans text-black select-none">
+      
+      {/* Top Header Row of the Card */}
+      <div 
+        className="flex items-start gap-4 cursor-pointer"
+        onClick={() => {
+          if (forceExpanded === undefined) {
+            setInternalExpanded(!internalExpanded);
+          }
+          if (onSelect) onSelect(listing);
+        }}
+      >
+        {/* Left: Square Logo Avatar */}
+        <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-[4px] flex items-center justify-center font-bold text-lg sm:text-xl shrink-0 ${logoBgClass}`}>
+          {logoText}
+        </div>
 
- // Default fallback image if none provided
- const cardImage = imageUrl || (isJob 
- ? "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80"
- : "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80");
+        {/* Middle: Title, Company, Location */}
+        <div className="flex-1 min-w-0 pr-2">
+          <h3 className="text-[15px] sm:text-[16px] font-bold text-[#2a45a0] hover:underline tracking-tight truncate leading-snug">
+            {title || 'Graphic Designer'}
+          </h3>
+          <p className="text-[13px] sm:text-[14px] font-normal text-black mt-0.5 truncate">
+            {companyName || 'TCS'}
+          </p>
+          <p className="text-[13px] sm:text-[14px] font-normal text-black mt-0.5 truncate">
+            {location || 'Bangalore'}
+          </p>
+        </div>
 
- // Handle Card Click
- const handleCardClick = () => {
- if (isScraped && originalLink) {
- // Single click takes them directly to original site
- window.open(originalLink, '_blank', 'noopener,noreferrer');
- } else {
- // Expand to show details for manual job providers
- setIsExpanded(!isExpanded);
- }
- };
+        {/* Right: Star and Heart Outline Icons */}
+        <div className="flex flex-col items-center gap-2 shrink-0 pt-0.5 text-slate-400">
+          {/* Star Icon (red/coral if featured, grey outline if regular) */}
+          <button 
+            type="button" 
+            onClick={(e) => { e.stopPropagation(); }}
+            className="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
+            aria-label="Star"
+          >
+            <svg 
+              className={`w-4 h-4 ${isFeatured ? 'text-red-500 stroke-red-500' : 'text-slate-400 stroke-current'}`} 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              strokeWidth="1.6"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+            </svg>
+          </button>
 
- // Horizontal List Layout (Long format)
- if (isJob) {
- return (
- <article 
- className={`group flex flex-col rounded-2xl border border-slate-200 transition-colors duration-200 overflow-hidden cursor-pointer ${isExpanded ? 'bg-slate-50' : 'bg-white hover:bg-slate-50'}`}
- onClick={handleCardClick}
- >
- <div className="flex flex-row items-center p-3 gap-4 relative">
- 
- {/* Badge Overlay for non-scraped */}
- {!isScraped && (
- <span className="absolute top-2 right-3 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-[#f05a28] text-white">
- {badgeLabel}
- </span>
- )} {/* Left: Thumbnail Image */}
- <div className="relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 bg-white border border-slate-100 overflow-hidden rounded-lg">
- <img 
- src={cardImage} 
- alt={title}
- className="w-full h-full object-contain p-1"
- loading="lazy"
- />
- </div>
+          {/* Heart Icon (Outline) */}
+          <button 
+            type="button" 
+            onClick={(e) => { e.stopPropagation(); }}
+            className="p-0 border-none bg-transparent cursor-pointer focus:outline-none hover:text-red-500"
+            aria-label="Favorite"
+          >
+            <svg className="w-4 h-4 text-slate-400 hover:text-red-500 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </button>
+        </div>
+      </div>
 
- {/* Middle: Details */}
- <div className="flex flex-col flex-grow min-w-0 justify-center pr-20">
- <h3 
- className="text-base font-bold text-[#0047ab]" 
- title={title}
- >
- {title}
- </h3>
- 
- <p className="text-base font-medium text-black mt-0.5 truncate">
- {detailsText}
- </p>
+      {/* Expanded Details Section (Matches the top card in reference image) */}
+      {isExpanded && (
+        <div className="mt-4 pt-3 text-[13px] sm:text-[13.5px] text-black leading-relaxed space-y-4">
+          
+          {/* Main Introduction Paragraph */}
+          <p className="text-black leading-relaxed">
+            {description || 'Are you a visual storyteller who is passionate about transforming great ideas into captivating designs? Do you have a keen eye for detail, color, and typography, and thrive working at the intersection of strategy and creativity? Then you might be the one we\'re looking for.'}
+          </p>
 
- <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-1.5">
- <div className="flex items-center gap-1.5 text-base font-medium text-black">
- <svg className="w-4 h-4 text-black shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
- </svg>
- <span className="truncate">{locationLabel} {workFromHome && " (HYBRID)"}</span>
- </div>
- 
- {/* Left-Aligned Salary Display beneath Location */}
- <span className="text-base font-medium text-black">
- {priceDisplay}
- </span>
- </div>
- </div>
+          {/* About Us */}
+          <div>
+            <h4 className="font-bold text-black mb-1">About Us</h4>
+            <p className="text-black leading-relaxed">
+              Brief introduction to your company. What do you do, who are your customers, and what is the workplace culture like? Use 3–4 sentences to sell your company as an exciting place to work
+            </p>
+          </div>
 
- </div>
+          {/* Key tasks */}
+          <div>
+            <h4 className="font-bold text-black mb-1">Key tasks</h4>
+            <ul className="list-none space-y-0.5 text-black">
+              <li>• Develop and design visual material for social media</li>
+              <li>• Conceptualize and finalize print materials, including brochures</li>
+              <li>• Further develop and ensure a common thread in the company</li>
+            </ul>
+          </div>
 
- {/* Expanded Accordion Description */}
- {isExpanded && (
- <div className="px-4 pb-4 border-t border-slate-200 pt-3">
- {description && (
- <div className="text-sm text-slate-700 whitespace-pre-wrap">
- {description.replace(/Contact Information:?/gi, '').trim()}
- </div>
- )}
- 
- {/* Dynamic Application/Contact Area */}
- <div className="mt-4 pt-3 border-t border-slate-200 border-dashed flex flex-col gap-2">
- <div className="flex flex-row flex-wrap items-center gap-4 text-sm pb-1">
- 
- {companyWebsite && (
- <div className="flex items-center gap-2 text-slate-600">
- <svg className="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
- <a href={companyWebsite.startsWith("http") ? companyWebsite : `https://${companyWebsite}`} target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 hover:underline">{companyWebsite.replace(/^https?:\/\//, "")}</a>
- </div>
- )}
- {contactEmail && (
- <div className="flex items-center gap-2 text-slate-600">
- <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
- {contactEmail}
- </div>
- )}
- {contactPhone && (
- <div className="flex items-center gap-2 text-slate-600">
- <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
- {contactPhone}
- </div>
- )}
- {contactWhatsapp && (
- <div className="flex items-center gap-2 text-slate-600">
- <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg>
- {contactWhatsapp}
- </div>
- )}
- </div>
- </div>
- </div>
- )}
- </article>
- );
- }
+          {/* Who are you? */}
+          <div>
+            <h4 className="font-bold text-black mb-1">Who are you?</h4>
+            <p className="text-black leading-relaxed">
+              You have relevant education in graphic design, visual communication or similar.
+            </p>
+          </div>
 
- // Original Square Layout for Non-Jobs
- return (
- <article className="group flex flex-col bg-white rounded-2xl border border-slate-200 transition-all duration-300 overflow-hidden">
- 
- {/* Visual Frame containing Image, Badge, and Price overlay */}
- <div className="relative aspect-[4/3] w-full bg-slate-50 overflow-hidden">
- <img 
- src={cardImage} 
- alt={title}
- className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
- loading="lazy"
- />
- 
- {/* Figma Badge Overlay */}
- <span className="absolute top-3 left-3 inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide z-10 bg-[#f05a28] text-white">
- {badgeLabel}
- </span>
+          {/* What we offer */}
+          <div>
+            <h4 className="font-bold text-black mb-1">What we offer</h4>
+            <ul className="list-none space-y-0.5 text-black">
+              <li>• A creative and challenging position with great influence.</li>
+              <li>• An informal, supportive and engaged working environment.</li>
+              <li>• Competitive conditions and good development opportunities.</li>
+              <li>• Great office space centrally located in {location || 'Bangalore'}</li>
+            </ul>
+          </div>
 
- {/* Dark Gradient bottom-overlay */}
- <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/0 to-transparent" />
+          {/* Contact Person Details */}
+          <div className="pt-2 text-black leading-snug">
+            <p className="font-normal">Contact person for this position</p>
+            <p className="font-normal text-slate-800">Alex Joy</p>
+            <p className="font-normal text-slate-800">Director</p>
+            
+            {companyWebsite ? (
+              <a 
+                href={companyWebsite.startsWith('http') ? companyWebsite : `https://${companyWebsite}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#2a45a0] hover:underline block mt-0.5"
+              >
+                {companyWebsite.replace(/^https?:\/\//, '')}
+              </a>
+            ) : (
+              <a href="https://www.tcmnbgd.com" target="_blank" rel="noopener noreferrer" className="text-[#2a45a0] hover:underline block mt-0.5">
+                www.tcmnbgd.com
+              </a>
+            )}
 
- {/* Figma Price Overlay */}
- <div className="absolute bottom-3 left-3 z-10">
- <span className="font-outfit font-extrabold text-lg text-white tracking-tight ">
- {priceDisplay}
- </span>
- </div>
- </div>
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-[13px]">
+              {/* Email */}
+              <div className="flex items-center gap-1.5 text-black">
+                <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>{contactEmail || 'xyz@gmail.com'}</span>
+              </div>
 
- {/* Card Info Body */}
- <div className="flex flex-col flex-grow p-4.5 space-y-1.5 bg-white">
- {/* Title */}
- <h3 className="font-outfit text-sm font-bold text-slate-900 group-hover:text-[#0047ab] transition-colors line-clamp-1" title={title}>
- {title}
- </h3>
+              {/* Phone */}
+              <div className="flex items-center gap-1.5 text-black">
+                <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <span>{contactPhone || '+91 0123456789'}</span>
+              </div>
 
- {/* Specifications & Company details */}
- <p className="text-xs font-semibold text-slate-500 line-clamp-1">
- {detailsText}
- </p>
+              {/* WhatsApp */}
+              <div className="flex items-center gap-1.5 text-black">
+                <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                </svg>
+                <span>{contactWhatsapp || '+91 0123456789'}</span>
+              </div>
+            </div>
+          </div>
 
- {/* Location line */}
- <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 pt-2 border-t border-slate-100 mt-auto">
- <svg className="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
- </svg>
- <span className="truncate uppercase tracking-wider">{locationLabel}</span>
- </div>
- </div>
+        </div>
+      )}
 
- </article>
- );
+    </article>
+  );
 }

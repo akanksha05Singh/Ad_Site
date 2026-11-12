@@ -67,7 +67,7 @@ mongoose.connect(MONGODB_URI, mongooseOptions)
   .then(async () => {
     console.log('Successfully connected to MongoDB with production connection pool configuration.');
     // Seed sample listings if database is empty
-    // await seedDatabaseIfNeeded(Listing);
+    await seedDatabaseIfNeeded(Listing);
     
     // Start Express Server
     app.listen(PORT, () => {

@@ -56,6 +56,7 @@ export default function App() {
  setToken(savedToken);
  setUser(JSON.parse(savedUser));
  setActiveTab('dashboard');
+ setWorkspaceTab('find-jobs');
  setActivePage('app');
  }
  }, []);
@@ -476,15 +477,15 @@ export default function App() {
  onSignInClick={() => setActivePage('signin')}
  user={user}
  onLogout={handleLogout}
- onJobsClick={() => {
- if (user) {
- setActiveTab('dashboard');
- setWorkspaceTab('find-jobs');
- setActivePage('app');
- } else {
- setActivePage('signin');
- }
- }}
+        onJobsClick={() => {
+          if (user) {
+            setActiveTab("dashboard");
+            setWorkspaceTab("find-jobs");
+            setActivePage("app");
+          } else {
+            setActivePage("signin");
+          }
+        }}
  onDashboardClick={() => {
  setActiveTab('dashboard');
  setActivePage('app');
@@ -536,10 +537,11 @@ export default function App() {
  setActivePage('home');
  }}
  showSearch={activeTab !== 'feed'} // Search is completely removed from the home feed
+ isHomePage={activeTab === 'feed' && activePage === 'home'}
  />
 
  {/* Main Container */}
- <main className="flex-grow mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+ <main className={`flex-grow w-full ${activeTab === 'feed' && activePage === 'home' ? '' : 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10'}`}>
  {activeTab === 'dashboard' && user ? (
  <div className="w-full">
  {renderWorkspaceContent()}

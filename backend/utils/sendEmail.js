@@ -2,16 +2,19 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, text, html }) => {
   try {
+    const user = process.env.EMAIL_USER || 'freeads.testing@gmail.com';
+    const pass = process.env.EMAIL_PASS || 'qqfvjrstbsgawvar';
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'freeadsapp6@gmail.com',
-        pass: 'mbqicykfcptasepx',
+        user,
+        pass,
       },
     });
 
     const mailOptions = {
-      from: 'FreeAds <freeadsapp6@gmail.com>',
+      from: `FreeAds <${user}>`,
       to,
       subject,
       text,
@@ -19,10 +22,10 @@ const sendEmail = async ({ to, subject, text, html }) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.response}`);
+    console.log(`Email successfully delivered to ${to}: ${info.response}`);
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending email:', error.message || error);
     return false;
   }
 };

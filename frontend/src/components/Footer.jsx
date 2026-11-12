@@ -1,40 +1,39 @@
 import React from 'react';
 
 export default function Footer() {
- return (
- <footer className="w-full bg-white border-t border-slate-200 mt-auto">
- <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
- <div className="flex flex-col items-center">
- {/* Brand */}
- <div className="mb-3">
- <img 
- src="/logo.png" 
- alt="freeads.no" 
- className="h-5 w-auto block"
- />
- </div>
- 
- <div className="text-center mb-3">
- <h3 className="text-[14px] font-bold text-slate-800 uppercase mb-1">SUPPORT</h3>
- <a href="mailto:contact@freeads.no" className="text-[14px] text-slate-600 hover:text-slate-900 transition-colors block">
- contact@freeads.no
- </a>
- </div>
+  const currentYear = new Date().getFullYear();
 
- <div className="text-center mb-4">
- <h3 className="text-[14px] font-bold text-slate-800 uppercase mb-1">LEGAL</h3>
- <div className="flex flex-col gap-1">
- <a href="/" onClick={(e) => e.preventDefault()} className="text-[14px] text-slate-600 hover:text-slate-900 transition-colors">Privacy Policy</a>
- <a href="/" onClick={(e) => e.preventDefault()} className="text-[14px] text-slate-600 hover:text-slate-900 transition-colors">Terms of Service</a>
- </div>
- </div>
+  const footerLinks = [
+    { label: 'About Us', href: '#' },
+    { label: 'Privacy Policy', href: '#' },
+    { label: 'Terms & Conditions', href: '#' },
+    { label: 'Listing Policy', href: '#' },
+    { label: 'Feedback', href: '#' },
+    { label: 'Contact Us', href: 'mailto:contact@freeads.no' },
+  ];
 
- {/* Copyright */}
- <div className="text-center text-[12px] text-slate-500">
- &copy; {new Date().getFullYear()} freeads.no. All rights reserved.
- </div>
- </div>
- </div>
- </footer>
- );
+  return (
+    <footer className="w-full bg-white mt-auto pt-16 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center justify-center space-y-3">
+          {footerLinks.map((link, idx) => (
+            <a
+              key={idx}
+              href={link.href}
+              onClick={(e) => {
+                if (link.href === '#') e.preventDefault();
+              }}
+              className="text-[15px] sm:text-[16px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+
+          <div className="pt-6 text-[14px] text-black font-normal text-center">
+            &copy; {currentYear} freeads.no. All rights reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

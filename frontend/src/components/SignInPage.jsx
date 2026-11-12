@@ -262,7 +262,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
  
  setSuccess('If the email exists, a reset code was sent to your inbox.');
  if (data.resetToken) {
- setDemoResetToken(data.resetToken);
+ 
  }
  setView('reset_password');
  } catch (err) {
@@ -343,12 +343,7 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
  Enter the 6-digit code sent to your email and your new password.
  </p>
  
- {demoResetToken && (
- <div style={{ padding: '12px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', marginBottom: '16px' }}>
- <p style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '4px' }}>MVP Demo Mode Active</p>
- <p style={{ fontSize: '0.875rem', color: '#1e40af' }}>Your password reset code is: <strong style={{ fontSize: '1.125rem', letterSpacing: '2px' }}>{demoResetToken}</strong></p>
- </div>
- )}
+ 
  
  <input
  className="pill-input"

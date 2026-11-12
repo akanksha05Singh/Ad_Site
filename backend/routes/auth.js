@@ -103,7 +103,7 @@ router.post('/signup', async (req, res) => {
       success: true,
       message: 'Verification required. Please check your email.',
       userId: savedUser._id,
-      verificationToken: verificationToken // Added for MVP Demo Purposes
+      
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -366,7 +366,7 @@ router.post('/forgot-password', async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'If email exists, reset link sent. Please check your email.',
-      resetToken: resetToken // MVP Demo Mode
+      
     });
   } catch (error) {
     console.error('Forgot password error:', error);

@@ -1,442 +1,467 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
-import Footer from './Footer';
-import ListingCard from './ListingCard';
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- LandingPage â€” Pixel-perfect home page matching Home page reference.jpg
- 
- Sections:
- 1. Sticky Navbar â€” logo left / Sign-in pill button right
- 2. Hero â€” left text module + right illustration
- 3. JOB Category â€” single pill/icon (all others removed)
- 4. Analytics Stripâ€” 2.4M+ / 2,450 / 3,470 counter blocks
- 5. Featured Listings â€” "PROMOTED" badge + 4-col card grid from API
- 6. Footer â€” logo + Support / Legal columns + copyright
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€*/
-export default function LandingPage({ onSignInClick, user, onLogout, hideHeader, hideFooter, onJobsClick, onHomeClick, onDashboardClick }) {
- const [listings, setListings] = useState([]);
- const [loadingListings, setLoadingListings] = useState(true);
- const [totalJobs, setTotalJobs] = useState(0);
+/* ── Reference Mock Featured Listings matching image exactly ── */
+const MOCK_FEATURED_LISTINGS = [
+  { _id: 'mock-1', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-2', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-3', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-4', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-5', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-6', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-7', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-8', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+];
 
- useEffect(() => {
- fetch(`${API_BASE_URL}/api/listings?category=job&limit=8&isScraped=false`)
- .then(r => r.json())
- .then(data => {
- if (data.success) {
- setListings(data.listings || data.data || []);
- setTotalJobs(data.total || 0);
- }
- })
- .catch(() => setListings([]))
- .finally(() => setLoadingListings(false));
- }, []);
+export default function LandingPage({ 
+  onSignInClick, 
+  user, 
+  onLogout, 
+  onJobsClick, 
+  onHomeClick, 
+  onDashboardClick 
+}) {
+  const [featuredListings, setFeaturedListings] = useState([]);
+  const [loadingListings, setLoadingListings] = useState(true);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isJobsBoxHovered, setIsJobsBoxHovered] = useState(false);
 
- return (
- <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', fontFamily: 'var(--font-sans)' }}>
+  const CARDS_PER_PAGE = 8;
+  const FETCH_LIMIT = 24; // Limit of 20-30 per page
 
- {/* â”€â”€ 1. Navbar â”€â”€ */}
- {!hideHeader && (
- <header style={{
- position: 'sticky', top: 0, zIndex: 40,
- backgroundColor: '#ffffff',
- display: 'flex', alignItems: 'center', justifyContent: 'space-between',
- padding: '0 2.5rem',
- height: '64px',
- border: 'none', borderBottom: 'none',
- boxShadow: 'none'
- }}>
- <button 
- onClick={onHomeClick ? onHomeClick : () => window.scrollTo({top: 0, behavior: 'smooth'})} 
- style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0}}
- >
- <LogoMark />
- </button>
- </header>
- )}
+  useEffect(() => {
+    // Fetch featured listings sorted by date and time of posting (createdAt: -1)
+    fetch(`${API_BASE_URL}/api/listings?isFeatured=true&limit=${FETCH_LIMIT}`)
+      .then(r => r.json())
+      .then(data => {
+        let items = [];
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          items = data.data;
+        }
+        
+        // If fewer than CARDS_PER_PAGE featured items in DB, supplement with reference items
+        // so that the 8-card grid matches the reference image seamlessly
+        if (items.length < CARDS_PER_PAGE) {
+          const needed = CARDS_PER_PAGE - items.length;
+          items = [...items, ...MOCK_FEATURED_LISTINGS.slice(0, needed)];
+        }
+        
+        setFeaturedListings(items);
+      })
+      .catch(() => {
+        setFeaturedListings(MOCK_FEATURED_LISTINGS);
+      })
+      .finally(() => setLoadingListings(false));
+  }, []);
 
- {/* â”€â”€ 2. Hero Section â”€â”€ */}
- <section style={{
- maxWidth: '1180px',
- margin: '0 auto',
- padding: '4rem 2.5rem 2.5rem',
- display: 'flex',
- alignItems: 'center',
- justifyContent: 'space-between',
- gap: '2rem',
- flexWrap: 'wrap',
- }}>
- <div style={{ flex: '1 1 340px', maxWidth: '520px' }}>
- <h1 style={{
- fontFamily: 'var(--font-sans)', fontSize: '2.5rem',
- fontWeight: 400,
- lineHeight: 1.15,
- color: '#000000',
- margin: 0,
- marginBottom: '1rem',
- }}>
- <span style={{ color: '#ff6b6b', fontWeight: 700 }}>job opportunities</span><br/>
- <span style={{ fontWeight: 600 }}>near you</span>
- </h1>
- <p style={{
- fontSize: '0.9rem',
- fontWeight: 500,
- color: '#000000',
- margin: 0,
- lineHeight: 1.4,
- }}>
- exciting new job vacancies<br/>
- <span>updated daily</span>
- </p>
- </div>
+  const totalCards = featuredListings.length;
+  const totalPages = Math.max(1, Math.ceil(totalCards / CARDS_PER_PAGE));
+  const displayedListings = featuredListings.slice(
+    currentPage * CARDS_PER_PAGE,
+    (currentPage + 1) * CARDS_PER_PAGE
+  );
 
- {/* Right Illustration */}
- <div style={{
- flex: '1 1 380px',
- maxWidth: '700px',
- display: 'flex',
- alignItems: 'center',
- justifyContent: 'center',
- }}>
- <img
- src="/landing-hero.png"
- alt="Team working on exciting job opportunities"
- style={{ width: '100%', maxWidth: '600px', height: 'auto', display: 'block', transform: 'none', transformOrigin: 'center right' }}
- />
- </div>
- </section>
+  const handlePrevPage = () => {
+    setCurrentPage(prev => (prev > 0 ? prev - 1 : totalPages - 1));
+  };
 
- {/* â”€â”€ 3. JOB Category Pill (only category shown) â”€â”€ */}
- <section style={{
- maxWidth: '1180px',
- margin: '0 auto',
- padding: '0.5rem 2.5rem 2rem',
- display: 'flex',
- alignItems: 'center',
- justifyContent: 'center',
- }}>
- <div 
- onClick={onJobsClick}
- style={{
- display: 'inline-flex',
- flexDirection: 'column',
- alignItems: 'center',
- gap: '0.5rem',
- cursor: 'pointer',
- transition: 'transform 0.2s ease',
- }}
- onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
- onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
- >
- <div style={{
- width: '40px', height: '40px',
- borderRadius: '12px',
- backgroundColor: '#ff6b57',
- display: 'flex', alignItems: 'center', justifyContent: 'center',
- boxShadow: '0 4px 14px rgba(255, 107, 87, 0.25)',
- }}>
- <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
- <rect x="2" y="7" width="20" height="14" rx="2"/>
- <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
- <path d="M12 12v4"/>
- <path d="M8 12h8"/>
- </svg>
- </div>
- <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#000000', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
- JOBS
- </span>
- </div>
- </section>
+  const handleNextPage = () => {
+    setCurrentPage(prev => (prev < totalPages - 1 ? prev + 1 : 0));
+  };
 
- {/* â”€â”€ 5. Featured Listings â”€â”€ */}
- <section style={{
- maxWidth: '1180px',
- margin: '0 auto',
- padding: '0 2.5rem 3.5rem',
- }}>
- {/* Section Header */}
- <div style={{
- display: 'flex', alignItems: 'center', justifyContent: 'space-between',
- marginBottom: '1rem',
- paddingBottom: '0.875rem',
- borderBottom: '1px solid #e5e7eb',
- }}>
- <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
- <span style={{ fontWeight: 400, fontSize: '1.125rem', color: '#000000', fontFamily: 'var(--font-sans)' }}>
- Featured Listings
- </span>
- <span style={{
- backgroundColor: '#ff6b57',
- color: '#ffffff',
- fontSize: '0.65rem',
- fontWeight: 700,
- letterSpacing: '0.05em',
- padding: '0.25rem 0.6rem',
- borderRadius: '9999px',
- textTransform: 'uppercase',
- }}>
- PROMOTED
- </span>
- </div>
- {/* Navigation chevrons */}
- <div style={{ display: 'flex', gap: '0.5rem' }}>
- <ChevronBtn direction="left" />
- <ChevronBtn direction="right" />
- </div>
- </div>
+  const handleJobsCategoryClick = () => {
+    if (onJobsClick) {
+      onJobsClick();
+    } else if (onSignInClick) {
+      onSignInClick();
+    }
+  };
 
- {/* Card Grid â€” 4 columns */}
- {loadingListings ? (
- <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
- {Array.from({ length: 4 }).map((_, i) => (
- <SkeletonCard key={i} />
- ))}
- </div>
- ) : listings.length > 0 ? (
- <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
- {listings.slice(0, 12).map((listing, i) => (
- <ListingCard key={listing._id || i} listing={listing} isJob={false} />
- ))}
- </div>
- ) : (
- <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
- No featured jobs found. Be the first to post a job!
- </div>
- )}
- </section>
+  return (
+    <div className="min-h-screen bg-white text-black font-sans flex flex-col antialiased">
+      
+      {/* ── Outer Alignment Container (Matches Reference 1020px Container & Margins) ── */}
+      <div className="w-full max-w-[1020px] mx-auto px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
 
- {!hideFooter && <Footer />}
+        {/* ── Top Header: freeads.no° logo left, clean, no border ── */}
+        <header className="pt-10 sm:pt-12 pb-8 sm:pb-10 w-full flex items-center justify-between">
+          <button 
+            type="button" 
+            onClick={onHomeClick || (() => window.scrollTo({ top: 0, behavior: 'smooth' }))}
+            className="focus:outline-none p-0 border-none bg-transparent cursor-pointer"
+            aria-label="freeads.no"
+          >
+            <img 
+              src="/logo.png" 
+              alt="freeads.no" 
+              className="h-6 sm:h-7 w-auto block" 
+            />
+          </button>
+        </header>
 
- </div>
- );
+        {/* ── Hero Section (Left Text Module + Right 4x3 Categories Grid) ── */}
+        <section className="pt-4 sm:pt-6 pb-20 sm:pb-24 w-full">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
+            
+            {/* Left Column: Heading + Gift Icon + Subscription Offer */}
+            <div className="w-full md:w-[480px] flex flex-col items-center text-center justify-between min-h-[290px] py-1">
+              <h1 className="text-[32px] sm:text-[36px] font-normal text-black leading-[1.22] tracking-tight m-0">
+                Explore exciting<br />
+                new job opportunities<br />
+                near you
+              </h1>
+
+              {/* Gift Box Icon with Ribbon Bow and Sparkles */}
+              <div className="my-3 flex items-center justify-center">
+                <GiftWithSparklesIcon />
+              </div>
+
+              {/* Subscription Offer (Clickable to Sign In / Sign Up) */}
+              <div 
+                onClick={onSignInClick}
+                className="text-center text-[15px] sm:text-[15.5px] text-black cursor-pointer leading-snug hover:opacity-80 transition-opacity select-none m-0"
+              >
+                Sign up today to get <strong className="font-bold">free</strong><br />
+                <strong className="font-bold">subscription till 30th June 2027</strong>
+              </div>
+            </div>
+
+            {/* Right Column: 4x3 Grid of Categories (Aligned Right to match Card 4 below) */}
+            <div className="w-full md:w-auto flex md:justify-end justify-center">
+              <div className="w-[360px] sm:w-[390px] grid grid-cols-4 gap-2.5 sm:gap-3">
+                {/* 12 Category Boxes (4 cols x 3 rows) */}
+                {Array.from({ length: 12 }).map((_, index) => {
+                  // Index 5 is Row 2, Column 2 (0-indexed: Row 1 = 0..3, Row 2 = 4..7 -> index 5 is Col 2)
+                  const isJobsBox = index === 5;
+
+                  if (isJobsBox) {
+                    return (
+                      <div
+                        key={index}
+                        onClick={handleJobsCategoryClick}
+                        onMouseEnter={() => setIsJobsBoxHovered(true)}
+                        onMouseLeave={() => setIsJobsBoxHovered(false)}
+                        style={{
+                          backgroundColor: isJobsBoxHovered ? '#bbf7d0' : '#ffffff',
+                        }}
+                        className="aspect-square border border-slate-300 rounded-[2px] flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 select-none shadow-none"
+                        title="Jobs (Click to sign in / sign up)"
+                      >
+                        <BriefcaseIcon />
+                        <span className="text-[11px] sm:text-[12px] font-bold text-black tracking-wider uppercase mt-1.5 sm:mt-2">
+                          JOBS
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  // Other 11 placeholder category boxes
+                  return (
+                    <div
+                      key={index}
+                      className="aspect-square border border-slate-300 rounded-[2px] bg-white select-none transition-colors"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── Featured Listing Section ── */}
+        <section className="w-full pt-4 sm:pt-6 pb-20 sm:pb-28">
+          
+          {/* Section Header: Star + Title on Left | Circular Pagination on Right */}
+          <div className="flex items-center justify-between mb-6 pb-1">
+            <div className="flex items-center gap-2">
+              <OutlineStarIcon className="w-5 h-5 text-black" strokeWidth={1.5} />
+              <h2 className="text-xl sm:text-[22px] font-normal text-black tracking-tight">
+                Featured Listing
+              </h2>
+            </div>
+
+            {/* Circular Navigation Buttons: < and > */}
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handlePrevPage}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-slate-300 bg-white flex items-center justify-center text-slate-700 hover:border-black hover:text-black transition-colors focus:outline-none cursor-pointer"
+                aria-label="Previous listings"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handleNextPage}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-slate-300 bg-white flex items-center justify-center text-slate-700 hover:border-black hover:text-black transition-colors focus:outline-none cursor-pointer"
+                aria-label="Next listings"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* 4-Column Card Grid (8 cards: 4 cols x 2 rows matching reference) */}
+          {loadingListings ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-5 h-[260px] animate-pulse flex flex-col justify-between"
+                >
+                  <div className="w-5 h-5 bg-slate-200 rounded" />
+                  <div className="space-y-2">
+                    <div className="h-5 bg-slate-200 rounded w-3/4" />
+                    <div className="h-4 bg-slate-200 rounded w-1/2" />
+                    <div className="h-4 bg-slate-200 rounded w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full">
+              {displayedListings.map((listing, idx) => (
+                <article
+                  key={listing._id || idx}
+                  onClick={() => setSelectedJob(listing)}
+                  className="group rounded-2xl border border-slate-200 bg-white p-5 h-[260px] flex flex-col justify-between cursor-pointer hover:border-slate-400 hover:shadow-xs transition-all duration-200 select-none"
+                >
+                  {/* Top-Left: Red/Coral Outline Star */}
+                  <div className="flex items-start justify-start">
+                    <OutlineStarIcon className="w-4.5 h-4.5 text-red-500" strokeWidth={1.8} />
+                  </div>
+
+                  {/* Bottom-Left: Designation, Company Name, Location */}
+                  <div className="flex flex-col text-left mt-auto pt-4">
+                    <h3 className="text-[15px] sm:text-[16px] font-bold text-black tracking-tight line-clamp-1">
+                      {listing.title || 'Graphic Designer'}
+                    </h3>
+                    <p className="text-[14px] sm:text-[15px] font-normal text-black mt-1 line-clamp-1">
+                      {listing.companyName || 'TCS'}
+                    </p>
+                    <p className="text-[14px] sm:text-[15px] font-normal text-black mt-0.5 line-clamp-1">
+                      {listing.location || 'Bangalore'}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+        </section>
+
+        {/* ── Centered Footer (Exactly as in Reference) ── */}
+        <footer className="w-full pt-16 sm:pt-24 pb-16 sm:pb-20 mt-auto">
+          <div className="flex flex-col items-center justify-center space-y-2.5 text-center">
+            <a 
+              href="#" 
+              onClick={e => e.preventDefault()} 
+              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              About Us
+            </a>
+            <a 
+              href="#" 
+              onClick={e => e.preventDefault()} 
+              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a 
+              href="#" 
+              onClick={e => e.preventDefault()} 
+              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              Terms & Conditions
+            </a>
+            <a 
+              href="#" 
+              onClick={e => e.preventDefault()} 
+              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              Listing Policy
+            </a>
+            <a 
+              href="#" 
+              onClick={e => e.preventDefault()} 
+              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              Feedback
+            </a>
+            <a 
+              href="mailto:contact@freeads.no" 
+              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+            >
+              Contact Us
+            </a>
+
+            <div className="pt-8 text-[14px] text-black font-normal">
+              &copy; 2026 freeads.no. All rights reserved.
+            </div>
+          </div>
+        </footer>
+
+      </div>
+
+      {/* ── Job Details Modal on Card Click ── */}
+      {selectedJob && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+          onClick={() => setSelectedJob(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-xl border border-slate-200 relative text-left"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setSelectedJob(null)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-black focus:outline-none cursor-pointer"
+              aria-label="Close"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="flex items-center gap-2 mb-3">
+              <OutlineStarIcon className="w-5 h-5 text-red-500" strokeWidth={2} />
+              <span className="text-xs uppercase font-bold tracking-wider text-red-600 bg-red-50 px-2 py-0.5 rounded">
+                Featured Ad
+              </span>
+            </div>
+
+            <h2 className="text-2xl font-bold text-black">{selectedJob.title}</h2>
+            <p className="text-lg font-medium text-slate-700 mt-1">{selectedJob.companyName || 'Company'}</p>
+            <p className="text-sm text-slate-500 mt-0.5">{selectedJob.location || 'Location'}</p>
+
+            {selectedJob.description && (
+              <div className="mt-4 pt-4 border-t border-slate-100 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                {selectedJob.description}
+              </div>
+            )}
+
+            <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap gap-3">
+              {selectedJob.originalLink ? (
+                <a
+                  href={selectedJob.originalLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+                >
+                  View Original Listing &rarr;
+                </a>
+              ) : selectedJob.contactEmail ? (
+                <a
+                  href={`mailto:${selectedJob.contactEmail}?subject=Application for ${encodeURIComponent(selectedJob.title)}`}
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+                >
+                  Contact Employer ({selectedJob.contactEmail})
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedJob(null);
+                    if (onSignInClick) onSignInClick();
+                  }}
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  Sign in to Apply
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
 }
 
-/* â”€â”€ Helper Components â”€â”€ */
+/* ─────────────────────────────────────────────────────────────
+   Micro SVG Icons Matching Reference Image Exactly
+───────────────────────────────────────────────────────────── */
 
-function LogoMark() {
- return (
- <img 
- src="/logo.png" 
- alt="freeads.no" 
- style={{ height: '24px', width: 'auto', display: 'block' }} 
- />
- );
+/** Outline Briefcase Icon for JOBS Box */
+function BriefcaseIcon() {
+  return (
+    <svg 
+      className="w-7 h-7 sm:w-8 sm:h-8 text-black" 
+      viewBox="0 0 28 28" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="1.8" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      {/* Handle */}
+      <path d="M10 7V5.5C10 4.67 10.67 4 11.5 4h5c.83 0 1.5.67 1.5 1.5V7" />
+      {/* Outer Case */}
+      <rect x="3.5" y="7" width="21" height="15" rx="2" />
+      {/* Horizontal divider line */}
+      <line x1="3.5" y1="13" x2="24.5" y2="13" />
+      {/* Central clasp lock */}
+      <path d="M12 11h4v4h-4z" />
+    </svg>
+  );
 }
 
-function ChevronBtn({ direction }) {
- return (
- <button
- style={{
- width: '40px', height: '40px',
- borderRadius: '50%',
- border: '1px solid #e5e7eb',
- backgroundColor: '#ffffff',
- display: 'flex', alignItems: 'center', justifyContent: 'center',
- cursor: 'pointer', color: '#6b7280',
- transition: 'border-color 0.15s, color 0.15s',
- }}
- onMouseEnter={e => { e.currentTarget.style.borderColor = '#000000'; e.currentTarget.style.color = '#000000'; }}
- onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#6b7280'; }}
- >
- <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
- {direction === 'left'
- ? <path d="M15 18l-6-6 6-6"/>
- : <path d="M9 18l6-6-6-6"/>}
- </svg>
- </button>
- );
+/** Outline Star Icon for Section Header and Cards */
+function OutlineStarIcon({ className = 'w-5 h-5', strokeWidth = 1.8 }) {
+  return (
+    <svg 
+      className={className} 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth={strokeWidth} 
+      viewBox="0 0 24 24"
+    >
+      <path 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" 
+      />
+    </svg>
+  );
 }
 
-function SkeletonCard() {
- return (
- <div style={{
- border: '1px solid #e5e7eb',
- borderRadius: '12px',
- padding: '1rem',
- minHeight: '120px',
- backgroundColor: '#fafafa',
- }}>
- <div style={{ height: '64px', backgroundColor: '#f3f4f6', borderRadius: '6px', marginBottom: '0.625rem' }} />
- <div style={{ height: '10px', backgroundColor: '#f3f4f6', borderRadius: '4px', width: '75%', marginBottom: '0.4rem' }} />
- <div style={{ height: '9px', backgroundColor: '#f3f4f6', borderRadius: '4px', width: '50%' }} />
- </div>
- );
+/** Outline Gift Box with Bow and Sparkles Icon */
+function GiftWithSparklesIcon() {
+  return (
+    <svg 
+      className="w-10 h-10 text-black" 
+      viewBox="0 0 36 36" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="1.6" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      {/* Top Left Sparkles */}
+      <path d="M7 6v3M5.5 7.5h3" strokeWidth="1.3" />
+      {/* Top Right Sparkles */}
+      <path d="M29 5v3M27.5 6.5h3" strokeWidth="1.3" />
+      <path d="M32 11v2M31 12h2" strokeWidth="1.2" />
+
+      {/* Bow loops */}
+      <path d="M14.5 13.5c-2.2-2.8-5.5-2.5-5.5.5s3.5 2 5.5 2.5" />
+      <path d="M21.5 13.5c2.2-2.8 5.5-2.5 5.5.5s-3.5 2-5.5 2.5" />
+
+      {/* Gift Box Lid */}
+      <rect x="7" y="16.5" width="22" height="4" rx="1" />
+
+      {/* Gift Box Base */}
+      <path d="M8.5 20.5V30a2 2 0 002 2h15a2 2 0 002-2v-9.5" />
+
+      {/* Vertical Ribbon Stripe */}
+      <line x1="18" y1="16.5" x2="18" y2="32" />
+    </svg>
+  );
 }
-
-
-/* HeroIllustration â€” kept as legacy export but replaced by img tag above */
-function HeroIllustration() {
- return (
- <img
- src="/landing-hero.png"
- alt="Team working on exciting job opportunities"
- style={{ width: '100%', maxWidth: '440px', height: 'auto', display: 'block' }}
- />
- );
-}
-/* Legacy SVG removed */
-function _LegacySVG() {
- return (
- <svg
- viewBox="0 0 520 340"
- xmlns="http://www.w3.org/2000/svg"
- style={{ width: '100%', maxWidth: '440px', height: 'auto' }}
- role="img"
- aria-label="Team working on job opportunities"
- >
- {/* Light blue oval backdrop */}
- <ellipse cx="265" cy="175" rx="210" ry="155" fill="#e0f2fe" opacity="0.65"/>
-
- {/* Desk */}
- <rect x="90" y="218" width="310" height="12" rx="6" fill="#b45309"/>
- <rect x="130" y="230" width="12" height="60" rx="4" fill="#92400e"/>
- <rect x="358" y="230" width="12" height="60" rx="4" fill="#92400e"/>
-
- {/* Monitor */}
- <rect x="195" y="138" width="110" height="78" rx="8" fill="#1e293b"/>
- <rect x="200" y="143" width="100" height="66" rx="5" fill="#38bdf8" opacity="0.85"/>
- {/* Monitor stand */}
- <rect x="244" y="216" width="12" height="12" rx="2" fill="#334155"/>
- <rect x="233" y="226" width="34" height="5" rx="2" fill="#334155"/>
-
- {/* Screen content lines */}
- <rect x="210" y="155" width="55" height="5" rx="2" fill="#ffffff" opacity="0.7"/>
- <rect x="210" y="165" width="40" height="4" rx="2" fill="#ffffff" opacity="0.5"/>
- <rect x="210" y="174" width="65" height="4" rx="2" fill="#ffffff" opacity="0.4"/>
- <rect x="210" y="183" width="48" height="4" rx="2" fill="#bae6fd" opacity="0.6"/>
-
- {/* Keyboard */}
- <rect x="205" y="219" width="90" height="12" rx="4" fill="#e2e8f0"/>
-
- {/* â”€â”€ Person 1 (seated, blue shirt) â”€â”€ */}
- {/* Body */}
- <ellipse cx="250" cy="198" rx="22" ry="26" fill="#38bdf8"/>
- {/* Head */}
- <circle cx="250" cy="168" r="18" fill="#fde68a"/>
- {/* Hair */}
- <ellipse cx="250" cy="155" rx="18" ry="9" fill="#292524"/>
- {/* Face detail */}
- <ellipse cx="244" cy="168" rx="2" ry="2.5" fill="#78350f"/>
- <ellipse cx="256" cy="168" rx="2" ry="2.5" fill="#78350f"/>
- <path d="M245 176 Q250 180 255 176" stroke="#78350f" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
- {/* Arms on keyboard */}
- <ellipse cx="228" cy="210" rx="9" ry="5" fill="#fde68a" transform="rotate(-15 228 210)"/>
- <ellipse cx="272" cy="210" rx="9" ry="5" fill="#fde68a" transform="rotate(15 272 210)"/>
-
- {/* â”€â”€ Person 2 (standing left, red shirt) â”€â”€ */}
- {/* Body */}
- <rect x="90" y="152" width="38" height="68" rx="14" fill="#ef4444"/>
- {/* Head */}
- <circle cx="109" cy="138" r="18" fill="#fcd34d"/>
- {/* Hair */}
- <ellipse cx="109" cy="126" rx="18" ry="8" fill="#1c1917"/>
- {/* Eyes */}
- <ellipse cx="103" cy="137" rx="2" ry="2.5" fill="#78350f"/>
- <ellipse cx="115" cy="137" rx="2" ry="2.5" fill="#78350f"/>
- {/* Smile */}
- <path d="M104 145 Q109 150 114 145" stroke="#78350f" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
- {/* Raised arm */}
- <line x1="90" y1="158" x2="68" y2="118" stroke="#ef4444" strokeWidth="12" strokeLinecap="round"/>
- <circle cx="68" cy="118" r="8" fill="#fcd34d"/>
- {/* Legs */}
- <rect x="92" y="218" width="15" height="42" rx="6" fill="#fbbf24"/>
- <rect x="111" y="218" width="15" height="42" rx="6" fill="#fbbf24"/>
- {/* Shoes */}
- <ellipse cx="100" cy="260" rx="11" ry="5" fill="#ef4444"/>
- <ellipse cx="119" cy="260" rx="11" ry="5" fill="#ef4444"/>
-
- {/* â”€â”€ Person 3 (standing right 1, orange top) â”€â”€ */}
- {/* Body */}
- <rect x="328" y="155" width="38" height="68" rx="14" fill="#f97316"/>
- {/* Head */}
- <circle cx="347" cy="140" r="18" fill="#fde68a"/>
- {/* Hair â€” bun */}
- <ellipse cx="347" cy="126" rx="14" ry="9" fill="#7c2d12"/>
- <circle cx="347" cy="119" r="7" fill="#7c2d12"/>
- {/* Eyes */}
- <ellipse cx="341" cy="140" rx="2" ry="2.5" fill="#78350f"/>
- <ellipse cx="353" cy="140" rx="2" ry="2.5" fill="#78350f"/>
- {/* Legs */}
- <rect x="330" y="221" width="15" height="42" rx="6" fill="#1e293b"/>
- <rect x="349" y="221" width="15" height="42" rx="6" fill="#1e293b"/>
- {/* Shoes */}
- <ellipse cx="338" cy="263" rx="11" ry="5" fill="#38bdf8"/>
- <ellipse cx="357" cy="263" rx="11" ry="5" fill="#38bdf8"/>
-
- {/* â”€â”€ Person 4 (standing right 2, yellow top) â”€â”€ */}
- {/* Body */}
- <rect x="378" y="160" width="36" height="62" rx="14" fill="#fbbf24"/>
- {/* Head */}
- <circle cx="396" cy="146" r="18" fill="#fde68a"/>
- {/* Hair â€” ponytail */}
- <ellipse cx="396" cy="133" rx="16" ry="9" fill="#dc2626"/>
- <path d="M410 133 Q418 125 414 115" stroke="#dc2626" strokeWidth="8" strokeLinecap="round" fill="none"/>
- {/* Eyes */}
- <ellipse cx="390" cy="146" rx="2" ry="2.5" fill="#78350f"/>
- <ellipse cx="402" cy="146" rx="2" ry="2.5" fill="#78350f"/>
- {/* Legs */}
- <rect x="380" y="220" width="14" height="40" rx="6" fill="#374151"/>
- <rect x="398" y="220" width="14" height="40" rx="6" fill="#374151"/>
- {/* Shoes */}
- <ellipse cx="387" cy="260" rx="10" ry="5" fill="#fbbf24"/>
- <ellipse cx="405" cy="260" rx="10" ry="5" fill="#fbbf24"/>
-
- {/* Floating icons */}
- {/* Lightbulb */}
- <circle cx="165" cy="95" r="16" fill="#fffbeb" stroke="#fde68a" strokeWidth="1.5"/>
- <path d="M165 88 Q165 82 165 80 M161 88 Q160 84 157 86 M169 88 Q170 84 173 86" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
- <ellipse cx="165" cy="93" rx="6" ry="7" fill="#fcd34d" opacity="0.8"/>
-
- {/* Gear */}
- <circle cx="358" cy="88" r="14" fill="#f0f9ff" stroke="#bae6fd" strokeWidth="1.5"/>
- <circle cx="358" cy="88" r="5" fill="#38bdf8"/>
-
- {/* Bar chart */}
- <circle cx="145" cy="195" r="13" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.5"/>
- <rect x="139" y="196" width="4" height="6" rx="1" fill="#22c55e"/>
- <rect x="145" y="192" width="4" height="10" rx="1" fill="#16a34a"/>
- <rect x="151" y="189" width="4" height="13" rx="1" fill="#15803d"/>
-
- {/* Speech bubble */}
- <circle cx="375" cy="188" r="13" fill="#fdf4ff" stroke="#f5d0fe" strokeWidth="1.5"/>
- <circle cx="370" cy="188" r="1.5" fill="#a855f7"/>
- <circle cx="375" cy="188" r="1.5" fill="#a855f7"/>
- <circle cx="380" cy="188" r="1.5" fill="#a855f7"/>
- </svg>
- );
-}
-
-/* â”€â”€ Nav Sign-in pill style â”€â”€ */
-const navSignInStyle = {
- display: 'inline-flex',
- alignItems: 'center',
- padding: '0.5rem 1.25rem',
- borderRadius: '9999px',
- border: '1.5px solid #000000',
- backgroundColor: '#ffffff',
- color: '#000000',
- fontSize: '0.9rem',
- fontWeight: 400,
- fontFamily: 'var(--font-sans)',
- cursor: 'pointer',
- transition: 'background-color 0.18s ease, color 0.18s ease',
-};
-
-/* â”€â”€ Footer styles â”€â”€ */
-const footerHeadStyle = {
- fontSize: '0.65rem',
- fontWeight: 700,
- color: '#000000',
- letterSpacing: '0.05em',
- textTransform: 'uppercase',
- margin: 0,
- marginBottom: '0.25rem',
-};
-
-const footerLinkStyle = {
- fontSize: '0.8125rem',
- color: '#6b7280',
- textDecoration: 'none',
- fontWeight: 400,
- display: 'block',
-};
