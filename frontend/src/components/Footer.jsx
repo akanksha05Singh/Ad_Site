@@ -13,9 +13,9 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-white mt-auto pt-16 pb-12">
+    <footer className="w-full bg-white mt-auto pt-14 pb-12 select-none font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center justify-center space-y-3">
+        <div className="flex flex-col items-center justify-center space-y-2.5">
           {footerLinks.map((link, idx) => (
             <a
               key={idx}
@@ -23,13 +23,13 @@ export default function Footer() {
               onClick={(e) => {
                 if (link.href === '#') e.preventDefault();
               }}
-              className="text-[15px] sm:text-[16px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               {link.label}
             </a>
           ))}
 
-          <div className="pt-6 text-[14px] text-black font-normal text-center">
+          <div className="pt-5 text-[13px] text-black font-normal text-center">
             &copy; {currentYear} freeads.no. All rights reserved.
           </div>
         </div>

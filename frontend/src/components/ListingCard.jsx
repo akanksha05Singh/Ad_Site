@@ -1,103 +1,96 @@
 import React, { useState } from 'react';
 
-export default function ListingCard({ listing, isJob: forceIsJob, onSelect, forceExpanded }) {
+export default function ListingCard({ listing, forceExpanded = false, onSelect }) {
   const [internalExpanded, setInternalExpanded] = useState(false);
-  const isExpanded = forceExpanded !== undefined ? forceExpanded : internalExpanded;
+  const isExpanded = forceExpanded || internalExpanded;
 
   const {
-    title,
-    companyName,
-    location,
-    description,
-    isFeatured,
-    contactEmail,
-    contactPhone,
-    contactWhatsapp,
-    companyWebsite,
-    originalLink,
-    imageUrl
-  } = listing;
+    title = 'Graphic Designer',
+    companyName = 'TCS',
+    location = 'Bangalore',
+    isFeatured = false,
+    description = '',
+    contactEmail = '',
+    contactPhone = '',
+    contactWhatsapp = '',
+    companyWebsite = '',
+    contactPerson = 'Alex Joy',
+    designation = 'Director'
+  } = listing || {};
 
-  // Company logo text (e.g. "TCS", "Ab")
-  const logoText = companyName 
-    ? (companyName.length <= 4 ? companyName : companyName.substring(0, 2))
-    : (title ? title.substring(0, 2) : 'Co');
-
-  // Background color for logo block (TCS cyan vs Plumber light orange)
-  const isTCS = (companyName && companyName.toLowerCase().includes('tcs')) || (title && title.toLowerCase().includes('graphic'));
-  const logoBgClass = isTCS ? 'bg-[#7fe3f5] text-black' : 'bg-[#fad69b] text-black';
+  // Company avatar styling matching PDF
+  const isTCS = companyName?.toUpperCase()?.includes('TCS');
+  const avatarBg = isTCS ? '#7fe3f5' : '#fad69b'; // Cyan for TCS, peach for others
+  const avatarText = isTCS ? 'TCS' : (companyName?.substring(0, 2) || 'Ab');
 
   return (
-    <article className="w-full bg-white border border-slate-300 rounded-[14px] p-4 sm:p-5 transition-shadow hover:shadow-2xs font-sans text-black select-none">
-      
-      {/* Top Header Row of the Card */}
+    <article 
+      className="w-full bg-white border border-slate-200/90 rounded-[14px] p-4 sm:p-5 transition-shadow hover:shadow-xs select-none"
+    >
+      {/* ── Top Row: Avatar + Title/Company + Star & Heart Icons ── */}
       <div 
-        className="flex items-start gap-4 cursor-pointer"
+        className="flex items-start justify-between cursor-pointer"
         onClick={() => {
-          if (forceExpanded === undefined) {
-            setInternalExpanded(!internalExpanded);
-          }
           if (onSelect) onSelect(listing);
+          else setInternalExpanded(!internalExpanded);
         }}
       >
-        {/* Left: Square Logo Avatar */}
-        <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-[4px] flex items-center justify-center font-bold text-lg sm:text-xl shrink-0 ${logoBgClass}`}>
-          {logoText}
+        <div className="flex items-start gap-4">
+          {/* Company Avatar Box */}
+          <div 
+            style={{ backgroundColor: avatarBg }}
+            className="w-14 h-14 rounded-lg flex items-center justify-center font-bold text-slate-900 text-lg shrink-0 tracking-tight"
+          >
+            {avatarText}
+          </div>
+
+          {/* Title & Company Info */}
+          <div>
+            <h3 className="text-[15.5px] font-semibold text-[#1d4ed8] hover:underline cursor-pointer leading-tight">
+              {title}
+            </h3>
+            <p className="text-[13.5px] text-slate-900 font-normal mt-0.5">{companyName}</p>
+            <p className="text-[13.5px] text-slate-800 font-normal">{location}</p>
+          </div>
         </div>
 
-        {/* Middle: Title, Company, Location */}
-        <div className="flex-1 min-w-0 pr-2">
-          <h3 className="text-[15px] sm:text-[16px] font-bold text-[#2a45a0] hover:underline tracking-tight truncate leading-snug">
-            {title || 'Graphic Designer'}
-          </h3>
-          <p className="text-[13px] sm:text-[14px] font-normal text-black mt-0.5 truncate">
-            {companyName || 'TCS'}
-          </p>
-          <p className="text-[13px] sm:text-[14px] font-normal text-black mt-0.5 truncate">
-            {location || 'Bangalore'}
-          </p>
-        </div>
-
-        {/* Right: Star and Heart Outline Icons */}
-        <div className="flex flex-col items-center gap-2 shrink-0 pt-0.5 text-slate-400">
-          {/* Star Icon (red/coral if featured, grey outline if regular) */}
+        {/* Right Action Icons: Star & Heart */}
+        <div className="flex flex-col items-center gap-2 pt-0.5 text-slate-400">
+          {/* Star Icon (Red outline if featured) */}
           <button 
             type="button" 
-            onClick={(e) => { e.stopPropagation(); }}
-            className="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
+            className="focus:outline-none hover:scale-110 transition-transform"
             aria-label="Star"
           >
             <svg 
-              className={`w-4 h-4 ${isFeatured ? 'text-red-500 stroke-red-500' : 'text-slate-400 stroke-current'}`} 
-              fill="none" 
+              className={`w-4 h-4 ${isFeatured ? 'text-red-500 fill-none stroke-current' : 'text-slate-300 fill-none stroke-current'}`} 
               viewBox="0 0 24 24" 
-              strokeWidth="1.6"
+              strokeWidth="1.8"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
           </button>
 
-          {/* Heart Icon (Outline) */}
+          {/* Heart Icon */}
           <button 
             type="button" 
-            onClick={(e) => { e.stopPropagation(); }}
-            className="p-0 border-none bg-transparent cursor-pointer focus:outline-none hover:text-red-500"
-            aria-label="Favorite"
+            className="focus:outline-none hover:scale-110 transition-transform"
+            aria-label="Bookmark"
           >
-            <svg className="w-4 h-4 text-slate-400 hover:text-red-500 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.6">
+            <svg className="w-4 h-4 text-slate-300 hover:text-red-400 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="1.8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Expanded Details Section (Matches the top card in reference image) */}
+      {/* ── Expanded Detail View (Matches PDF Mockup) ── */}
       {isExpanded && (
-        <div className="mt-4 pt-3 text-[13px] sm:text-[13.5px] text-black leading-relaxed space-y-4">
+        <div className="mt-4 pt-3 border-t border-slate-100 text-[13px] text-slate-800 space-y-4 leading-normal">
           
-          {/* Main Introduction Paragraph */}
+          {/* Intro Paragraph */}
           <p className="text-black leading-relaxed">
-            {description || 'Are you a visual storyteller who is passionate about transforming great ideas into captivating designs? Do you have a keen eye for detail, color, and typography, and thrive working at the intersection of strategy and creativity? Then you might be the one we\'re looking for.'}
+            {description || "Are you a visual storyteller who is passionate about transforming great ideas into captivating designs? Do you have a keen eye for detail, color, and typography, and thrive working at the intersection of strategy and creativity? Then you might be the one we're looking for."}
           </p>
 
           {/* About Us */}
@@ -140,8 +133,8 @@ export default function ListingCard({ listing, isJob: forceIsJob, onSelect, forc
           {/* Contact Person Details */}
           <div className="pt-2 text-black leading-snug">
             <p className="font-normal">Contact person for this position</p>
-            <p className="font-normal text-slate-800">Alex Joy</p>
-            <p className="font-normal text-slate-800">Director</p>
+            <p className="font-normal text-slate-800">{contactPerson || 'Alex Joy'}</p>
+            <p className="font-normal text-slate-800">{designation || 'Director'}</p>
             
             {companyWebsite ? (
               <a 
@@ -158,7 +151,7 @@ export default function ListingCard({ listing, isJob: forceIsJob, onSelect, forc
               </a>
             )}
 
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-[13px]">
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-[14px]">
               {/* Email */}
               <div className="flex items-center gap-1.5 text-black">
                 <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
