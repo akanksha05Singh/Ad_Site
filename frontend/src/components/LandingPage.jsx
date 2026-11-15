@@ -11,6 +11,8 @@ const MOCK_FEATURED_LISTINGS = [
   { _id: 'mock-6', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
   { _id: 'mock-7', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
   { _id: 'mock-8', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-9', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
+  { _id: 'mock-10', title: 'Graphic Designer', companyName: 'TCS', location: 'Bangalore', isFeatured: true },
 ];
 
 export default function LandingPage({ 
@@ -27,8 +29,8 @@ export default function LandingPage({
   const [currentPage, setCurrentPage] = useState(0);
   const [isJobsBoxHovered, setIsJobsBoxHovered] = useState(false);
 
-  const CARDS_PER_PAGE = 8;
-  const FETCH_LIMIT = 24; // Limit of 20-30 per page
+  const CARDS_PER_PAGE = 10;
+  const FETCH_LIMIT = 30; // Limit of 20-30 per page
 
   useEffect(() => {
     // Fetch featured listings sorted by date and time of posting (createdAt: -1)
@@ -81,11 +83,11 @@ export default function LandingPage({
   return (
     <div className="min-h-screen bg-white text-black font-sans flex flex-col antialiased">
       
-      {/* ── Outer Alignment Container (Matches Reference 1020px Container & Margins) ── */}
-      <div className="w-full max-w-[1020px] mx-auto px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
+      {/* ── Outer Alignment Container (Matches Max Width 7xl & px-4 sm:px-6 lg:px-8 to align with Navbar) ── */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
 
-        {/* ── Top Header: freeads.no° logo left, clean, no border ── */}
-        <header className="pt-10 sm:pt-12 pb-8 sm:pb-10 w-full flex items-center justify-between">
+        {/* ── Top Header: freeads.no° logo left, clean, no border (Matches Navbar h-16 alignment) ── */}
+        <header className="h-16 w-full flex items-center justify-between">
           <button 
             type="button" 
             onClick={onHomeClick || (() => window.scrollTo({ top: 0, behavior: 'smooth' }))}
@@ -95,18 +97,18 @@ export default function LandingPage({
             <img 
               src="/logo.png" 
               alt="freeads.no" 
-              className="h-6 sm:h-7 w-auto block" 
+              style={{ height: '24px', width: 'auto', display: 'block' }} 
             />
           </button>
         </header>
 
         {/* ── Hero Section (Left Text Module + Right 4x3 Categories Grid) ── */}
-        <section className="pt-4 sm:pt-6 pb-20 sm:pb-24 w-full">
+        <section className="pt-6 sm:pt-10 pb-16 sm:pb-20 w-full">
           <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
             
             {/* Left Column: Heading + Gift Icon + Subscription Offer */}
-            <div className="w-full md:w-[480px] flex flex-col items-center text-center justify-between min-h-[290px] py-1">
-              <h1 className="text-[32px] sm:text-[36px] font-normal text-black leading-[1.22] tracking-tight m-0">
+            <div className="w-full md:w-[480px] flex flex-col items-center text-center justify-between min-h-[300px] py-1">
+              <h1 className="text-[32px] sm:text-[38px] font-normal text-black leading-[1.22] tracking-tight m-0">
                 Explore exciting<br />
                 new job opportunities<br />
                 near you
@@ -127,9 +129,9 @@ export default function LandingPage({
               </div>
             </div>
 
-            {/* Right Column: 4x3 Grid of Categories (Aligned Right to match Card 4 below) */}
+            {/* Right Column: 4x3 Grid of Categories (Larger boxes, smaller gaps matching manager note) */}
             <div className="w-full md:w-auto flex md:justify-end justify-center">
-              <div className="w-[360px] sm:w-[390px] grid grid-cols-4 gap-2.5 sm:gap-3">
+              <div className="w-[420px] sm:w-[460px] grid grid-cols-4 gap-1.5 sm:gap-2">
                 {/* 12 Category Boxes (4 cols x 3 rows) */}
                 {Array.from({ length: 12 }).map((_, index) => {
                   // Index 5 is Row 2, Column 2 (0-indexed: Row 1 = 0..3, Row 2 = 4..7 -> index 5 is Col 2)
@@ -176,7 +178,7 @@ export default function LandingPage({
           {/* Section Header: Star + Title on Left | Circular Pagination on Right */}
           <div className="flex items-center justify-between mb-6 pb-1">
             <div className="flex items-center gap-2">
-              <OutlineStarIcon className="w-5 h-5 text-black" strokeWidth={1.5} />
+              <OutlineStarIcon className="w-5 h-5 text-red-500" strokeWidth={1.5} />
               <h2 className="text-xl sm:text-[22px] font-normal text-black tracking-tight">
                 Featured Listing
               </h2>
@@ -207,10 +209,10 @@ export default function LandingPage({
             </div>
           </div>
 
-          {/* 4-Column Card Grid (8 cards: 4 cols x 2 rows matching reference) */}
+          {/* 5-Column Card Grid (10 cards: 5 cols x 2 rows matching manager's instruction) */}
           {loadingListings ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full">
-              {Array.from({ length: 8 }).map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-4.5 w-full">
+              {Array.from({ length: 10 }).map((_, i) => (
                 <div
                   key={i}
                   className="rounded-2xl border border-slate-200 bg-slate-50 p-5 h-[260px] animate-pulse flex flex-col justify-between"
@@ -225,14 +227,14 @@ export default function LandingPage({
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-4.5 w-full">
               {displayedListings.map((listing, idx) => (
                 <article
                   key={listing._id || idx}
                   onClick={() => setSelectedJob(listing)}
                   className="group rounded-2xl border border-slate-200 bg-white p-5 h-[260px] flex flex-col justify-between cursor-pointer hover:border-slate-400 hover:shadow-xs transition-all duration-200 select-none"
                 >
-                  {/* Top-Left: Red/Coral Outline Star */}
+                  {/* Top-Left: Red Outline Star */}
                   <div className="flex items-start justify-start">
                     <OutlineStarIcon className="w-4.5 h-4.5 text-red-500" strokeWidth={1.8} />
                   </div>
@@ -262,41 +264,41 @@ export default function LandingPage({
             <a 
               href="#" 
               onClick={e => e.preventDefault()} 
-              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               About Us
             </a>
             <a 
               href="#" 
               onClick={e => e.preventDefault()} 
-              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               Privacy Policy
             </a>
             <a 
               href="#" 
               onClick={e => e.preventDefault()} 
-              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               Terms & Conditions
             </a>
             <a 
               href="#" 
               onClick={e => e.preventDefault()} 
-              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               Listing Policy
             </a>
             <a 
               href="#" 
               onClick={e => e.preventDefault()} 
-              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               Feedback
             </a>
             <a 
               href="mailto:contact@freeads.no" 
-              className="text-[15px] text-black font-normal hover:text-slate-600 transition-colors"
+              className="text-[14px] text-black font-normal hover:text-slate-600 transition-colors"
             >
               Contact Us
             </a>
