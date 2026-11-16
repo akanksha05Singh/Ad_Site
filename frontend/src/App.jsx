@@ -476,9 +476,10 @@ export default function App() {
  return (
  <LandingPage
  onFeaturedClick={(item) => {
- setSelectedListingId(item?._id || item?.id || null);
- setActiveTab('browse');
- }}
+          setSelectedListingId(item?._id || item?.id || null);
+          setActiveTab('browse');
+          setActivePage('app');
+        }}
  onSignInClick={() => setActivePage('signin')}
  user={user}
  onLogout={handleLogout}
