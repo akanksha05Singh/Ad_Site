@@ -21,7 +21,8 @@ export default function LandingPage({
   onLogout, 
   onJobsClick, 
   onHomeClick, 
-  onDashboardClick 
+  onDashboardClick,
+  onFeaturedClick
 }) {
   const [featuredListings, setFeaturedListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(true);
@@ -231,7 +232,15 @@ export default function LandingPage({
               {displayedListings.map((listing, idx) => (
                 <article
                   key={listing._id || idx}
-                  onClick={() => setSelectedJob(listing)}
+                  onClick={() => {
+                    if (onFeaturedClick) {
+                      onFeaturedClick(listing);
+                    } else if (onJobsClick) {
+                      onJobsClick();
+                    } else {
+                      setSelectedJob(listing);
+                    }
+                  }}
                   className="group rounded-2xl border border-slate-200 bg-white p-5 h-[260px] flex flex-col justify-between cursor-pointer hover:border-slate-400 hover:shadow-xs transition-all duration-200 select-none"
                 >
                   {/* Top-Left: Red Outline Star */}

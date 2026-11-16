@@ -27,7 +27,8 @@ export default function App() {
 
  // Tab View Navigation
  // activeTab: 'feed', 'dashboard', 'admin'
- const [activeTab, setActiveTab] = useState('feed'); 
+ const [activeTab, setActiveTab] = useState('feed');
+  const [selectedListingId, setSelectedListingId] = useState(null); 
  
  // workspaceTab (sub-tabs inside logged-in dashboard view)
  // 'overview', 'listings', 'applicants', 'saved', 'messages', 'billing', 'profile'
@@ -474,6 +475,10 @@ export default function App() {
  if (activePage === 'home') {
  return (
  <LandingPage
+ onFeaturedClick={(item) => {
+ setSelectedListingId(item?._id || item?.id || null);
+ setActiveTab('browse');
+ }}
  onSignInClick={() => setActivePage('signin')}
  user={user}
  onLogout={handleLogout}
@@ -552,6 +557,7 @@ export default function App() {
  <h1 className="text-2xl font-medium text-slate-900">Browse Jobs</h1>
  </div>
  <BrowseGrid 
+ initialExpandedId={selectedListingId}
  searchQuery={searchQuery} 
  selectedCategory="job" 
  refreshTrigger={refreshTrigger} 

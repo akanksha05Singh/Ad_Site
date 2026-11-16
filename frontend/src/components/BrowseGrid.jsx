@@ -75,7 +75,14 @@ const MOCK_LISTINGS = [
   }
 ];
 
-export default function BrowseGrid({ searchQuery, selectedCategory = 'job', location, minPrice, refreshTrigger }) {
+export default function BrowseGrid({ 
+  searchQuery, 
+  selectedCategory = 'job', 
+  location, 
+  minPrice, 
+  refreshTrigger,
+  initialExpandedId
+}) {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -95,7 +102,13 @@ export default function BrowseGrid({ searchQuery, selectedCategory = 'job', loca
     gender: 'Any'
   });
 
-  const [expandedCardId, setExpandedCardId] = useState('mock-detail-1');
+  const [expandedCardId, setExpandedCardId] = useState(initialExpandedId || 'mock-detail-1');
+
+  useEffect(() => {
+    if (initialExpandedId) {
+      setExpandedCardId(initialExpandedId);
+    }
+  }, [initialExpandedId]);
 
   useEffect(() => {
     let active = true;
