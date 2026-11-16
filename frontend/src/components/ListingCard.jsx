@@ -5,17 +5,17 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect }
   const isExpanded = forceExpanded || internalExpanded;
 
   const {
-    title = 'Graphic Designer',
-    companyName = 'TCS',
-    location = 'Bangalore',
+    title = '',
+    companyName = '',
+    location = '',
     isFeatured = false,
     description = '',
     contactEmail = '',
     contactPhone = '',
     contactWhatsapp = '',
     companyWebsite = '',
-    contactPerson = 'Alex Joy',
-    designation = 'Director'
+    contactPerson = '',
+    designation = ''
   } = listing || {};
 
   // Company avatar styling matching PDF
