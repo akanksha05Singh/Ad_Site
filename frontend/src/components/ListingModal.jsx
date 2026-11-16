@@ -106,28 +106,26 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
           whatsappCountryCode: initialData.whatsappCountryCode || '+91'
         });
       } else {
-        const cleanPhone = (user?.phone || '').replace(/^\+91\s*/, '');
-        const cleanWhatsapp = (user?.whatsapp || '').replace(/^\+91\s*/, '');
         setFormData({
           category: 'JOB',
           title: '',
           occupationCategory: 'Engineer',
-          location: user?.location || '',
+          location: '',
           price: '25,000',
           maxPrice: '35,000',
           gender: 'Any',
           employmentType: 'Any',
-          companyName: user?.companyName || '',
-          companyWebsite: user?.website || '',
+          companyName: '',
+          companyWebsite: '',
           contactEmail: user?.email || '',
           description: '',
           isFeatured: false,
-          contactPerson: user?.name || '',
-          designation: user?.designation || '',
-          contactPhone: cleanPhone,
+          contactPerson: '',
+          designation: '',
+          contactPhone: '',
           phoneCountryCode: '+91',
           hidePhone: false,
-          contactWhatsapp: cleanWhatsapp || cleanPhone,
+          contactWhatsapp: '',
           whatsappCountryCode: '+91'
         });
       }
@@ -194,10 +192,10 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
         imageUrl: user?.profilePhoto || user?.avatar || ''
       };
 
-      const url = initialData 
-        ? `${API_BASE_URL}/api/listings/${initialData._id}` 
+      const url = initialData
+        ? `${API_BASE_URL}/api/listings/${initialData._id}`
         : `${API_BASE_URL}/api/listings`;
-      
+
       const method = initialData ? 'PUT' : 'POST';
       const token = localStorage.getItem('token');
       const headers = { 'Content-Type': 'application/json' };
@@ -231,15 +229,15 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto font-sans" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       {/* Background backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity" 
+      <div
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
       <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 text-left">
         {/* White Card Container matching PDF layout */}
         <div className="relative w-full max-w-[620px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 z-10">
-          
+
           {/* Close button top right */}
           <button
             type="button"
@@ -353,7 +351,7 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
                 Salary per month<span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-center">
-                
+
                 {/* Min */}
                 <div className="sm:col-span-3 flex items-center gap-1.5">
                   <span className="text-slate-700 text-[13.5px]">Min</span>

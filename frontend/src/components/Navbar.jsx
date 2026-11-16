@@ -1,61 +1,61 @@
 import React, { useState } from 'react';
 
-export default function Navbar({ 
- searchQuery, 
- setSearchQuery, 
- selectedCategory, 
- setSelectedCategory, 
- user, 
- onLogout, 
- onLoginClick,
- onPostClick,
- setActiveTab,
- onHomeClick,
- showSearch = true,
- isHomePage = false
+export default function Navbar({
+  searchQuery,
+  setSearchQuery,
+  selectedCategory,
+  setSelectedCategory,
+  user,
+  onLogout,
+  onLoginClick,
+  onPostClick,
+  setActiveTab,
+  onHomeClick,
+  showSearch = true,
+  isHomePage = false
 }) {
- const [dropdownOpen, setDropdownOpen] = useState(false);
- const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
- const handleCategorySelect = (category) => {
- setSelectedCategory(category);
- setDropdownOpen(false);
- };
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setDropdownOpen(false);
+  };
 
- const getCategoryLabel = () => {
- if (selectedCategory === 'all') return 'All';
- if (selectedCategory === 'classified') return 'Classifieds';
- if (selectedCategory === 'job') return 'Jobs';
- return 'All';
- };
+  const getCategoryLabel = () => {
+    if (selectedCategory === 'all') return 'All';
+    if (selectedCategory === 'classified') return 'Classifieds';
+    if (selectedCategory === 'job') return 'Jobs';
+    return 'All';
+  };
 
- const handleUserMenuClick = (tabName) => {
- setActiveTab(tabName);
- setUserMenuOpen(false);
- };
+  const handleUserMenuClick = (tabName) => {
+    setActiveTab(tabName);
+    setUserMenuOpen(false);
+  };
 
- return (
- <header className={`sticky top-0 z-40 w-full bg-white h-16 ${isHomePage ? '' : 'border-b border-slate-200'}`}>
- <div className="mx-auto flex max-w-7xl h-full items-center justify-between px-4 sm:px-6 lg:px-8">
- 
- {/* Left Side: Logo */}
- <div className="flex items-center gap-3 shrink-0">
- <button 
- type="button" 
- onClick={onHomeClick ? onHomeClick : () => handleUserMenuClick('feed')} 
- className="focus:outline-none"
- aria-label="freeads.no"
- >
- <img 
- src="/logo.png" 
- alt="freeads.no" 
- style={{ height: '24px', width: 'auto', display: 'block' }} 
- />
- </button>
- </div>
+  return (
+    <header className={`sticky top-0 z-40 w-full bg-white h-16 ${isHomePage ? '' : 'border-b border-slate-200'}`}>
+      <div className="mx-auto flex max-w-7xl h-full items-center justify-between px-4 sm:px-6 lg:px-8">
 
- {/* Search Bar Removed as per user instruction */}
- {/* Right Side: Authentication / Actions (Matching PDF exactly) */}
+        {/* Left Side: Logo */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={onHomeClick ? onHomeClick : () => handleUserMenuClick('feed')}
+            className="focus:outline-none"
+            aria-label="freeads.no"
+          >
+            <img
+              src="/logo.png"
+              alt="freeads.no"
+              style={{ height: '24px', width: 'auto', display: 'block' }}
+            />
+          </button>
+        </div>
+
+        {/* Search Bar Removed as per user instruction */}
+        {/* Right Side: Authentication / Actions (Matching PDF exactly) */}
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           {/* + Post an AD button */}
           <button
@@ -82,8 +82,8 @@ export default function Navbar({
           </button>
 
           {/* Notification Bell matching PDF */}
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={onLoginClick}
             className="relative p-1 text-black hover:opacity-75 focus:outline-none cursor-pointer bg-transparent border-none"
             aria-label="Notifications"
@@ -135,6 +135,13 @@ export default function Navbar({
                 </button>
                 <button
                   type="button"
+                  onClick={() => handleUserMenuClick('profile')}
+                  className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-left text-slate-700"
+                >
+                  My Profile
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleUserMenuClick('overview')}
                   className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-left text-slate-700"
                 >
@@ -167,5 +174,5 @@ export default function Navbar({
         </div>
       </div>
     </header>
- );
+  );
 }
