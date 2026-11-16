@@ -190,7 +190,8 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
         phoneCountryCode: formData.phoneCountryCode,
         hidePhone: formData.hidePhone,
         contactWhatsapp: formData.contactWhatsapp,
-        whatsappCountryCode: formData.whatsappCountryCode
+        whatsappCountryCode: formData.whatsappCountryCode,
+        imageUrl: user?.profilePhoto || user?.avatar || ''
       };
 
       const url = initialData 

@@ -15,13 +15,17 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect }
     contactWhatsapp = '',
     companyWebsite = '',
     contactPerson = '',
-    designation = ''
+    designation = '',
+    imageUrl = '',
+    owner = {}
   } = listing || {};
+
+  const userPhoto = imageUrl || owner?.avatar || owner?.profilePhoto || listing?.profilePhoto;
 
   // Company avatar styling matching PDF
   const isTCS = companyName?.toUpperCase()?.includes('TCS');
   const avatarBg = isTCS ? '#7fe3f5' : '#fad69b'; // Cyan for TCS, peach for others
-  const avatarText = isTCS ? 'TCS' : (companyName?.substring(0, 2) || 'Ab');
+  const avatarText = isTCS ? 'TCS' : (companyName?.substring(0, 2) || (contactPerson ? contactPerson.substring(0, 2) : 'Ad'));
 
   return (
     <article 
@@ -36,12 +40,16 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect }
         }}
       >
         <div className="flex items-start gap-4">
-          {/* Company Avatar Box */}
+          {/* Company Avatar / Profile Photo Box */}
           <div 
-            style={{ backgroundColor: avatarBg }}
-            className="w-14 h-14 rounded-lg flex items-center justify-center font-bold text-slate-900 text-lg shrink-0 tracking-tight"
+            style={{ backgroundColor: userPhoto ? 'transparent' : avatarBg }}
+            className="w-14 h-14 rounded-lg flex items-center justify-center font-bold text-slate-900 text-lg shrink-0 tracking-tight overflow-hidden"
           >
-            {avatarText}
+            {userPhoto ? (
+              <img src={userPhoto} alt={companyName || contactPerson || 'Profile'} className="w-full h-full object-cover" />
+            ) : (
+              avatarText
+            )}
           </div>
 
           {/* Title & Company Info */}
