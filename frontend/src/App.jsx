@@ -124,8 +124,10 @@ export default function App() {
  <div className="space-y-6">
  <BrowseGrid 
  selectedCategory="job" 
- refreshTrigger={refreshTrigger} 
- />
+ refreshTrigger={refreshTrigger}
+            user={user}
+            onRequireAuth={() => setActivePage('signin')}
+          />
  </div>
  );
  case 'messages':

@@ -106,26 +106,28 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
           whatsappCountryCode: initialData.whatsappCountryCode || '+91'
         });
       } else {
+        const cleanPhone = (user?.phone || '').replace(/^\+91\s*/, '');
+        const cleanWhatsapp = (user?.whatsapp || '').replace(/^\+91\s*/, '');
         setFormData({
           category: 'JOB',
           title: '',
           occupationCategory: 'Engineer',
-          location: '',
+          location: user?.location || '',
           price: '25,000',
           maxPrice: '35,000',
           gender: 'Any',
           employmentType: 'Any',
-          companyName: '',
-          companyWebsite: '',
+          companyName: user?.companyName || '',
+          companyWebsite: user?.website || '',
           contactEmail: user?.email || '',
           description: '',
           isFeatured: false,
-          contactPerson: '',
-          designation: '',
-          contactPhone: '',
+          contactPerson: user?.name || '',
+          designation: user?.designation || '',
+          contactPhone: cleanPhone,
           phoneCountryCode: '+91',
           hidePhone: false,
-          contactWhatsapp: '',
+          contactWhatsapp: cleanWhatsapp || cleanPhone,
           whatsappCountryCode: '+91'
         });
       }
