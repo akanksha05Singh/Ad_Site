@@ -167,6 +167,7 @@ router.post('/', async (req, res) => {
       isFeatured: isFeatured || false,
       companyName: companyName || '',
       companyWebsite: companyWebsite || '',
+      imageUrl: req.body.imageUrl || (user ? (user.avatar || user.profilePhoto) : '') || '',
       owner: user ? user._id : null,
       status: 'active',
       isScraped: false
