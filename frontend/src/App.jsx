@@ -560,11 +560,13 @@ export default function App() {
  <h1 className="text-2xl font-medium text-slate-900">Browse Jobs</h1>
  </div>
  <BrowseGrid 
- initialExpandedId={selectedListingId}
- searchQuery={searchQuery} 
- selectedCategory="job" 
- refreshTrigger={refreshTrigger} 
- />
+              initialExpandedId={selectedListingId}
+              searchQuery={searchQuery} 
+              selectedCategory="job" 
+              refreshTrigger={refreshTrigger} 
+              user={user}
+              onRequireAuth={() => setActivePage('signin')}
+            />
  </div>
  ) : (
  <LandingPage

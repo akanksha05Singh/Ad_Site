@@ -81,7 +81,9 @@ export default function BrowseGrid({
   location, 
   minPrice, 
   refreshTrigger,
-  initialExpandedId
+  initialExpandedId,
+  user,
+  onRequireAuth
 }) {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -209,6 +211,8 @@ export default function BrowseGrid({
                 key={item._id || index}
                 listing={item}
                 forceExpanded={isCurrentlyExpanded}
+                user={user}
+                onRequireAuth={onRequireAuth}
                 onSelect={(clicked) => {
                   setExpandedCardId(prev => prev === clicked._id ? null : clicked._id);
                 }}

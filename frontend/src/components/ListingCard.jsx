@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
-export default function ListingCard({ listing, forceExpanded = false, onSelect }) {
+export default function ListingCard({ listing, forceExpanded = false, onSelect, user, onRequireAuth }) {
   const [internalExpanded, setInternalExpanded] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(() => {
+    const bookmarks = user?.bookmarks || [];
+    const listingId = listing?._id || listing?.id;
+    return bookmarks.some(b => (b?._id || b) === listingId);
+  });
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const isExpanded = forceExpanded || internalExpanded;
 
   const {
@@ -26,6 +33,48 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect }
   const isTCS = companyName?.toUpperCase()?.includes('TCS');
   const avatarBg = isTCS ? '#7fe3f5' : '#fad69b'; // Cyan for TCS, peach for others
   const avatarText = isTCS ? 'TCS' : (companyName?.substring(0, 2) || (contactPerson ? contactPerson.substring(0, 2) : 'Ad'));
+
+  const handleBookmarkToggle = async (e) => {
+    e.stopPropagation();
+    const listingId = listing?._id || listing?.id;
+    if (!listingId) return;
+
+    if (!user) {
+      if (onRequireAuth) onRequireAuth();
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    setBookmarkLoading(true);
+    const nextState = !isBookmarked;
+    setIsBookmarked(nextState);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/bookmark/${listingId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setIsBookmarked(!nextState); // Rollback on failure
+      } else {
+        // Update user bookmarks in localStorage
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        storedUser.bookmarks = data.bookmarks;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+      }
+    } catch (err) {
+      console.error('Bookmark error:', err);
+      setIsBookmarked(!nextState);
+    } finally {
+      setBookmarkLoading(false);
+    }
+  };
 
   return (
     <article 
@@ -79,13 +128,24 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect }
             </svg>
           </button>
 
-          {/* Heart Icon */}
+          {/* Heart Icon (Shortlist) */}
           <button 
             type="button" 
-            className="focus:outline-none hover:scale-110 transition-transform"
+            onClick={handleBookmarkToggle}
+            disabled={bookmarkLoading}
+            className="focus:outline-none hover:scale-125 transition-transform cursor-pointer p-1"
             aria-label="Bookmark"
+            title={isBookmarked ? 'Remove from shortlisted' : 'Add to shortlisted'}
           >
-            <svg className="w-4 h-4 text-slate-300 hover:text-red-400 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="1.8">
+            <svg 
+              className={`w-4 h-4 transition-colors ${
+                isBookmarked 
+                  ? 'text-red-500 fill-red-500' 
+                  : 'text-slate-300 hover:text-red-400 fill-none stroke-current'
+              }`} 
+              viewBox="0 0 24 24" 
+              strokeWidth="1.8"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
           </button>
