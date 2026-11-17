@@ -127,6 +127,7 @@ export default function App() {
  refreshTrigger={refreshTrigger}
             user={user}
             onRequireAuth={() => setActivePage('signin')}
+            onUserUpdate={setUser}
           />
  </div>
  );
@@ -566,6 +567,7 @@ export default function App() {
               refreshTrigger={refreshTrigger} 
               user={user}
               onRequireAuth={() => setActivePage('signin')}
+            onUserUpdate={setUser}
             />
  </div>
  ) : (

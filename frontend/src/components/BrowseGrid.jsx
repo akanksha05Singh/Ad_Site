@@ -75,20 +75,21 @@ const MOCK_LISTINGS = [
   }
 ];
 
-export default function BrowseGrid({ 
-  searchQuery, 
-  selectedCategory = 'job', 
-  location, 
-  minPrice, 
+export default function BrowseGrid({
+  searchQuery,
+  selectedCategory = 'job',
+  location,
+  minPrice,
   refreshTrigger,
   initialExpandedId,
   user,
-  onRequireAuth
+  onRequireAuth,
+  onUserUpdate
 }) {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Job Filters matching sidebar
   const [jobFilters, setJobFilters] = useState({
     q: '',
@@ -185,12 +186,12 @@ export default function BrowseGrid({
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-6 lg:gap-8 items-start select-none font-sans">
-      
+
       {/* Left Sidebar Filters */}
-      <JobFiltersSidebar 
-        filters={jobFilters} 
-        setFilters={setJobFilters} 
-        onApply={() => {}} 
+      <JobFiltersSidebar
+        filters={jobFilters}
+        setFilters={setJobFilters}
+        onApply={() => { }}
       />
 
       {/* Right Column: Feed of Listings Cards */}
@@ -207,12 +208,17 @@ export default function BrowseGrid({
             const isCurrentlyExpanded = expandedCardId === item._id || (isFirst && !expandedCardId);
 
             return (
-              <ListingCard 
+              <ListingCard
                 key={item._id || index}
                 listing={item}
                 forceExpanded={isCurrentlyExpanded}
                 user={user}
                 onRequireAuth={onRequireAuth}
+                onBookmarkChange={(newBookmarks) => {
+                  if (onUserUpdate && user) {
+                    onUserUpdate({ ...user, bookmarks: newBookmarks });
+                  }
+                }}
                 onSelect={(clicked) => {
                   setExpandedCardId(prev => prev === clicked._id ? null : clicked._id);
                 }}

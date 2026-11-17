@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../config';
 
-export default function ListingCard({ listing, forceExpanded = false, onSelect, user, onRequireAuth }) {
+export default function ListingCard({ listing, forceExpanded = false, onSelect, user, onRequireAuth, onBookmarkChange }) {
   const [internalExpanded, setInternalExpanded] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(() => {
-    const bookmarks = user?.bookmarks || [];
-    const listingId = listing?._id || listing?.id;
-    return bookmarks.some(b => (b?._id || b) === listingId);
-  });
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const isExpanded = forceExpanded || internalExpanded;
+
+  const listingId = listing?._id || listing?.id;
+  const isBookmarked = (user?.bookmarks || []).some(b => (b?._id || b) === listingId);
 
   const {
     title = '',
@@ -36,8 +34,8 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect, 
 
   const handleBookmarkToggle = async (e) => {
     e.stopPropagation();
-    const listingId = listing?._id || listing?.id;
-    if (!listingId) return;
+    const id = listing?._id || listing?.id;
+    if (!id) return;
 
     if (!user) {
       if (onRequireAuth) onRequireAuth();
@@ -48,11 +46,9 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect, 
     if (!token) return;
 
     setBookmarkLoading(true);
-    const nextState = !isBookmarked;
-    setIsBookmarked(nextState);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/bookmark/${listingId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/bookmark/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,17 +56,18 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect, 
         }
       });
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        setIsBookmarked(!nextState); // Rollback on failure
-      } else {
-        // Update user bookmarks in localStorage
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        storedUser.bookmarks = data.bookmarks;
-        localStorage.setItem('user', JSON.stringify(storedUser));
+      if (res.ok && data.success) {
+        // Notify parent to update user state so ALL pages and cards stay synced
+        if (onBookmarkChange) {
+          onBookmarkChange(data.bookmarks);
+        } else {
+          const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+          storedUser.bookmarks = data.bookmarks;
+          localStorage.setItem('user', JSON.stringify(storedUser));
+        }
       }
     } catch (err) {
       console.error('Bookmark error:', err);
-      setIsBookmarked(!nextState);
     } finally {
       setBookmarkLoading(false);
     }
