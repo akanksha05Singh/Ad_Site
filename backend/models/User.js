@@ -26,6 +26,26 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  profilePhoto: {
+    type: String,
+    default: ''
+  },
+  phone: {
+    type: String,
+    default: ''
+  },
+  whatsapp: {
+    type: String,
+    default: ''
+  },
+  website: {
+    type: String,
+    default: ''
+  },
+  companyName: {
+    type: String,
+    default: ''
+  },
   role: {
     type: String,
     enum: ['user', 'admin'],

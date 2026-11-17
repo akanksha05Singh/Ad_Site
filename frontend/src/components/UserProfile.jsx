@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 import MyListings from './MyListings';
 
 export default function UserProfile({ user, onProfileUpdate, workspaceTab = 'profile', setWorkspaceTab }) {
@@ -32,29 +33,54 @@ export default function UserProfile({ user, onProfileUpdate, workspaceTab = 'pro
  }
  };
 
- const handleSubmit = (e) => {
- e.preventDefault();
- 
- // Construct updated user object
- const updatedUser = {
- ...user,
- name: fullName,
- email: emailAddress,
- phone: phoneNumber,
-    whatsapp: whatsappNumber,
-    website: websiteUrl,
-      companyName: companyName,
- profilePhoto: profilePhoto
- };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Construct updated user object
+  const updatedUser = {
+  ...user,
+  name: fullName,
+  email: emailAddress,
+  phone: phoneNumber,
+     whatsapp: whatsappNumber,
+     website: websiteUrl,
+       companyName: companyName,
+  profilePhoto: profilePhoto,
+  avatar: profilePhoto
+  };
 
- // Update parent states & localStorage
- localStorage.setItem('user', JSON.stringify(updatedUser));
- if (onProfileUpdate) {
- onProfileUpdate(updatedUser);
- }
+  // Update parent states & localStorage
+  localStorage.setItem('user', JSON.stringify(updatedUser));
+  if (onProfileUpdate) {
+  onProfileUpdate(updatedUser);
+  }
 
- setAlertMessage('Changes saved successfully!');
- setTimeout(() => setAlertMessage(''), 3000);
+  // Persist to MongoDB database so it never vanishes on logout
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await fetch(`${API_BASE_URL}/api/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: fullName,
+          phone: phoneNumber,
+          whatsapp: whatsappNumber,
+          website: websiteUrl,
+          companyName: companyName,
+          profilePhoto: profilePhoto
+        })
+      });
+    }
+  } catch (err) {
+    console.error('Failed to sync profile to server:', err);
+  }
+
+  setAlertMessage('Changes saved successfully!');
+  setTimeout(() => setAlertMessage(''), 3000);
  };
 
  return (

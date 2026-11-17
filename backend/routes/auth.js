@@ -6,9 +6,15 @@ const sendEmail = require('../utils/sendEmail');
 const sanitizeUser = (user) => {
   return {
     id: user._id,
+    _id: user._id,
     name: user.name,
     email: user.email,
     avatar: user.avatar,
+    profilePhoto: user.profilePhoto || user.avatar || '',
+    phone: user.phone || '',
+    whatsapp: user.whatsapp || '',
+    website: user.website || '',
+    companyName: user.companyName || '',
     role: user.role,
     bookmarks: user.bookmarks,
     createdAt: user.createdAt
@@ -206,6 +212,45 @@ router.get('/me', async (req, res) => {
   } catch (error) {
     console.error('Get profile error:', error);
     return res.status(500).json({ success: false, error: 'Server error fetching user profile' });
+  }
+});
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile (photo, phone, WhatsApp, company, etc.)
+// @access  Private
+router.put('/profile', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Not authorized, token missing' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const user = await User.findById(token);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const { name, phone, whatsapp, website, companyName, profilePhoto } = req.body;
+    if (name) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (whatsapp !== undefined) user.whatsapp = whatsapp;
+    if (website !== undefined) user.website = website;
+    if (companyName !== undefined) user.companyName = companyName;
+    if (profilePhoto !== undefined) {
+      user.profilePhoto = profilePhoto;
+      user.avatar = profilePhoto; // Also set avatar so it syncs everywhere
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      user: sanitizeUser(user)
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return res.status(500).json({ success: false, error: 'Failed to update profile' });
   }
 });
 
