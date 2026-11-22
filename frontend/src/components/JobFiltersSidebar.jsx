@@ -1,4 +1,5 @@
 import React from 'react';
+import { TIER_1_CITIES, TIER_2_CITIES, INDIAN_STATES } from '../constants/locations';
 
 export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
   const handleChange = (e) => {
@@ -217,12 +218,24 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
             className="w-full h-8 px-2.5 pr-7 rounded-[6px] border border-slate-300 bg-white text-[13px] text-black appearance-none focus:border-slate-500 focus:outline-none transition-colors cursor-pointer"
           >
             <option value="">Select</option>
-            <option value="Bangalore">Bangalore</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Mumbai">Mumbai</option>
-            <option value="Oslo">Oslo</option>
-            <option value="Andhra Pradesh">Andhra Pradesh</option>
-            <option value="Karnataka">Karnataka</option>
+            <optgroup label="Tier 1 Cities">
+              {TIER_1_CITIES.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Tier 2 Cities">
+              {TIER_2_CITIES.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </optgroup>
+            <optgroup label="States">
+              {INDIAN_STATES.map(state => (
+                <option key={state} value={state}>{state}</option>
+              ))}
+            </optgroup>
+            <optgroup label="Other">
+              <option value="Remote">Work from home / Remote</option>
+            </optgroup>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

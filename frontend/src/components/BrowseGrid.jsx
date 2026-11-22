@@ -156,16 +156,16 @@ export default function BrowseGrid({
         if (active) {
           if (data.success && Array.isArray(data.data) && data.data.length > 0) {
             setListings(data.data);
-            setExpandedCardId(data.data[0]._id);
+            setExpandedCardId(prev => initialExpandedId || prev || data.data[0]._id);
           } else {
             setListings(MOCK_LISTINGS);
-            setExpandedCardId(MOCK_LISTINGS[0]._id);
+            setExpandedCardId(prev => initialExpandedId || prev || MOCK_LISTINGS[0]._id);
           }
         }
       } catch (err) {
         if (active) {
           setListings(MOCK_LISTINGS);
-          setExpandedCardId(MOCK_LISTINGS[0]._id);
+          setExpandedCardId(prev => initialExpandedId || prev || MOCK_LISTINGS[0]._id);
         }
       } finally {
         if (active) {
@@ -183,6 +183,17 @@ export default function BrowseGrid({
       clearTimeout(delayDebounce);
     };
   }, [searchQuery, selectedCategory, location, minPrice, refreshTrigger, jobFilters]);
+
+  const sortedListings = React.useMemo(() => {
+    if (!initialExpandedId || listings.length === 0) return listings;
+    const clickedItemIndex = listings.findIndex(item => item._id === initialExpandedId || item.id === initialExpandedId);
+    if (clickedItemIndex > 0) {
+      const copy = [...listings];
+      const [clickedItem] = copy.splice(clickedItemIndex, 1);
+      return [clickedItem, ...copy];
+    }
+    return listings;
+  }, [listings, initialExpandedId]);
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-6 lg:gap-8 items-start select-none font-sans">
@@ -202,8 +213,8 @@ export default function BrowseGrid({
               <div key={i} className="w-full h-24 bg-slate-100 rounded-[14px] border border-slate-200 animate-pulse" />
             ))}
           </div>
-        ) : listings.length > 0 ? (
-          listings.map((item, index) => {
+        ) : sortedListings.length > 0 ? (
+          sortedListings.map((item, index) => {
             const isFirst = index === 0;
             const isCurrentlyExpanded = expandedCardId === item._id || (isFirst && !expandedCardId);
 

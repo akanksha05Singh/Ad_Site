@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
+import { ALL_LOCATIONS } from '../constants/locations';
 
 const OCCUPATION_OPTIONS = [
   'Engineer',
@@ -15,19 +16,7 @@ const OCCUPATION_OPTIONS = [
   'Other'
 ];
 
-const LOCATION_OPTIONS = [
-  'Bangalore',
-  'Mumbai',
-  'Delhi',
-  'Hyderabad',
-  'Chennai',
-  'Pune',
-  'Kolkata',
-  'Ahmedabad',
-  'Jaipur',
-  'Chandigarh',
-  'Remote'
-];
+const LOCATION_OPTIONS = ALL_LOCATIONS;
 
 const SALARY_MIN_OPTIONS = [
   '15,000',
