@@ -104,9 +104,13 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let finalValue = type === 'checkbox' ? checked : value;
+    if (name === 'contactWhatsapp') {
+      finalValue = String(value).replace(/\D/g, '').slice(0, 10);
+    }
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: finalValue
     }));
   };
 
@@ -587,10 +591,12 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
                   </div>
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
                     name="contactWhatsapp"
                     value={formData.contactWhatsapp}
                     onChange={handleChange}
-                    placeholder="0123456789"
+                    placeholder="10 digit number"
                     className="w-full h-full px-3 text-slate-800 placeholder-slate-400 text-[13.5px] focus:outline-none"
                   />
                 </div>

@@ -300,12 +300,15 @@ export default function UserProfile({ user, onProfileUpdate, workspaceTab = 'pro
       </select>
       <input
         type="tel"
+        maxLength={10}
         value={phoneNumber.replace(/^\+\d+\s*/, '')}
         onChange={(e) => {
+          const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
           const codeMatch = phoneNumber.match(/^\+\d+/);
           const code = codeMatch ? codeMatch[0] : '+91';
-          setPhoneNumber(code + ' ' + e.target.value);
+          setPhoneNumber(code + ' ' + digits);
         }}
+        placeholder="10 digit mobile number"
         className="w-full rounded-r-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-3 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
       />
     </div>
@@ -330,12 +333,15 @@ export default function UserProfile({ user, onProfileUpdate, workspaceTab = 'pro
       </select>
       <input
         type="tel"
+        maxLength={10}
         value={whatsappNumber.replace(/^\+\d+\s*/, '')}
         onChange={(e) => {
+          const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
           const codeMatch = whatsappNumber.match(/^\+\d+/);
           const code = codeMatch ? codeMatch[0] : '+91';
-          setWhatsappNumber(code + ' ' + e.target.value);
+          setWhatsappNumber(code + ' ' + digits);
         }}
+        placeholder="10 digit mobile number"
         className="w-full rounded-r-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 px-3 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-[#0047ab] focus:bg-white transition-all"
       />
     </div>
