@@ -105,11 +105,11 @@ export default function LandingPage({
 
         {/* ── Hero Section (Left Text Module + Right 4x3 Categories Grid) ── */}
         <section className="pt-6 sm:pt-10 pb-16 sm:pb-20 w-full">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 md:gap-8 w-full">
             
-            {/* Left Column: Heading + Gift Icon + Subscription Offer */}
-            <div className="w-full md:w-[480px] flex flex-col items-center text-center justify-between min-h-[300px] py-1">
-              <h1 className="text-[32px] sm:text-[38px] font-normal text-black leading-[1.22] tracking-tight m-0">
+            {/* Left Column: Heading + Gift Icon + Subscription Offer (Centered in left 50% half of container) */}
+            <div className="w-full flex flex-col items-center text-center justify-between min-h-[300px] py-1">
+              <h1 className="text-[32px] sm:text-[38px] font-normal text-black leading-[1.22] tracking-tight m-0 max-w-[440px]">
                 Explore exciting<br />
                 new job opportunities<br />
                 near you
@@ -130,8 +130,8 @@ export default function LandingPage({
               </div>
             </div>
 
-            {/* Right Column: 4x3 Grid of Categories (Larger boxes, smaller gaps matching manager note) */}
-            <div className="w-full md:w-auto flex md:justify-end justify-center">
+            {/* Right Column: 4x3 Grid of Categories (Centered in right 50% half of container) */}
+            <div className="w-full flex justify-center">
               <div className="w-[420px] sm:w-[460px] grid grid-cols-4 gap-1.5 sm:gap-2">
                 {/* 12 Category Boxes (4 cols x 3 rows) */}
                 {Array.from({ length: 12 }).map((_, index) => {
