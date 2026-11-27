@@ -40,6 +40,8 @@ export default function ListingCard({ listing, forceExpanded = false, onSelect, 
     const digitsOnly = clean.replace(/\D/g, '');
     return `+91 ${digitsOnly}`;
   };
+
+  const isTCS = companyName?.toUpperCase()?.includes('TCS');
   const avatarBg = isTCS ? '#7fe3f5' : '#fad69b'; // Cyan for TCS, peach for others
   const avatarText = isTCS ? 'TCS' : (companyName?.substring(0, 2) || (contactPerson ? contactPerson.substring(0, 2) : 'Ad'));
 
