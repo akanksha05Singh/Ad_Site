@@ -16,6 +16,7 @@ export default function Navbar({
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -82,17 +83,39 @@ export default function Navbar({
           </button>
 
           {/* Notification Bell matching PDF */}
-          <button
-            type="button"
-            onClick={onLoginClick}
-            className="relative p-1 text-black hover:opacity-75 focus:outline-none cursor-pointer bg-transparent border-none"
-            aria-label="Notifications"
-          >
-            <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                if (user) {
+                  setNotificationsOpen(!notificationsOpen);
+                  setUserMenuOpen(false);
+                } else if (onLoginClick) {
+                  onLoginClick();
+                }
+              }}
+              className="relative p-1 text-black hover:opacity-75 focus:outline-none cursor-pointer bg-transparent border-none"
+              aria-label="Notifications"
+            >
+              <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+            </button>
+
+            {/* Notifications Dropdown */}
+            {user && notificationsOpen && (
+              <div className="absolute right-0 top-11 w-72 bg-white rounded-2xl border border-slate-200/80 py-3 z-50 shadow-lg text-sm font-sans text-slate-700">
+                <div className="px-4 pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
+                  <span className="font-semibold text-slate-900">Notifications</span>
+                  <span className="text-[11px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-medium">New</span>
+                </div>
+                <div className="px-4 py-3 text-xs text-slate-500 text-center">
+                  You have no new notifications right now.
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* User Avatar Circle (matching PDF avatar) */}
           <div className="relative">
@@ -101,6 +124,7 @@ export default function Navbar({
               onClick={() => {
                 if (user) {
                   setUserMenuOpen(!userMenuOpen);
+                  setNotificationsOpen(false);
                 } else if (onLoginClick) {
                   onLoginClick();
                 }
