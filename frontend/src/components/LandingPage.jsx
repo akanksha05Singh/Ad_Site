@@ -105,11 +105,11 @@ export default function LandingPage({
 
         {/* ── Hero Section (Left Text Module + Right 4x3 Categories Grid) ── */}
         <section className="pt-6 sm:pt-10 pb-16 sm:pb-20 w-full">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 items-center gap-6 sm:gap-8 w-full">
             
-            {/* Left Column: Heading + Gift Icon + Subscription Offer (Centered over Card 1 & Card 2 below) */}
-            <div className="w-full md:w-[48%] flex flex-col items-center text-center justify-between min-h-[300px] py-1">
-              <h1 className="text-[32px] sm:text-[38px] font-normal text-black leading-[1.22] tracking-tight m-0 max-w-[460px]">
+            {/* Left Column: Spans 2 columns (Cards 1 & 2 width) -> Text is perfectly centered over Cards 1 & 2 */}
+            <div className="lg:col-span-2 w-full flex flex-col items-center text-center justify-between min-h-[300px] py-1">
+              <h1 className="text-[32px] sm:text-[38px] font-normal text-black leading-[1.22] tracking-tight m-0 max-w-[420px]">
                 Explore exciting<br />
                 new job opportunities<br />
                 near you
@@ -130,9 +130,9 @@ export default function LandingPage({
               </div>
             </div>
 
-            {/* Right Column: 4x3 Grid of Categories (Aligned to right side over Card 3, 4, 5 below) */}
-            <div className="w-full md:w-[48%] flex md:justify-end justify-center">
-              <div className="w-[420px] sm:w-[460px] grid grid-cols-4 gap-1.5 sm:gap-2">
+            {/* Right Column: Spans 3 columns (Cards 3, 4, 5 width) -> Category Grid perfectly positioned over Cards 3, 4, 5 */}
+            <div className="lg:col-span-3 w-full flex justify-center lg:justify-end">
+              <div className="w-[380px] sm:w-[420px] lg:w-[440px] grid grid-cols-4 gap-1.5 sm:gap-2">
                 {/* 12 Category Boxes (4 cols x 3 rows) */}
                 {Array.from({ length: 12 }).map((_, index) => {
                   // Index 5 is Row 2, Column 2 (0-indexed: Row 1 = 0..3, Row 2 = 4..7 -> index 5 is Col 2)
