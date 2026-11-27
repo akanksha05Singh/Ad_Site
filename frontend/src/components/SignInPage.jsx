@@ -74,18 +74,13 @@ export default function SignInPage({ onAuthSuccess, onGoSignUp, onGoHome }) {
  flexDirection: 'column',
  }}>
  {/* Minimal Navbar */}
- <nav style={{
- display: 'flex',
- alignItems: 'center',
- justifyContent: 'space-between',
- padding: '1.25rem 2.5rem',
- borderBottom: '1px solid #e5e7eb',
- backgroundColor: '#ffffff',
- }}>
+ <header className="sticky top-0 z-40 w-full bg-white h-16 border-b border-slate-200">
+ <div className="mx-auto flex max-w-7xl h-full items-center justify-between px-4 sm:px-6 lg:px-8">
  <button onClick={onGoHome} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
  <LogoMark />
  </button>
- </nav>
+ </div>
+ </header>
 
  {/* Centered Panel */}
  <div style={{

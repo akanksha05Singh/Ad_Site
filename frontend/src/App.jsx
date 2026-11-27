@@ -557,9 +557,6 @@ export default function App() {
  </div>
  ) : activeTab === 'browse' ? (
  <div className="space-y-6">
- <div className="flex justify-between items-center mb-6">
- <h1 className="text-2xl font-medium text-slate-900">Browse Jobs</h1>
- </div>
  <BrowseGrid 
               initialExpandedId={selectedListingId}
               searchQuery={searchQuery} 
