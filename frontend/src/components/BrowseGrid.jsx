@@ -130,10 +130,10 @@ export default function BrowseGrid({
         if (finalQuery.trim() !== '') params.append('q', finalQuery);
         if (finalLocation.trim() !== '') params.append('location', finalLocation);
         if (finalMinPrice.toString().trim() !== '') {
-          params.append('minPrice', finalMinPrice.toString().replace(/,/g, ''));
+          params.append('minPrice', finalMinPrice.toString().replace(/[^0-9]/g, ''));
         }
         if (jobFilters.maxSalary) {
-          params.append('maxPrice', jobFilters.maxSalary.toString().replace(/,/g, ''));
+          params.append('maxPrice', jobFilters.maxSalary.toString().replace(/[^0-9]/g, ''));
         }
         if (jobFilters.occupationCategory) {
           params.append('occupationCategory', jobFilters.occupationCategory);

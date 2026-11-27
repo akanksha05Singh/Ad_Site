@@ -169,10 +169,10 @@ export default function MyListings({ user }) {
  {listing.category === 'job' ? 'Job' : 'Ad'}
  </span>
  </td>
- <td className="px-6 py-4 font-medium text-slate-900">
+ <td className="px-6 py-4 font-medium text-slate-900 tabular-nums">
  {listing.category === 'job' 
- ? `${Number(listing.price).toLocaleString()} NOK / month` 
- : `${Number(listing.price).toLocaleString()} NOK`}
+ ? `₹${Number(listing.price || 0).toLocaleString('en-IN')}${listing.maxPrice ? ` - ₹${Number(listing.maxPrice).toLocaleString('en-IN')}` : ''} / month` 
+ : `₹${Number(listing.price || 0).toLocaleString('en-IN')}`}
  </td>
  <td className="px-6 py-4 font-medium text-slate-500">{listing.location}</td>
  <td className="px-6 py-4">

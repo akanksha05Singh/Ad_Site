@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 import { ALL_LOCATIONS } from '../constants/locations';
+import { SALARY_MIN_OPTIONS, SALARY_MAX_OPTIONS } from '../constants/salaries';
 
 const OCCUPATION_OPTIONS = [
   'Engineer',
@@ -17,28 +18,6 @@ const OCCUPATION_OPTIONS = [
 ];
 
 const LOCATION_OPTIONS = ALL_LOCATIONS;
-
-const SALARY_MIN_OPTIONS = [
-  '15,000',
-  '20,000',
-  '25,000',
-  '30,000',
-  '40,000',
-  '50,000',
-  '75,000',
-  '1,00,000'
-];
-
-const SALARY_MAX_OPTIONS = [
-  '25,000',
-  '35,000',
-  '45,000',
-  '60,000',
-  '80,000',
-  '1,00,000',
-  '1,50,000',
-  '2,00,000+'
-];
 
 export default function ListingModal({ isOpen, onClose, onListingCreated, onListingUpdated, initialData, user }) {
   if (!isOpen) return null;
@@ -83,38 +62,40 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
           employmentType: initialData.employmentType || 'Any',
           companyName: initialData.companyName || '',
           companyWebsite: initialData.companyWebsite || '',
-          contactEmail: initialData.contactEmail || user?.email || '',
+          contactEmail: user?.email || initialData.contactEmail || '',
           description: initialData.description || '',
           isFeatured: initialData.isFeatured || false,
           contactPerson: initialData.contactPerson || '',
           designation: initialData.designation || '',
-          contactPhone: initialData.contactPhone || '',
+          contactPhone: (user?.phone || initialData.contactPhone || '').replace(/^\+91\s*/, ''),
           phoneCountryCode: initialData.phoneCountryCode || '+91',
           hidePhone: initialData.hidePhone || false,
           contactWhatsapp: initialData.contactWhatsapp || '',
           whatsappCountryCode: initialData.whatsappCountryCode || '+91'
         });
       } else {
+        const cleanPhone = (user?.phone || '').replace(/^\+91\s*/, '');
+        const cleanWhatsapp = (user?.whatsapp || '').replace(/^\+91\s*/, '');
         setFormData({
           category: 'JOB',
           title: '',
           occupationCategory: 'Engineer',
-          location: '',
+          location: user?.location || '',
           price: '25,000',
           maxPrice: '35,000',
           gender: 'Any',
           employmentType: 'Any',
-          companyName: '',
-          companyWebsite: '',
+          companyName: user?.companyName || '',
+          companyWebsite: user?.website || '',
           contactEmail: user?.email || '',
           description: '',
           isFeatured: false,
-          contactPerson: '',
-          designation: '',
-          contactPhone: '',
+          contactPerson: user?.name || '',
+          designation: user?.designation || '',
+          contactPhone: cleanPhone,
           phoneCountryCode: '+91',
           hidePhone: false,
-          contactWhatsapp: '',
+          contactWhatsapp: cleanWhatsapp || cleanPhone,
           whatsappCountryCode: '+91'
         });
       }
@@ -351,18 +332,19 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
                 {/* Min */}
                 <div className="sm:col-span-3 flex items-center gap-1.5">
                   <span className="text-slate-700 text-[13.5px]">Min</span>
-                  <div className="relative flex-1">
+                  <div className="relative flex-1 flex items-center h-10 rounded-lg border border-slate-300 bg-white focus-within:border-slate-500">
+                    <span className="pl-2.5 text-slate-600 text-[13px] select-none">₹</span>
                     <select
                       name="price"
                       value={formData.price}
                       onChange={handleChange}
-                      className="w-full h-10 px-2.5 pr-7 rounded-lg border border-slate-300 text-slate-700 bg-white text-[13px] focus:outline-none focus:border-slate-500 appearance-none cursor-pointer"
+                      className="w-full h-full px-1.5 pr-6 bg-transparent text-slate-700 text-[13px] text-right tabular-nums focus:outline-none appearance-none cursor-pointer"
                     >
                       {SALARY_MIN_OPTIONS.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
+                        <option key={opt} value={opt} className="text-right">{opt}</option>
                       ))}
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -373,18 +355,19 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
                 {/* Max */}
                 <div className="sm:col-span-3 flex items-center gap-1.5">
                   <span className="text-slate-700 text-[13.5px]">Max</span>
-                  <div className="relative flex-1">
+                  <div className="relative flex-1 flex items-center h-10 rounded-lg border border-slate-300 bg-white focus-within:border-slate-500">
+                    <span className="pl-2.5 text-slate-600 text-[13px] select-none">₹</span>
                     <select
                       name="maxPrice"
                       value={formData.maxPrice}
                       onChange={handleChange}
-                      className="w-full h-10 px-2.5 pr-7 rounded-lg border border-slate-300 text-slate-700 bg-white text-[13px] focus:outline-none focus:border-slate-500 appearance-none cursor-pointer"
+                      className="w-full h-full px-1.5 pr-6 bg-transparent text-slate-700 text-[13px] text-right tabular-nums focus:outline-none appearance-none cursor-pointer"
                     >
                       {SALARY_MAX_OPTIONS.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
+                        <option key={opt} value={opt} className="text-right">{opt}</option>
                       ))}
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -469,7 +452,7 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
               </div>
             </div>
 
-            {/* Email */}
+            {/* Email (Taken from registered profile, non-editable) */}
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-center">
               <label className="sm:col-span-4 text-slate-800 text-[13.5px] font-normal">
                 Email
@@ -479,8 +462,9 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
                   type="email"
                   name="contactEmail"
                   value={formData.contactEmail}
-                  onChange={handleChange}
-                  className="w-full h-10 px-3.5 rounded-lg border border-slate-300 text-slate-800 text-[13.5px] focus:outline-none focus:border-slate-500"
+                  readOnly
+                  title="Email is taken from your registered profile and cannot be edited"
+                  className="w-full h-10 px-3.5 rounded-lg border border-slate-300 bg-slate-50 text-slate-600 text-[13.5px] cursor-not-allowed focus:outline-none"
                 />
               </div>
             </div>
@@ -550,16 +534,16 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
               </div>
             </div>
 
-            {/* Phone */}
+            {/* Phone (Taken from registered profile, non-editable) */}
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-center">
               <label className="sm:col-span-3 text-slate-800 text-[13.5px] font-normal">
                 Phone
               </label>
               <div className="sm:col-span-6 flex items-center">
-                <div className="flex items-center w-full h-10 border border-slate-300 rounded-lg overflow-hidden bg-white">
-                  <div className="flex items-center px-2.5 bg-slate-50 border-r border-slate-300 text-slate-700 text-[13px] shrink-0">
+                <div className="flex items-center w-full h-10 border border-slate-300 rounded-lg overflow-hidden bg-slate-50">
+                  <div className="flex items-center px-2.5 bg-slate-100 border-r border-slate-300 text-slate-600 text-[13px] shrink-0">
                     <span>IN +91</span>
-                    <svg className="w-3.5 h-3.5 ml-1 text-slate-500" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 ml-1 text-slate-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -567,9 +551,10 @@ export default function ListingModal({ isOpen, onClose, onListingCreated, onList
                     type="tel"
                     name="contactPhone"
                     value={formData.contactPhone}
-                    onChange={handleChange}
-                    placeholder="0123456789"
-                    className="w-full h-full px-3 text-slate-800 placeholder-slate-400 text-[13.5px] focus:outline-none"
+                    readOnly
+                    title="Phone is taken from your registered profile and cannot be edited"
+                    placeholder="From registered profile"
+                    className="w-full h-full px-3 bg-slate-50 text-slate-600 placeholder-slate-400 text-[13.5px] cursor-not-allowed focus:outline-none"
                   />
                 </div>
               </div>

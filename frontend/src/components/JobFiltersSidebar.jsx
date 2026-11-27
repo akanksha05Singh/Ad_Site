@@ -1,5 +1,6 @@
 import React from 'react';
 import { TIER_1_CITIES, TIER_2_CITIES, INDIAN_STATES } from '../constants/locations';
+import { SALARY_MIN_OPTIONS, SALARY_MAX_OPTIONS } from '../constants/salaries';
 
 export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
   const handleChange = (e) => {
@@ -91,25 +92,49 @@ export default function JobFiltersSidebar({ filters, setFilters, onApply }) {
         </span>
         <div className="flex items-center gap-2 mb-2">
           <span className="text-[12px] font-normal text-black w-8">Min</span>
-          <input
-            type="text"
-            id="minSalary"
-            name="minSalary"
-            value={filters.minSalary || ''}
-            onChange={handleChange}
-            className="flex-1 h-7 px-2 rounded-[6px] border border-slate-300 bg-white text-[13px] text-black focus:border-slate-500 focus:outline-none transition-colors"
-          />
+          <div className="relative flex-1 flex items-center h-8 rounded-[6px] border border-slate-300 bg-white focus-within:border-slate-500 transition-colors">
+            <span className="pl-2 text-[13px] text-slate-600 select-none">₹</span>
+            <select
+              id="minSalary"
+              name="minSalary"
+              value={filters.minSalary || ''}
+              onChange={handleChange}
+              className="w-full h-full px-1.5 pr-6 bg-transparent text-[13px] text-black text-right tabular-nums appearance-none focus:outline-none cursor-pointer"
+            >
+              <option value="" className="text-right">Select</option>
+              {SALARY_MIN_OPTIONS.map(opt => (
+                <option key={opt} value={opt} className="text-right">{opt}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-500">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[12px] font-normal text-black w-8">Max</span>
-          <input
-            type="text"
-            id="maxSalary"
-            name="maxSalary"
-            value={filters.maxSalary || ''}
-            onChange={handleChange}
-            className="flex-1 h-7 px-2 rounded-[6px] border border-slate-300 bg-white text-[13px] text-black focus:border-slate-500 focus:outline-none transition-colors"
-          />
+          <div className="relative flex-1 flex items-center h-8 rounded-[6px] border border-slate-300 bg-white focus-within:border-slate-500 transition-colors">
+            <span className="pl-2 text-[13px] text-slate-600 select-none">₹</span>
+            <select
+              id="maxSalary"
+              name="maxSalary"
+              value={filters.maxSalary || ''}
+              onChange={handleChange}
+              className="w-full h-full px-1.5 pr-6 bg-transparent text-[13px] text-black text-right tabular-nums appearance-none focus:outline-none cursor-pointer"
+            >
+              <option value="" className="text-right">Select</option>
+              {SALARY_MAX_OPTIONS.map(opt => (
+                <option key={opt} value={opt} className="text-right">{opt}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-500">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
